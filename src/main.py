@@ -14,7 +14,6 @@ Norway (NO)
 
 def test():
     """Scrapes numbers for all programmed countries"""
-    #retrieveNumbers("")
     data = list()
 
     browser = webdriver.Firefox()
@@ -27,5 +26,16 @@ def test():
 
     browser.quit()
 
+def single_test():
+    browser = None#webdriver.Firefox()
+
+    scraper = NovelScraperSE()
+    data = scraper.scrape(browser)
+
+    print(data)
+
+    #browser.quit()
+
 def main():
-    test()
+    #test()
+    single_test()
