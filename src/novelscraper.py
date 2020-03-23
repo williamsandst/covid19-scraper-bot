@@ -128,7 +128,7 @@ class NovelScraperDK(NovelScraper):
         denmark_tested = clean_number(table[5])
 
         faraoe_cases = clean_number(table[10])
-        faraoe_deaths = clean_number(table[12])
+        faraoe_deaths = clean_number(table[11])
         faraoe_tested = clean_number(table[9])
 
         greenland_cases = clean_number(table[14])
@@ -215,6 +215,56 @@ class NovelScraperEE(NovelScraper):
 
         return result
 
+class NovelScraperLV(NovelScraper):
+    """Latvian Coronavirus Scraper. Plain HTML"""
+    def __init__(self):
+        """Initializes class members to match the country the class is designed for"""
+        self.country_name = "Latvia"
+        self.iso_code = "LV"
+        #Source is used in the official health department site https://www.terviseamet.ee/et/koroonaviirus/koroonakaart
+        self.source_website = "https://arkartassituacija.gov.lv/"
+
+    def scrape(self, browser):
+        """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
+        result = dataobject.DataObject(self)
+        soup = getHTML(self.source_website)
+
+        paragraph = soup.find("span", style="font-family:inherit", text=re.compile("Iepriekšējā")).string
+
+        result.tested = clean_number(match(paragraph, "Latvijā kopā veikti {} izmeklējumi"))
+        result.cases = clean_number(match(paragraph, "apstiptināti {} saslimšanas gadījumi"))
+
+        return result
+
+class NovelScraperLI(NovelScraper):
+    """Lithuania Coronavirus Scraper. Plain HTML"""
+    def __init__(self):
+        """Initializes class members to match the country the class is designed for"""
+        self.country_name = "Lithuania"
+        self.iso_code = "LI"
+        #Source is used in the official health department site https://www.terviseamet.ee/et/koroonaviirus/koroonakaart
+        self.source_website = "https://sam.lrv.lt/lt/naujienos/koronavirusas"
+
+    def scrape(self, browser):
+        """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
+        result = dataobject.DataObject(self)
+        soup = getHTML(self.source_website)
+
+        paragraph = soup.find("div", class_="text").text
+
+
+        result.cases = clean_number(match(paragraph, "atvejų: {}"))
+        result.deaths = clean_number(match(paragraph, "koronaviruso skaičius: {}"))
+        result.recovered = clean_number(match(paragraph, "Pasveikusiųjų skaičius: {}"))
+        result.tested = clean_number(match(paragraph, "įtariamo koronaviruso: {}"))
+
+        #Sometimes they add an extra update. Then grab those numbers instead
+        if "Atnaujinta" in paragraph:
+            index = paragraph.find("Atnaujinta")
+            paragraph = paragraph[index:]
+            result.cases = clean_number(match(paragraph, "atvejų: {}"))
+
+        return result
 
 
 #saveToFile(soup.prettify(), "output.txt")

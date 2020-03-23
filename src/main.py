@@ -44,21 +44,30 @@ def test():
     print("Scraping ", scraper.country_name)
     data.append(scraper.scrape(browser))
 
+    scraper = NovelScraperLV()
+    print("Scraping ", scraper.country_name)
+    data.append(scraper.scrape(browser))
+
+    scraper = NovelScraperLI()
+    print("Scraping ", scraper.country_name)
+    data.append(scraper.scrape(browser))
+
     for country in data:
         print(country)
 
     browser.quit()
 
 def single_test():
-    browser = webdriver.Firefox()
+    #browser = webdriver.Firefox()
+    browser = None
 
-    scraper = NovelScraperEE()
+    scraper = NovelScraperLI()
     data = scraper.scrape(browser)
 
     print(data)
 
-    browser.quit()
+    #browser.quit()
 
 def main():
-    #test()
-    single_test()
+    test()
+    #single_test()
