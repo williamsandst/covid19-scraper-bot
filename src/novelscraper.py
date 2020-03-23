@@ -74,8 +74,14 @@ class NovelScraperNO(NovelScraper):
         result = dataobject.DataObject(self)
         soup = getParsedJavaScriptHTML(self.source_website, browser)
 
-        result.cases = soup.find("span", class_="absolute confirmed").contents[0]
-        result.deaths = soup.find("span", class_="absolute dead").contents[0]
+        saveToFile(soup.prettify(), "output.txt")
+
+        result.cases = clean_number(soup.find("span", class_="absolute confirmed").contents[0])
+        result.deaths = clean_number(soup.find("span", class_="absolute dead").contents[0])
+        hospital_cases = soup.find_all("a", class_="content", href="#norge-innlagt-paa-sykehus")
+        result.hospitalised = clean_number(hospital_cases[0].find("span", class_="deadNorway").text)
+        result.intensive_care = clean_number(hospital_cases[1].find("span", class_="deadNorway").text)
+        result.tested = clean_number(soup.find("a", class_="content", href="#norge-testet").find("span", class_="deadNorway").text)
 
         return result
 
@@ -179,7 +185,6 @@ class NovelScraperIS(NovelScraper):
 
         elem = soup.find("div", class_="igc-textual-fact", text=re.compile("á sjúkrahúsi"))
         result.hospitalised = clean_number(elem.previous)
-        #saveToFile(soup.prettify(), "output.txt")
 
         elem = soup.find("div", class_="igc-textual-fact", text=re.compile("batnað"))
         result.recovered = clean_number(elem.previous)

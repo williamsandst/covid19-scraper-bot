@@ -46,15 +46,15 @@ def test():
     browser.quit()
 
 def single_test():
-    browser = None#webdriver.Firefox()
+    browser = webdriver.Firefox()
 
-    scraper = NovelScraperIS()
+    scraper = NovelScraperNO()
     data = scraper.scrape(browser)
 
     print(data)
 
-    #browser.quit()
+    browser.quit()
 
 def main():
-    test()
-    #single_test()
+    #test()
+    single_test()

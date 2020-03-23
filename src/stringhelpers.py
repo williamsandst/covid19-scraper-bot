@@ -1,12 +1,12 @@
 
 
-number_cleanup_dict = {ord('.'): None, ord(','): None, ord('*'): None, ord('^'): None}
+number_cleanup_dict = {ord('.'): None, ord(','): None, ord('*'): None, ord('^'): None, ord(' '): None, ord(u"\xa0"): None}
 
 def clean_number(number : str) -> int:
     number = number.strip().translate(number_cleanup_dict)
     if not number.isdigit():
         print("Error converting number string to number literal: ", number)
-        return 0
+        return -1
     return int(number)
 
 
