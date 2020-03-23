@@ -6,10 +6,18 @@ import time
 
 import dataobject
 
+PRINT_PROGRESS = True
+
 def getParsedJavaScriptHTML(website, browser):
     """Returns the parsed javascript HTML source code for a website"""
+    if PRINT_PROGRESS:
+        print("Scraping website: {}".format(website))
     browser.get(website)
     time.sleep(4)
+
+    if PRINT_PROGRESS:
+        print("Scraping website complete")
+        
     return BeautifulSoup(browser.page_source, "html5lib")
 
 class NovelScraper:

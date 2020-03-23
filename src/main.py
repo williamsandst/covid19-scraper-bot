@@ -12,12 +12,20 @@ Countries with working scraping:
 Norway (NO)
 """
 
-def main():
+def test():
+    """Scrapes numbers for all programmed countries"""
     #retrieveNumbers("")
+    data = list()
+
     browser = webdriver.Firefox()
 
     scraper = NovelScraperNO()
-    data = scraper.scrape(browser)
-    print(data)
+    data.append(scraper.scrape(browser))
+
+    for country in data:
+        print(country)
 
     browser.quit()
+
+def main():
+    test()
