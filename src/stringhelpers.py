@@ -1,7 +1,18 @@
 
 
-def match(string, sequence):
-    """Finds the first matching wildcard {} from sequence in string """
+number_cleanup_dict = {ord('.'): None, ord(','): None, ord('*'): None, ord('^'): None}
+
+def clean_number(number : str) -> int:
+    number = number.strip().translate(number_cleanup_dict)
+    if not number.isdigit():
+        print("Error converting number string to number literal: ", number)
+        return 0
+    return int(number)
+
+
+
+def match(string: str, sequence: str) -> str:
+    """Finds the first matching wildcard {} from sequence in string. Ignores {$} """
     words = string.split()
     words = combine_separate_numbers(words)
     sequence = sequence.split()
@@ -11,6 +22,8 @@ def match(string, sequence):
         for j, match_word in enumerate(sequence):
             if match_word == "{}":
                 wildcard_index = i+j
+                continue
+            elif match_word == "{$}":
                 continue
             elif words[i+j] != match_word:
                 wildcard_index = -1
@@ -24,7 +37,7 @@ def match(string, sequence):
             
                 
 
-def combine_separate_numbers(words):
+def combine_separate_numbers(words: list) -> list:
     """ Combines separated numbers eg 2 016 into 2016. Doesn't work for negative numbers, floats or exponentials """
     processed_words = list()
     number_word = "" #Temp variable for holding the combined number

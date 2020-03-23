@@ -10,6 +10,8 @@ from novelscraper import *
 """ 
 Countries with working scraping:
 Norway (NO)
+Sweden (SE)
+Denmark (DK)
 """
 
 def test():
@@ -19,6 +21,15 @@ def test():
     browser = webdriver.Firefox()
 
     scraper = NovelScraperNO()
+    print("Scraping ", scraper.country_name)
+    data.append(scraper.scrape(browser))
+
+    scraper = NovelScraperSE()
+    print("Scraping ", scraper.country_name)
+    data.append(scraper.scrape(browser))
+
+    scraper = NovelScraperDK()
+    print("Scraping ", scraper.country_name)
     data.append(scraper.scrape(browser))
 
     for country in data:
@@ -29,7 +40,7 @@ def test():
 def single_test():
     browser = None#webdriver.Firefox()
 
-    scraper = NovelScraperSE()
+    scraper = NovelScraperFI()
     data = scraper.scrape(browser)
 
     print(data)
