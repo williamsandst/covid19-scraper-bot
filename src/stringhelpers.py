@@ -20,6 +20,8 @@ def match(string: str, sequence: str) -> str:
 
     wildcard_index = -1
     for i, word in enumerate(words):
+        if i > (len(words) - len(sequence)):
+            break
         for j, match_word in enumerate(sequence):
             if match_word == "{}":
                 wildcard_index = i+j

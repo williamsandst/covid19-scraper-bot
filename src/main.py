@@ -7,6 +7,7 @@ from selenium import webdriver
 
 from novelscraper import *
 from nordic_scrapers import *
+from central_europe_scrapers import *
 
 """ 
 Countries with working scraping:
@@ -67,6 +68,18 @@ def test():
     print("Scraping ", scraper.country_name)
     data.append(scraper.try_scrape(browser))
 
+    scraper = NovelScraperDE()
+    print("Scraping ", scraper.country_name)
+    data.append(scraper.try_scrape(browser))
+
+    scraper = NovelScraperFR()
+    print("Scraping ", scraper.country_name)
+    data.append(scraper.try_scrape(browser))
+
+    scraper = NovelScraperES()
+    print("Scraping ", scraper.country_name)
+    data.append(scraper.try_scrape(browser))
+
     for country in data:
         print(country)
 
@@ -76,7 +89,7 @@ def single_test():
     #browser = webdriver.Firefox()
     browser = None
 
-    scraper = NovelScraperIE()
+    scraper = NovelScraperES()
     data = scraper.scrape(browser)
 
     print(data)

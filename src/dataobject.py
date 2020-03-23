@@ -15,4 +15,4 @@ class DataObject:
 
     def __str__(self):
         """ Function to give nice printing results for print() """
-        return "{}: {} cases, {} deaths, {} recovered, {} tested, {} hospitalized".format(self.country_name, self.cases, self.deaths, self.recovered, self.tested, self.hospitalised)
+        return "{}: {} cases, {} deaths, {} recovered, {} tested, {} hospitalized, {} in ICU".format(self.country_name, self.cases, self.deaths, self.recovered, self.tested, self.hospitalised, self.intensive_care)
