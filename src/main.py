@@ -40,6 +40,10 @@ def test():
     print("Scraping ", scraper.country_name)
     data.append(scraper.scrape(browser))
 
+    scraper = NovelScraperEE()
+    print("Scraping ", scraper.country_name)
+    data.append(scraper.scrape(browser))
+
     for country in data:
         print(country)
 
@@ -48,7 +52,7 @@ def test():
 def single_test():
     browser = webdriver.Firefox()
 
-    scraper = NovelScraperNO()
+    scraper = NovelScraperEE()
     data = scraper.scrape(browser)
 
     print(data)

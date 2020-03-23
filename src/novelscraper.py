@@ -74,8 +74,6 @@ class NovelScraperNO(NovelScraper):
         result = dataobject.DataObject(self)
         soup = getParsedJavaScriptHTML(self.source_website, browser)
 
-        saveToFile(soup.prettify(), "output.txt")
-
         result.cases = clean_number(soup.find("span", class_="absolute confirmed").contents[0])
         result.deaths = clean_number(soup.find("span", class_="absolute dead").contents[0])
         hospital_cases = soup.find_all("a", class_="content", href="#norge-innlagt-paa-sykehus")
@@ -193,3 +191,30 @@ class NovelScraperIS(NovelScraper):
         result.tested = clean_number(elem.previous)
 
         return result
+
+class NovelScraperEE(NovelScraper):
+    """Estonia Coronavirus Scraper. Javascript parsing needed"""
+    def __init__(self):
+        """Initializes class members to match the country the class is designed for"""
+        self.country_name = "Estonia"
+        self.iso_code = "EE"
+        #Source is used in the official health department site https://www.terviseamet.ee/et/koroonaviirus/koroonakaart
+        self.source_website = "https://www.koroonakaart.ee/en"
+
+    def scrape(self, browser):
+        """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
+        result = dataobject.DataObject(self)
+        soup = getParsedJavaScriptHTML(self.source_website, browser)
+
+
+        result.cases = clean_number(soup.find("h5", text=re.compile("Confirmed cases")).parent.nextSibling.string)
+        result.hospitalised = clean_number(soup.find("h5", text=re.compile("In treatment")).parent.nextSibling.string)
+        result.deaths = clean_number(soup.find("h5", text=re.compile("Deaths")).parent.nextSibling.string)
+        result.recovered = clean_number(soup.find("h5", text=re.compile("Recovered")).parent.nextSibling.string)
+        result.tested = clean_number(soup.find("h5", text=re.compile("Tests administered")).parent.nextSibling.string)
+
+        return result
+
+
+
+#saveToFile(soup.prettify(), "output.txt")
