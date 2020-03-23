@@ -1,0 +1,7 @@
+.vscode
+geckodriver.log
+output.txt
+
+__pycache__/
+*.py[cod]
+*$py.class
