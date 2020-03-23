@@ -11,16 +11,20 @@ from stringhelpers import *
 
 PRINT_PROGRESS = True
 
-def getParsedJavaScriptHTML(website, browser):
+def getParsedJavaScriptHTML(website, browser, wait_time = 4, scroll = False):
     """Returns the parsed javascript HTML source code for a website"""
     if PRINT_PROGRESS:
         print("Scraping website with Selenium: {}".format(website))
     
     browser.get(website)
-    time.sleep(4)
+    time.sleep(wait_time)
 
     if PRINT_PROGRESS:
         print("Scraping website complete")
+
+    if scroll: #Scroll down page to load in potential deferred javascript elements
+        browser.execute_script("window.scrollTo(0, document.body.scrollHeight/4);") 
+        time.sleep(2)
 
     return BeautifulSoup(browser.page_source, "html5lib")
 
@@ -57,7 +61,7 @@ class NovelScraper:
         return result
 
 class NovelScraperNO(NovelScraper):
-    """Norway Coronavirus Scraper"""
+    """Norway Coronavirus Scraper. Javascript parsing needed"""
     def __init__(self):
         """Initializes class members to match the country the class is designed for"""
         self.country_name = "Norway"
@@ -146,6 +150,41 @@ class NovelScraperFI(NovelScraper):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
         soup = getHTML(self.source_website)
-        saveToFile(soup.prettify(), "output.txt")
+
+        title = soup.find("title", text=re.compile("Suomen koronavirus-tartuntatilanne - Tartunnat")).string
+        title_words = title.split()
+        result.cases = title_words[5]
+        result.recovered = title_words[8]
+        result.deaths = title_words[11]
+
+        return result
+
+
+class NovelScraperIS(NovelScraper):
+    """Iceland Coronavirus Scraper. Javascript parsing needed"""
+    def __init__(self):
+        """Initializes class members to match the country the class is designed for"""
+        self.country_name = "Iceland"
+        self.iso_code = "IS"
+        #Source has javascript. Link is embedded data from https://www.covid.is/tolulegar-upplysingar
+        self.source_website = "https://e.infogram.com/7327507d-28f5-4e3c-b587-c1680bd790e6?src=embed"
+
+    def scrape(self, browser):
+        """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
+        result = dataobject.DataObject(self)
+        soup = getParsedJavaScriptHTML(self.source_website, browser, 6, True)
+
+        elem = soup.find("div", class_="igc-textual-fact", text=re.compile("staðfest smit"))
+        result.cases = clean_number(elem.previous)
+
+        elem = soup.find("div", class_="igc-textual-fact", text=re.compile("á sjúkrahúsi"))
+        result.hospitalised = clean_number(elem.previous)
+        #saveToFile(soup.prettify(), "output.txt")
+
+        elem = soup.find("div", class_="igc-textual-fact", text=re.compile("batnað"))
+        result.recovered = clean_number(elem.previous)
+
+        elem = soup.find("div", class_="igc-textual-fact", text=re.compile("sýni"))
+        result.tested = clean_number(elem.previous)
 
         return result
