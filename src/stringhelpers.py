@@ -6,6 +6,7 @@ def clean_number(number : str) -> int:
     number = number.strip().translate(number_cleanup_dict)
     if not number.isdigit():
         print("Error converting number string to number literal: ", number)
+        raise TypeError
         return -1
     return int(number)
 
@@ -49,4 +50,6 @@ def combine_separate_numbers(words: list) -> list:
                 processed_words.append(number_word)
                 number_word = ""
             processed_words.append(word)
+    if number_word != "":
+        processed_words.append(number_word)
     return processed_words
