@@ -44,10 +44,11 @@ class NovelScraperFR(NovelScraper):
 
         #saveToFile(soup.prettify(), "output.txt")
         text = soup.find("div", class_="item__layout-inner").text
-        result.cases = clean_number(match(text, "{} cas COVID-19 ont été confirmés,"))
-        result.deaths = clean_number(match(text, "incluant {} décès survenus"))
-        result.hospitalised = clean_number(match(text, "{} cas de COVID-19 étaient hospitalisés"))
-        result.intensive_care = clean_number(match(text, "dont {} en"))
+        result.cases = clean_number(match(text, "{} cas de COVID-19 ont été diagnostiqués"))
+        result.deaths = -1
+        #result.deaths = clean_number(match(text, "incluant {} décès survenus"))
+        #result.hospitalised = clean_number(match(text, "{} cas de COVID-19 étaient hospitalisés"))
+        #result.intensive_care = clean_number(match(text, "dont {} en"))
         
         return result
 
@@ -66,9 +67,9 @@ class NovelScraperES(NovelScraper):
 
         text = soup.find("div", class_="artBody", itemprop="articleBody").text
 
-        result.cases = clean_number(match(text, "{} casos de contagio en España,"))
+        result.cases = clean_number(match(text, "{} casos de contagio"))
         result.deaths = clean_number(match(text, "muerte de {} personas"))
-        result.recovered = clean_number(match(text, "{} pacientes recuperados,"))
+        result.recovered = clean_number(match(text, "recuperación de {}"))
         result.intensive_care =  clean_number(match(text, "{} personas están ingresadas en la UCI,"))
 
         return result
@@ -133,7 +134,7 @@ class NovelScraperNL(NovelScraper):
         result = dataobject.DataObject(self)
         soup = getHTML(self.source_website)
 
-        result.deaths = clean_number(match(soup.find("span", text=re.compile(" Er zijn in totaal")).text, "Er zijn in totaal {} mensen"))
+        result.deaths = clean_number(match(soup.find("span", text=re.compile(" Er zijn in totaal")).text, "Er zijn in totaal {}"))
         paragraph2 = soup.find("span", text=re.compile("Sinds gisteren zijn")).text
         result.cases = clean_number(match(paragraph2, "positief geteste mensen op {}"))
         result.hospitalised = clean_number(match(paragraph2, "Onder hen zijn {}"))

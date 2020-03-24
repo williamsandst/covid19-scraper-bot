@@ -11,7 +11,7 @@ from stringhelpers import *
 from novelscraper import *
 
 class NovelScraperRU(NovelScraper):
-    """Russia Coronavirus Scraper. Plain HTML"""
+    """Russia Coronavirus Scraper. Javascript parsing needed"""
     def __init__(self):
         """Initializes class members to match the country the class is designed for"""
         self.country_name = "Russia"
@@ -32,20 +32,13 @@ class NovelScraperRU(NovelScraper):
 
         return result
 
-class NovelScraperBY(NovelScraper):
-    """Belarus Coronavirus Scraper. Plain HTML"""
+class NovelScraperBY(NovelScraperCoronaCloudTemplate):
+    """Belarus Coronavirus Scraper. Plain HTML. Inherits scraper from template as it it uses CoronaCloud"""
     def __init__(self):
         """Initializes class members to match the country the class is designed for"""
         self.country_name = "Belarus"
         self.iso_code = "BY"
-        self.source_website = "https://sam.lrv.lt/lt/naujienos/koronavirusas"
-
-    def scrape(self, browser):
-        """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
-        result = dataobject.DataObject(self)
-        soup = getHTML(self.source_website)
-
-        return result
+        self.source_website = "https://www.corona.cloud/belarus"
 
 
 class NovelScraperPL(NovelScraper):
@@ -54,12 +47,19 @@ class NovelScraperPL(NovelScraper):
         """Initializes class members to match the country the class is designed for"""
         self.country_name = "Poland"
         self.iso_code = "PL"
-        self.source_website = "https://sam.lrv.lt/lt/naujienos/koronavirusas"
+        self.source_website = "https://koronawirusunas.pl/"
 
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
         soup = getHTML(self.source_website)
+
+        elem = soup.find("div", class_="col-lg-8")
+        result.cases = clean_number(elem.find("span", class_="badge badge-danger").text)
+        result.deaths = clean_number(elem.find("span", class_="badge badge-dark").text)
+        result.hospitalised = clean_number(match(elem.text, "{} hospitalizacja"))
+        result.tested = clean_number(match(elem.text, "{} wykonane testy"))
+        result.source_update_date = date_formatter(elem.find("span", class_="badge badge-light").text)
 
         return result
 

@@ -67,6 +67,36 @@ class NovelScraper:
         result = dataobject.DataObject(self)
         return result
 
+class NovelScraperCoronaCloudTemplate:
+    """Parent class to be inherited for all countries. Defines two needed functions: scrape and __init__"""
+    def __init__(self):
+        """Initializes class members to match the country the class is designed for"""
+        self.country_name = "N/A (BASE CLASS)"
+        self.iso_code = "N/A (BASE CLASS)"
+        self.source_website = "N/A (BASE CLASS)"
+
+    def try_scrape(self, browser, count = 3):
+        for i in range(3):
+            try:
+                return self.scrape(browser)
+            except:
+                print("Error on scraping attempt {}. Most likely the javascript did not load in time. Retrying.".format(i))
+
+    def scrape(self, browser):
+        """ Template for Coronacloud function. Returns a data object containing the cases"""
+        result = dataobject.DataObject(self)
+        soup = getHTML(self.source_website)
+
+        text = soup.find("div", class_="card border-left-danger h-100 py-2").parent.parent.text
+        words = text.split('e')
+        result.cases = clean_number(words[1])
+        result.deaths = clean_number(words[2])
+        result.recovered = clean_number(words[5])
+
+        #Date needs javascript.
+
+        return result
+
 class NovelScraperGB(NovelScraper):
     """United Kingdom Coronavirus Scraper. Javascript parsing needed"""
     def __init__(self):

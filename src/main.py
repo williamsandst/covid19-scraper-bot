@@ -28,6 +28,9 @@ Portugal (PT)
 Netherlands (NL)
 Belgium (BE)
 Switzerland (CH)
+Austria (AT)
+Russia (RU)
+Poland (PL)
 """
 
 def test():
@@ -116,6 +119,14 @@ def test():
     print("Scraping ", scraper.country_name)
     data.append(scraper.try_scrape(browser))
 
+    scraper = NovelScraperPL()
+    print("Scraping ", scraper.country_name)
+    data.append(scraper.try_scrape(browser))
+
+    scraper = NovelScraperBY()
+    print("Scraping ", scraper.country_name)
+    data.append(scraper.try_scrape(browser))
+
 
     for country in data:
         print(country)
@@ -124,15 +135,15 @@ def test():
     browser.quit()
 
 def single_test():
-    browser = webdriver.Firefox()
-    #browser = None
+    #browser = webdriver.Firefox()
+    browser = None
 
-    scraper = NovelScraperRU()
+    scraper = NovelScraperBY()
     data = scraper.scrape(browser)
 
     print(data)
 
-    browser.quit()
+    #browser.quit()
 
 def main():
     #test()

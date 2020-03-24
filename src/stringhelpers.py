@@ -14,10 +14,12 @@ date_replace_dict = {"марта": "march", "апреля":"april", "мая": "m
 
 def clean_number(number : str) -> int:
     number = number.strip().translate(number_cleanup_dict)
-    if not number.isdigit():
-        print("Error converting number string to number literal: ", number)
-        raise TypeError
-    return int(number)
+    final_number = ""
+    for character in number:
+        if character.isdigit():
+            final_number += character
+
+    return int(final_number)
 
 def date_formatter(date: str) -> datetime.datetime:
     "Uses dateutil to convert arbitary time string to datetime. Probably doesn't work with non-english months/days"
