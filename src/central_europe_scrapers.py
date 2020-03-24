@@ -74,7 +74,7 @@ class NovelScraperES(NovelScraper):
         return result
 
 class NovelScraperIT(NovelScraper):
-    """Italy Coronavirus Scraper. Plain HTML"""
+    """Italy Coronavirus Scraper. Javascript parsing needed"""
     def __init__(self):
         """Initializes class members to match the country the class is designed for"""
         self.country_name = "Italy"
@@ -96,7 +96,7 @@ class NovelScraperIT(NovelScraper):
         return result
 
 class NovelScraperPT(NovelScraper):
-    """Portugal Coronavirus Scraper. Plain HTML"""
+    """Portugal Coronavirus Scraper. Javascript parsing needed"""
     def __init__(self):
         """Initializes class members to match the country the class is designed for"""
         self.country_name = "Portugal"
@@ -140,3 +140,31 @@ class NovelScraperNL(NovelScraper):
         result.source_update_date = date_formatter(soup.find("span", class_="content-date-created").text)
 
         return result
+
+class NovelScraperBE(NovelScraper):
+    """Belgium Coronavirus Scraper. Plain HTML"""
+    def __init__(self):
+        """Initializes class members to match the country the class is designed for"""
+        self.country_name = "Belgium"
+        self.iso_code = "BE"
+        #Site linked from Belgiums Gov Health Department site https://www.health.belgium.be/en
+        self.source_website = "https://www.info-coronavirus.be/fr/2020/03/24/526-nouvelles-infections-au-covid-19/"
+
+    def scrape(self, browser):
+        """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
+        result = dataobject.DataObject(self)
+        soup = getHTML(self.source_website)
+        
+        post = soup.find("div", class_="blog-post")
+        result.date = date_formatter(post.find("span", class_="blue").string)
+
+        result.cases = clean_number(match(post.find("p").text, "total de cas confirmés s’élève à {}"))
+
+        points = post.find("ul").text
+        result.hospitalised = clean_number(match(points, "{} patients sont hospitalisés,"))
+        result.intensive_care = clean_number(match(points, "{} patients se trouvent en soins"))
+        result.recovered = clean_number(match(points, "{} patients sont sortis"))
+        result.deaths = clean_number(match(points, "{} décès ont été"))
+
+        return result
+

@@ -24,6 +24,7 @@ France (FR)
 Spain (ES)
 Italy (IT)
 Portugal (PT)
+Belgium (BE)
 """
 
 def test():
@@ -106,7 +107,7 @@ def single_test():
     #browser = webdriver.Firefox()
     browser = None
 
-    scraper = NovelScraperNL()
+    scraper = NovelScraperBE()
     data = scraper.scrape(browser)
 
     print(data)

@@ -21,7 +21,7 @@ def date_formatter(date: str) -> datetime.datetime:
     end_string = ""
     has_digits = False
     for word in date.split():
-        if word in date_keep_set:
+        if word.lower() in date_keep_set:
             end_string += word + " "
         else:
             for letter in word: #Keep words in the set
@@ -58,6 +58,7 @@ def match(string: str, sequence: str) -> str:
     
     if wildcard_index == -1:
         print("Function <match()>: The supplied string does not match the sequence ", sequence)
+        raise TypeError
     return words[wildcard_index]
             
                 
