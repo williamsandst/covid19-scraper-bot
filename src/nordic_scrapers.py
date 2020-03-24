@@ -48,8 +48,8 @@ class NovelScraperSE(NovelScraper):
         soup = getHTML(self.source_website)
 
         text = soup.find("p", text=re.compile("Totalt har"))
-        result.cases = int(match(text.get_text(), "Totalt har {} personer"))
-        result.deaths = int(match(text.get_text(), "Nationellt har {} av fallen"))
+        result.cases = clean_number(match(text.get_text(), "Totalt har {} personer"))
+        result.deaths = clean_number(match(text.get_text(), "Nationellt har {} av fallen"))
 
         return result
 

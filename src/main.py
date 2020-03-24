@@ -19,6 +19,9 @@ Iceland (IS)
 Estonia (EE)
 Lativa (LV)
 Lithuania (LI)
+Germany (DE)
+France (FR)
+Spain (ES)
 
 """
 
@@ -80,21 +83,26 @@ def test():
     print("Scraping ", scraper.country_name)
     data.append(scraper.try_scrape(browser))
 
+    scraper = NovelScraperIT()
+    print("Scraping ", scraper.country_name)
+    data.append(scraper.try_scrape(browser))
+
     for country in data:
         print(country)
+    print("Total cases: {}".format(sum(i.cases for i in data)))
 
     browser.quit()
 
 def single_test():
-    #browser = webdriver.Firefox()
-    browser = None
+    browser = webdriver.Firefox()
+    #browser = None
 
-    scraper = NovelScraperES()
+    scraper = NovelScraperIT()
     data = scraper.scrape(browser)
 
     print(data)
 
-    #browser.quit()
+    browser.quit()
 
 def main():
     test()

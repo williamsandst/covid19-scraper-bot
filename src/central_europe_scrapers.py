@@ -44,10 +44,10 @@ class NovelScraperFR(NovelScraper):
 
         #saveToFile(soup.prettify(), "output.txt")
         text = soup.find("div", class_="item__layout-inner").text
-        result.cases = match(text, "{} cas COVID-19 ont été confirmés,")
-        result.deaths = match(text, "incluant {} décès survenus")
-        result.hospitalised = match(text, "{} cas de COVID-19 étaient hospitalisés")
-        result.intensive_care = match(text, "dont {} en")
+        result.cases = clean_number(match(text, "{} cas COVID-19 ont été confirmés,"))
+        result.deaths = clean_number(match(text, "incluant {} décès survenus"))
+        result.hospitalised = clean_number(match(text, "{} cas de COVID-19 étaient hospitalisés"))
+        result.intensive_care = clean_number(match(text, "dont {} en"))
         
         return result
 
@@ -70,5 +70,27 @@ class NovelScraperES(NovelScraper):
         result.deaths = clean_number(match(text, "muerte de {} personas"))
         result.recovered = clean_number(match(text, "{} pacientes recuperados,"))
         result.intensive_care =  clean_number(match(text, "{} personas están ingresadas en la UCI,"))
+
+        return result
+
+class NovelScraperIT(NovelScraper):
+    """Italy Coronavirus Scraper. Plain HTML"""
+    def __init__(self):
+        """Initializes class members to match the country the class is designed for"""
+        self.country_name = "Italy"
+        self.iso_code = "IT"
+        self.source_website = "https://datastudio.google.com/u/0/reporting/91350339-2c97-49b5-92b8-965996530f00/page/RdlHB"
+
+    def scrape(self, browser):
+        """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
+        result = dataobject.DataObject(self)
+        soup = getParsedJavaScriptHTML(self.source_website, browser, 5)
+
+        result.cases = clean_number(soup.find("div", class_="kpi-label ng-binding", text=re.compile("Total Cases")).parent.find("div", class_="valueLabel").string)
+        result.deaths = clean_number(soup.find("div", class_="kpi-label ng-binding", text=re.compile("Deaths")).parent.find("div", class_="valueLabel").string)
+        result.recovered = clean_number(soup.find("div", class_="kpi-label ng-binding", text=re.compile("Recovered")).parent.find("div", class_="valueLabel").string)
+        result.intensive_care = clean_number(soup.find("div", class_="kpi-label ng-binding", text=re.compile("Intensive Care")).parent.find("div", class_="valueLabel").string)
+        result.hospitalised = clean_number(soup.find("div", class_="kpi-label ng-binding", text=re.compile("Hospitalized")).parent.find("div", class_="valueLabel").string)
+        result.tested = clean_number(soup.find("div", class_="kpi-label ng-binding", text=re.compile("Tests")).parent.find("div", class_="valueLabel").string)
 
         return result
