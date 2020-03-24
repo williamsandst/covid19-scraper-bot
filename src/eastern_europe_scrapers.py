@@ -38,6 +38,7 @@ class NovelScraperBY(NovelScraperCoronaCloudTemplate):
         """Initializes class members to match the country the class is designed for"""
         self.country_name = "Belarus"
         self.iso_code = "BY"
+        #There is no primary online source. Newspaper articles seem to be the standard. Therefore secondary
         self.source_website = "https://www.corona.cloud/belarus"
 
 
@@ -63,33 +64,21 @@ class NovelScraperPL(NovelScraper):
 
         return result
 
-class NovelScraperUA(NovelScraper):
+class NovelScraperUA(NovelScraperCoronaCloudTemplate):
     """Ukraine Coronavirus Scraper. Plain HTML"""
     def __init__(self):
         """Initializes class members to match the country the class is designed for"""
         self.country_name = "Ukraine"
         self.iso_code = "UA"
-        self.source_website = "https://sam.lrv.lt/lt/naujienos/koronavirusas"
-
-    def scrape(self, browser):
-        """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
-        result = dataobject.DataObject(self)
-        soup = getHTML(self.source_website)
-
-        return result
+        #The primary source uses facebook, which is hard to scrape. Therefore secondary source
+        self.source_website = "https://www.corona.cloud/ukraine"
 
 
-class NovelScraperGR(NovelScraper):
+
+class NovelScraperGR(NovelScraperCoronaCloudTemplate):
     """Greece Coronavirus Scraper. Plain HTML"""
     def __init__(self):
         """Initializes class members to match the country the class is designed for"""
         self.country_name = "Greece"
         self.iso_code = "GR"
-        self.source_website = "https://sam.lrv.lt/lt/naujienos/koronavirusas"
-
-    def scrape(self, browser):
-        """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
-        result = dataobject.DataObject(self)
-        soup = getHTML(self.source_website)
-
-        return result
+        self.source_website = "https://www.corona.cloud/greece"

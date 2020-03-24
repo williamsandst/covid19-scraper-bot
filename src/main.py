@@ -127,6 +127,14 @@ def test():
     print("Scraping ", scraper.country_name)
     data.append(scraper.try_scrape(browser))
 
+    scraper = NovelScraperUA()
+    print("Scraping ", scraper.country_name)
+    data.append(scraper.try_scrape(browser))
+
+    scraper = NovelScraperGR()
+    print("Scraping ", scraper.country_name)
+    data.append(scraper.try_scrape(browser))
+
 
     for country in data:
         print(country)
@@ -138,7 +146,7 @@ def single_test():
     #browser = webdriver.Firefox()
     browser = None
 
-    scraper = NovelScraperBY()
+    scraper = NovelScraperGR()
     data = scraper.scrape(browser)
 
     print(data)
