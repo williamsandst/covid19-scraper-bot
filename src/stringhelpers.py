@@ -4,9 +4,13 @@ import datetime
 
 number_cleanup_dict = {ord('.'): None, ord(','): None, ord('*'): None, ord('^'): None, ord(' '): None, ord(u"\xa0"): None}
 
-date_keep_set = {"monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday", 
+date_cleanup_dict = {}
+
+date_keep_set = {"monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday", "pm", "am" 
     "january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"
     "mon", "tue", "wed", "thu", "fri", "sat", "sun", "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"}
+
+date_replace_dict = {"марта": "march", "апреля":"april", "мая": "may"}
 
 def clean_number(number : str) -> int:
     number = number.strip().translate(number_cleanup_dict)
@@ -18,9 +22,19 @@ def clean_number(number : str) -> int:
 def date_formatter(date: str) -> datetime.datetime:
     "Uses dateutil to convert arbitary time string to datetime. Probably doesn't work with non-english months/days"
     #Keep all numbers, months, days
+    date = date.strip(".,:*<>")
     end_string = ""
     has_digits = False
-    for word in date.split():
+
+    words = date.split()
+    new_words = list()
+    for word in words: #Translate certain important words if needed
+        if word in date_replace_dict:
+            new_words.append(date_replace_dict[word])
+        else:
+            new_words.append(word)
+
+    for word in new_words:
         if word.lower() in date_keep_set:
             end_string += word + " "
         else:

@@ -8,6 +8,7 @@ from selenium import webdriver
 from novelscraper import *
 from nordic_scrapers import *
 from central_europe_scrapers import *
+from eastern_europe_scrapers import *
 
 """ 
 Countries with working scraping:
@@ -24,7 +25,9 @@ France (FR)
 Spain (ES)
 Italy (IT)
 Portugal (PT)
+Netherlands (NL)
 Belgium (BE)
+Switzerland (CH)
 """
 
 def test():
@@ -97,6 +100,23 @@ def test():
     print("Scraping ", scraper.country_name)
     data.append(scraper.try_scrape(browser))
 
+    scraper = NovelScraperBE()
+    print("Scraping ", scraper.country_name)
+    data.append(scraper.try_scrape(browser))
+
+    scraper = NovelScraperCH()
+    print("Scraping ", scraper.country_name)
+    data.append(scraper.try_scrape(browser))
+
+    scraper = NovelScraperAT()
+    print("Scraping ", scraper.country_name)
+    data.append(scraper.try_scrape(browser))
+
+    scraper = NovelScraperRU()
+    print("Scraping ", scraper.country_name)
+    data.append(scraper.try_scrape(browser))
+
+
     for country in data:
         print(country)
     print("Total cases: {}".format(sum(i.cases for i in data)))
@@ -104,15 +124,15 @@ def test():
     browser.quit()
 
 def single_test():
-    #browser = webdriver.Firefox()
-    browser = None
+    browser = webdriver.Firefox()
+    #browser = None
 
-    scraper = NovelScraperBE()
+    scraper = NovelScraperRU()
     data = scraper.scrape(browser)
 
     print(data)
 
-    #browser.quit()
+    browser.quit()
 
 def main():
     #test()

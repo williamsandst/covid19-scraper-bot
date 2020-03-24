@@ -1,4 +1,5 @@
 import novelscraper
+import datetime
 
 class DataObject:
     """Contains the data scraped from a country"""
@@ -11,6 +12,7 @@ class DataObject:
         self.intensive_care = 0
         self.suspected_cases = 0
         self.source_update_date = None
+        self.scrape_date = datetime.datetime.now()
         self.country_name = scraper.country_name
         self.iso_code = scraper.iso_code
         self.source_website = scraper.source_website
@@ -18,6 +20,6 @@ class DataObject:
     def __str__(self):
         """ Function to give nice printing results for print() """
         output = "{}: {} cases, {} deaths, {} recovered, {} tested, {} hospitalized, {} in ICU".format(self.country_name, self.cases, self.deaths, self.recovered, self.tested, self.hospitalised, self.intensive_care)
-        if self.source_update_date != None:
-            output += "\n{}: Source updated at {}".format(self.country_name, self.source_update_date)
+        output += "\n{}: Source: [{}], updated at {}, retrieved at {}".format(self.country_name, self.source_website[12:35] + (self.source_website[35:] and '..'), 
+        self.source_update_date, self.scrape_date)
         return output

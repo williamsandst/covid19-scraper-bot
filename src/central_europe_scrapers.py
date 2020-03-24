@@ -156,7 +156,7 @@ class NovelScraperBE(NovelScraper):
         soup = getHTML(self.source_website)
         
         post = soup.find("div", class_="blog-post")
-        result.date = date_formatter(post.find("span", class_="blue").string)
+        result.source_update_date = date_formatter(post.find("span", class_="blue").string)
 
         result.cases = clean_number(match(post.find("p").text, "total de cas confirmés s’élève à {}"))
 
@@ -168,3 +168,45 @@ class NovelScraperBE(NovelScraper):
 
         return result
 
+class NovelScraperCH(NovelScraper):
+    """Switzerland Coronavirus Scraper. Plain HTML"""
+    def __init__(self):
+        """Initializes class members to match the country the class is designed for"""
+        self.country_name = "Switzerland"
+        self.iso_code = "CH"
+        #Site is Switzerland Gov Health Department site
+        self.source_website = "https://www.bag.admin.ch/bag/en/home/krankheiten/ausbrueche-epidemien-pandemien/aktuelle-ausbrueche-epidemien/novel-cov/situation-schweiz-und-international.html"
+
+    def scrape(self, browser):
+        """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
+        result = dataobject.DataObject(self)
+        soup = getHTML(self.source_website)
+        
+        post = soup.find_all("article", class_="clearfix")[1]
+        result.source_update_date = date_formatter(post.find("b").string)
+        result.cases = clean_number(match(post.text, "Infected: {}"))
+        result.deaths = clean_number(match(post.text, "Died: {}"))
+
+        return result
+
+class NovelScraperAT(NovelScraper):
+    """Austria Coronavirus Scraper. Plain HTML"""
+    def __init__(self):
+        """Initializes class members to match the country the class is designed for"""
+        self.country_name = "Austria"
+        self.iso_code = "AT"
+        #Site is Austria Gov Social Ministry site
+        self.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+
+    def scrape(self, browser):
+        """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
+        result = dataobject.DataObject(self)
+        soup = getHTML(self.source_website)
+        
+        post = soup.find("p", class_="abstract")
+        result.source_update_date = date_formatter(post.find("strong").next)
+        result.tested = clean_number(match(post.text, "Testungen: {}"))
+        result.cases = clean_number(match(post.text, "Fälle: {}"))
+        result.deaths = clean_number(match(post.text, "Todesfälle: {}"))
+
+        return result
