@@ -22,7 +22,8 @@ Lithuania (LI)
 Germany (DE)
 France (FR)
 Spain (ES)
-
+Italy (IT)
+Portugal (PT)
 """
 
 def test():
@@ -97,7 +98,7 @@ def single_test():
     browser = webdriver.Firefox()
     #browser = None
 
-    scraper = NovelScraperIT()
+    scraper = NovelScraperPT()
     data = scraper.scrape(browser)
 
     print(data)
@@ -105,5 +106,5 @@ def single_test():
     browser.quit()
 
 def main():
-    test()
-    #single_test()
+    #test()
+    single_test()

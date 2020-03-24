@@ -9,6 +9,7 @@ class DataObject:
         self.tested = 0
         self.hospitalised = 0
         self.intensive_care = 0
+        self.suspected_cases = 0
         self.country_name = scraper.country_name
         self.iso_code = scraper.iso_code
         self.source_website = scraper.source_website

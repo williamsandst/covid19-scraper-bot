@@ -94,3 +94,46 @@ class NovelScraperIT(NovelScraper):
         result.tested = clean_number(soup.find("div", class_="kpi-label ng-binding", text=re.compile("Tests")).parent.find("div", class_="valueLabel").string)
 
         return result
+
+class NovelScraperPT(NovelScraper):
+    """Portugal Coronavirus Scraper. Plain HTML"""
+    def __init__(self):
+        """Initializes class members to match the country the class is designed for"""
+        self.country_name = "Portugal"
+        self.iso_code = "PT"
+        #Embeded source in https://covid19.min-saude.pt/ponto-de-situacao-atual-em-portugal/
+        self.source_website = "https://esriportugal.maps.arcgis.com/apps/opsdashboard/index.html#/e9dd1dea8d1444b985d38e58076d197a"
+
+    def scrape(self, browser):
+        """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
+        result = dataobject.DataObject(self)
+        soup = getParsedJavaScriptHTML(self.source_website, browser, 5)
+
+        elem = soup.find("div", class_="dock-container ember-view").find("text", text=re.compile("Casos Confirmados")).parent.parent.parent.parent.parent
+        result.cases = clean_number(match(elem.text, "Casos Confirmados {}"))
+        elem = soup.find("div", class_="dock-container ember-view").find("text", text=re.compile("Total de Óbitos")).parent.parent.parent.parent.parent
+        result.deaths = clean_number(match(elem.text, "Total de Óbitos {}"))
+        elem = soup.find("div", class_="dock-container ember-view").find("text", text=re.compile("Total de Recuperados")).parent.parent.parent.parent.parent
+        result.recovered = clean_number(match(elem.text, "Total de Recuperados {}"))
+        elem = soup.find("div", class_="dock-container ember-view").find("text", text=re.compile("Casos Suspeitos")).parent.parent.parent.parent.parent
+        result.suspected_cases = clean_number(match(elem.text, "Casos Suspeitos {}"))
+
+        return result
+
+class NovelScraperNL(NovelScraper):
+    """Netherlands Coronavirus Scraper. Plain HTML"""
+    def __init__(self):
+        """Initializes class members to match the country the class is designed for"""
+        self.country_name = "Netherlands"
+        self.iso_code = "NL"
+        #Embeded source in https://covid19.min-saude.pt/ponto-de-situacao-atual-em-portugal/
+        self.source_website = "https://esriportugal.maps.arcgis.com/apps/opsdashboard/index.html#/e9dd1dea8d1444b985d38e58076d197a"
+
+    def scrape(self, browser):
+        """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
+        result = dataobject.DataObject(self)
+        soup = getParsedJavaScriptHTML(self.source_website, browser, 5)
+
+        #saveToFile(soup.prettify(), "output.txt")
+
+        return result
