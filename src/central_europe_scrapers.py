@@ -126,14 +126,17 @@ class NovelScraperNL(NovelScraper):
         """Initializes class members to match the country the class is designed for"""
         self.country_name = "Netherlands"
         self.iso_code = "NL"
-        #Embeded source in https://covid19.min-saude.pt/ponto-de-situacao-atual-em-portugal/
-        self.source_website = "https://esriportugal.maps.arcgis.com/apps/opsdashboard/index.html#/e9dd1dea8d1444b985d38e58076d197a"
+        self.source_website = "https://www.rivm.nl/nieuws/actuele-informatie-over-coronavirus"
 
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getParsedJavaScriptHTML(self.source_website, browser, 5)
+        soup = getHTML(self.source_website)
 
-        #saveToFile(soup.prettify(), "output.txt")
+        result.deaths = clean_number(match(soup.find("span", text=re.compile(" Er zijn in totaal")).text, "Er zijn in totaal {} mensen"))
+        paragraph2 = soup.find("span", text=re.compile("Sinds gisteren zijn")).text
+        result.cases = clean_number(match(paragraph2, "positief geteste mensen op {}"))
+        result.hospitalised = clean_number(match(paragraph2, "Onder hen zijn {}"))
+        result.source_update_date = date_formatter(soup.find("span", class_="content-date-created").text)
 
         return result

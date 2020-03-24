@@ -10,10 +10,14 @@ class DataObject:
         self.hospitalised = 0
         self.intensive_care = 0
         self.suspected_cases = 0
+        self.source_update_date = None
         self.country_name = scraper.country_name
         self.iso_code = scraper.iso_code
         self.source_website = scraper.source_website
 
     def __str__(self):
         """ Function to give nice printing results for print() """
-        return "{}: {} cases, {} deaths, {} recovered, {} tested, {} hospitalized, {} in ICU".format(self.country_name, self.cases, self.deaths, self.recovered, self.tested, self.hospitalised, self.intensive_care)
+        output = "{}: {} cases, {} deaths, {} recovered, {} tested, {} hospitalized, {} in ICU".format(self.country_name, self.cases, self.deaths, self.recovered, self.tested, self.hospitalised, self.intensive_care)
+        if self.source_update_date != None:
+            output += "\n{}: Source updated at {}".format(self.country_name, self.source_update_date)
+        return output

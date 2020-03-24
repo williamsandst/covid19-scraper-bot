@@ -88,6 +88,14 @@ def test():
     print("Scraping ", scraper.country_name)
     data.append(scraper.try_scrape(browser))
 
+    scraper = NovelScraperPT()
+    print("Scraping ", scraper.country_name)
+    data.append(scraper.try_scrape(browser))
+
+    scraper = NovelScraperNL()
+    print("Scraping ", scraper.country_name)
+    data.append(scraper.try_scrape(browser))
+
     for country in data:
         print(country)
     print("Total cases: {}".format(sum(i.cases for i in data)))
@@ -95,15 +103,15 @@ def test():
     browser.quit()
 
 def single_test():
-    browser = webdriver.Firefox()
-    #browser = None
+    #browser = webdriver.Firefox()
+    browser = None
 
-    scraper = NovelScraperPT()
+    scraper = NovelScraperNL()
     data = scraper.scrape(browser)
 
     print(data)
 
-    browser.quit()
+    #browser.quit()
 
 def main():
     #test()

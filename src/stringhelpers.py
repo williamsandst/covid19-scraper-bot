@@ -1,16 +1,38 @@
 
+import dateutil.parser
+import datetime
 
 number_cleanup_dict = {ord('.'): None, ord(','): None, ord('*'): None, ord('^'): None, ord(' '): None, ord(u"\xa0"): None}
+
+date_keep_set = {"monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday", 
+    "january", "february", "march", "april", "may", "june", "july", "august", "september", "october", "november", "december"
+    "mon", "tue", "wed", "thu", "fri", "sat", "sun", "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"}
 
 def clean_number(number : str) -> int:
     number = number.strip().translate(number_cleanup_dict)
     if not number.isdigit():
         print("Error converting number string to number literal: ", number)
         raise TypeError
-        return -1
     return int(number)
 
+def date_formatter(date: str) -> datetime.datetime:
+    "Uses dateutil to convert arbitary time string to datetime. Probably doesn't work with non-english months/days"
+    #Keep all numbers, months, days
+    end_string = ""
+    has_digits = False
+    for word in date.split():
+        if word in date_keep_set:
+            end_string += word + " "
+        else:
+            for letter in word: #Keep words in the set
+                if letter.isdigit():
+                    has_digits = True
+                    break
+            if has_digits: #Also keep any word with a number in
+                end_string += word + " "
+                has_digits = False
 
+    return dateutil.parser.parse(end_string.strip())
 
 def match(string: str, sequence: str) -> str:
     """Finds the first matching wildcard {} from sequence in string. Ignores {$} """
