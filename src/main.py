@@ -31,6 +31,11 @@ Switzerland (CH)
 Austria (AT)
 Russia (RU)
 Poland (PL)
+Czechia (CZ)
+Romania (RO)
+Belarus (BY) (CoronaCloud)
+Ukarine (UA) (CoronaCloud)
+Greece (GR) (CoronaCloud)
 """
 
 def test():
@@ -135,6 +140,14 @@ def test():
     print("Scraping ", scraper.country_name)
     data.append(scraper.try_scrape(browser))
 
+    scraper = NovelScraperCZ()
+    print("Scraping ", scraper.country_name)
+    data.append(scraper.try_scrape(browser))
+
+    scraper = NovelScraperRO()
+    print("Scraping ", scraper.country_name)
+    data.append(scraper.try_scrape(browser))
+
 
     for country in data:
         print(country)
@@ -143,16 +156,16 @@ def test():
     browser.quit()
 
 def single_test():
-    #browser = webdriver.Firefox()
-    browser = None
+    browser = webdriver.Firefox()
+    #browser = None
 
-    scraper = NovelScraperGR()
+    scraper = NovelScraperRO()
     data = scraper.scrape(browser)
 
     print(data)
 
-    #browser.quit()
+    browser.quit()
 
 def main():
-    #test()
-    single_test()
+    test()
+    #single_test()

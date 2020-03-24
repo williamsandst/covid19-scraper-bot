@@ -82,3 +82,45 @@ class NovelScraperGR(NovelScraperCoronaCloudTemplate):
         self.country_name = "Greece"
         self.iso_code = "GR"
         self.source_website = "https://www.corona.cloud/greece"
+
+class NovelScraperCZ(NovelScraper):
+    """Czechia Coronavirus Scraper. Plain HTML"""
+    def __init__(self):
+        """Initializes class members to match the country the class is designed for"""
+        self.country_name = "Czechia"
+        self.iso_code = "CZ"
+        self.source_website = "https://onemocneni-aktualne.mzcr.cz/covid-19"
+
+    def scrape(self, browser):
+        """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
+        result = dataobject.DataObject(self)
+        soup = getHTML(self.source_website)
+
+        result.source_update_date = date_formatter(soup.find("p", id="last-modified-datetime").text) #Minute is off
+        result.tested = clean_number(soup.find("p", id="count-test").text)
+        result.cases = clean_number(soup.find("p", id="count-sick").text)
+        result.recovered = clean_number(soup.find("p", id="count-recover").text)
+        result.deaths = clean_number(soup.find("p", id="count-dead").text)
+
+        return result
+
+class NovelScraperRO(NovelScraper):
+    """Romania Coronavirus Scraper. Requires Javascript parsing"""
+    def __init__(self):
+        """Initializes class members to match the country the class is designed for"""
+        self.country_name = "Romania"
+        self.iso_code = "RO"
+        #Linked from Official Gov Health Deparment Site
+        self.source_website = "https://instnsp.maps.arcgis.com/apps/opsdashboard/index.html#/5eced796595b4ee585bcdba03e30c127"
+
+    def scrape(self, browser):
+        """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
+        result = dataobject.DataObject(self)
+        soup = getParsedJavaScriptHTML(self.source_website, browser)
+
+        result.source_update_date = date_formatter(soup.find("strong").text)
+
+        result.cases = clean_number(match(soup.text, "Total cazuri confirmate {}"))
+        result.deaths = clean_number(match(soup.text, "Persoane decedate {}"))
+
+        return result
