@@ -36,7 +36,7 @@ def getParsedJavaScriptHTML(website, browser, wait_time = 4, scroll = False):
 
     return BeautifulSoup(browser.page_source, "html5lib")
 
-def getVisibleText(website, browser, wait_time = 4, screenshot = False, parse_javscript = False):
+def getVisibleText(website, browser, wait_time = 4, screenshot = False, parse_javscript = False, scroll=False):
     # extract text
     
     browser.get(website)
@@ -44,6 +44,10 @@ def getVisibleText(website, browser, wait_time = 4, screenshot = False, parse_ja
         time.sleep(wait_time)
     else:
         time.sleep(0.5)
+
+    if scroll: #Scroll down page to load in potential deferred javascript elements
+        browser.execute_script("window.scrollTo(0, document.body.scrollHeight/5);") 
+        time.sleep(2)
 
     root = html.document_fromstring(browser.page_source)
     Cleaner(kill_tags=['noscript'], style=True)(root) # lxml >= 2.3.1
@@ -110,6 +114,8 @@ class NovelScraper:
         self.source_website = "N/A (BASE CLASS)"
         self.report_website = "N/A (BASE CLASS)"
         self.javascript_required = False
+        self.training_data = None
+        self.website_scroll = False
 
     def try_scrape(self, browser, count = 3):
         for i in range(3):
@@ -156,9 +162,6 @@ class LearnedData():
         loaded_data = loadDictFromFile(filename)
         self.data = loaded_data["register"]
         self.indices = loaded_data["indices"]
-
-
-
 
 class NovelScraperAuto(NovelScraper):
     """ Automated scraping through a training approach
@@ -213,7 +216,7 @@ class NovelScraperAuto(NovelScraper):
         self.learned_data.save(self.country_name)
 
     def retrieve_text(self, website, browser, screenshot = False):
-        return getVisibleText(self.source_website, browser, 5, screenshot, self.javascript_required)
+        return getVisibleText(self.source_website, browser, 5, screenshot, self.javascript_required, self.website_scroll)
 
     def evaluate(self, words, register, ratio): #Ratio is % of way through word
         """ Give a score to a list of words based on how good a fit it is to the learned model """
