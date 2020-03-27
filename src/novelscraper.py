@@ -15,9 +15,12 @@ import random
 import dataobject
 from stringhelpers import *
 
-surrounding_word_count = 5
-
+# Constants
 PRINT_PROGRESS = True
+ALLOW_SCREENSHOTS = True
+
+# How many words should we use surrounding the number for the learning model?
+SURROUNDING_WORD_COUNT = 5
 
 def get_parsed_javascript_html(website, browser, wait_time = 4, scroll = False):
     """Returns the parsed javascript HTML source code for a website"""
@@ -36,7 +39,7 @@ def get_parsed_javascript_html(website, browser, wait_time = 4, scroll = False):
 
     return BeautifulSoup(browser.page_source, "html5lib")
 
-def get_visible_text(website, browser, wait_time = 4, screenshot = False, parse_javscript = False, scroll=False):
+def get_visible_text(website, browser, wait_time = 4, screenshot = None, parse_javscript = False, scroll=False):
     # extract text
     
     browser.get(website)
@@ -44,6 +47,9 @@ def get_visible_text(website, browser, wait_time = 4, screenshot = False, parse_
         time.sleep(wait_time)
     else:
         time.sleep(0.5)
+
+    if ALLOW_SCREENSHOTS and screenshot != None:
+        browser.save_screenshot('output/{}.png'.format(screenshot))
 
     if scroll: #Scroll down page to load in potential deferred javascript elements
         browser.execute_script("window.scrollTo(0, document.body.scrollHeight/5);") 
@@ -200,24 +206,24 @@ class NovelScraperAuto(NovelScraper):
 
         self.learned_data.indices[label] = number_index
         #Get surrounding words and skip the center one
-        context_words = get_surrounding_words(words, number_index, surrounding_word_count)
+        context_words = get_surrounding_words(words, number_index, SURROUNDING_WORD_COUNT)
         for i, word in enumerate(context_words): #Compute distance value from center, ascending
-            context_words[i] = (word, abs(surrounding_word_count-i) + (i >= surrounding_word_count))
+            context_words[i] = (word, abs(SURROUNDING_WORD_COUNT-i) + (i >= SURROUNDING_WORD_COUNT))
         #Eval function: distance * similarity * constant
         #Filter out dates and various unneccessary components
 
         self.learned_data.data[label] = {}
         for word in context_words:
-            self.learned_data.data[label][word[0]] = surrounding_word_count - word[1] 
+            self.learned_data.data[label][word[0]] = SURROUNDING_WORD_COUNT - word[1] 
 
     def train(self, browser):
         """ Train the model to find the numbers specified in data """
-        text = self.retrieve_text(self.source_website, browser, False)
+        text = self.retrieve_text(self.source_website, browser)
         for label, number in self.training_data.items():
             self.learn(text, number, label)
         self.learned_data.save(self.country_name)
 
-    def retrieve_text(self, website, browser, screenshot = False):
+    def retrieve_text(self, website, browser, screenshot = None):
         return get_visible_text(self.source_website, browser, 5, screenshot, self.javascript_required, self.website_scroll)
 
     def evaluate(self, words, register, ratio): #Ratio is % of way through word
@@ -228,7 +234,7 @@ class NovelScraperAuto(NovelScraper):
             for rword in register:
                 ldistance = 1 - stringdist.levenshtein_norm(rword, word)
                 if ldistance >= ldistancecutoff: #Similar enough
-                  score += register[rword]/surrounding_word_count + ratio*3
+                  score += register[rword]/SURROUNDING_WORD_COUNT + ratio*3
         return score
 
     def apply(self, text, register, index):
@@ -250,7 +256,7 @@ class NovelScraperAuto(NovelScraper):
         previousMaxNumber = -1
         for i, word in enumerate(words):
             if word.isdigit() and not is_time(word):
-                sur_words = get_surrounding_words(words, i, surrounding_word_count)
+                sur_words = get_surrounding_words(words, i, SURROUNDING_WORD_COUNT)
                 distance_from_index = (index - abs(index - float(i))) / index
                 score = self.evaluate(sur_words, register, distance_from_index)
                 if score > previousMaxScore:
@@ -265,7 +271,7 @@ class NovelScraperAuto(NovelScraper):
     def scrape(self, browser):
         """Automated scraping using the saved learned model from train()"""
         result = dataobject.DataObject(self)
-        text = self.retrieve_text(self.source_website, browser, True)
+        text = self.retrieve_text(self.source_website, browser, self.country_name.lower())
         #Scramble testing
         #text = clean_text(text)
         #text = scramble_text(text)
