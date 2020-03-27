@@ -1,20 +1,19 @@
 from bs4 import BeautifulSoup
 import html5lib
 from selenium import webdriver
-from lxml.html.clean import Cleaner
+from lxml import etree
 import lxml.html as html
+from lxml.html.clean import Cleaner
+import stringdist
+
 import json
-    
 import requests
 import time
 import re
+import random
 
 import dataobject
 from stringhelpers import *
-import stringdist
-import random
-
-from lxml import etree
 
 surrounding_word_count = 5
 
@@ -165,7 +164,7 @@ class LearnedData():
 
 
 
-class NovelScraperAutomatic(NovelScraper):
+class NovelScraperAuto(NovelScraper):
     """ Automated scraping through a training approach
         #Steps:
         #Learning:
@@ -181,9 +180,13 @@ class NovelScraperAutomatic(NovelScraper):
         self.country_name = "N/A (BASE CLASS)"
         self.iso_code = "N/A (BASE CLASS)"
         self.source_website = "N/A (BASE CLASS)"
+        self.report_website = None
+        self.javascript_required = False
         self.learned_data = LearnedData()
+        self.training_data = None
 
     def learn(self, text, number, label):
+        """ Learn the data surrounding a number to be able to find it in the future """
         text = clean_text(text)
         words = text.split()
         words = combine_separate_numbers(words)
@@ -195,7 +198,6 @@ class NovelScraperAutomatic(NovelScraper):
             raise TypeError
 
         self.learned_data.indices[label] = number_index
-        #deaths_index = find_word_index(words, deaths)
         #Get surrounding words and skip the center one
         context_words = get_surrounding_words(words, number_index, surrounding_word_count)
         for i, word in enumerate(context_words): #Compute distance value from center, ascending
@@ -207,17 +209,18 @@ class NovelScraperAutomatic(NovelScraper):
         for word in context_words:
             self.learned_data.data[label][word[0]] = surrounding_word_count - word[1] 
 
-    def train(self, browser, data):
-        text = self.retrieve_text(self.source_website, browser, False, True)
-        for label, number in data.items():
+    def train(self, browser):
+        """ Train the model to find the numbers specified in data """
+        text = self.retrieve_text(self.source_website, browser, False)
+        for label, number in self.training_data.items():
             self.learn(text, number, label)
         self.learned_data.save(self.country_name)
 
-    def retrieve_text(self, website, browser, screenshot = False, javascript = False):
-        return getVisibleText(self.source_website, browser, 5, screenshot, javascript)
+    def retrieve_text(self, website, browser, screenshot = False):
+        return getVisibleText(self.source_website, browser, 5, screenshot, self.javascript_required)
 
     def evaluate(self, words, register, ratio): #Ratio is % of way through word
-        """ Evaluate word based on learned data """
+        """ Give a score to a list of words based on how good a fit it is to the learned model """
         ldistancecutoff = 0.65
         score = 0
         for word in words:
@@ -228,6 +231,7 @@ class NovelScraperAutomatic(NovelScraper):
         return score
 
     def apply(self, text, register, index):
+        """ Apply the learned model to the text to find the asked for number """
         text = clean_text(text)
         words = text.split()
         words = combine_separate_numbers(words)
@@ -250,12 +254,13 @@ class NovelScraperAutomatic(NovelScraper):
         else:
             return -1
 
-    def scrape_auto(self, browser):
-        """Automated scraping using a training approach"""
+    def scrape(self, browser):
+        """Automated scraping using the saved learned model from train()"""
         result = dataobject.DataObject(self)
-        text = self.retrieve_text(self.source_website, browser, False, True)
-        text = clean_text(text)
-        text = scramble_text(text)
+        text = self.retrieve_text(self.source_website, browser, True)
+        #Scramble testing
+        #text = clean_text(text)
+        #text = scramble_text(text)
         self.learned_data.load(self.country_name)
 
         result_dict = {}

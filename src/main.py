@@ -38,158 +38,51 @@ Ukarine (UA) (CoronaCloud)
 Greece (GR) (CoronaCloud)
 """
 
-def report_all():
-    """Scrapes numbers for all programmed countries"""
-    data = list()
-
-    browser = webdriver.Firefox()
-
-    scraper = NovelScraperNO()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperSE()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperDK()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperFI()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperIS()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperEE()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperLV()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperLI()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperGB()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperIE()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperDE()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperFR()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperES()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperIT()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperPT()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    #scraper = NovelScraperNL()
-    #print("Scraping ", scraper.country_name)
-    #data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperBE()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperCH()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperAT()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperRU()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperPL()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperBY()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperUA()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperGR()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperCZ()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-    scraper = NovelScraperRO()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
-
-
-    for country in data:
-        print(country)
-    print("Total cases: {}".format(sum(i.cases for i in data)))
-
-    browser.quit()
+country_classes = {}
+results = {}
 
 def train():
-    pass
-
-def single_train():
     browser = webdriver.Firefox()
-    #browser = None
 
-    scraper = NovelScraperAutomatic()
-    #scraper.source_website = "https://www.vg.no/spesial/2020/corona/"
-    #scraper.country_name = "Norway"
-    #data = {"cases": "3717", "deaths": "19", "hospitalised":"302", "intensive_care":"76", "tested":"78036"}
-    #data = {"cases": "280", "tested": "11702", "hospitalised":"21"}
-    #scraper.source_website = "https://arkartassituacija.gov.lv/"
-    #scraper.country_name = "Latvia"
-    scraper.source_website = "https://fohm.maps.arcgis.com/apps/opsdashboard/index.html#/68d4537bf2714e63b646c37f152f1392"
-    scraper.country_name = "Sweden"
-    
-    #scraper.train(browser, data)
-    data = scraper.scrape_auto(browser)
+    print("Starting training...")
+    for country in country_classes:
+        train_country(country, browser)
+    print("Training complete!")
+    browser.quit()
 
-    print(data)
+def train_country(country, browser):
+    print(country, "{}: Training recognition model...")
+    country_classes[country].train(browser)
+    print(country, "{}: Training complete!")
+
+def scrape():
+    browser = webdriver.Firefox()
+
+    for country in country_classes:
+        results[country] = scrape_country(country, browser)
+
+    for country, result in results.items():
+        print(result)
 
     browser.quit()
 
-def single_test():
-    browser = webdriver.Firefox()
-    #browser = None
+def scrape_country(country: str, browser):
+    print(country, "{}: Scraping...")
+    result = country_classes[country].scrape(browser)
+    print(country, "{}: Scraping complete!")
+    return result
 
-    scraper = NovelScraperNO()
-    data = scraper.scrape(browser)
-
-    print(data)
-
-    browser.quit()
+def init_countries():
+    #Norway
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Norway" 
+    scraper.iso_code = "NO"
+    scraper.javascript_required = True
+    scraper.source_website = "https://www.vg.no/spesial/2020/corona/"
+    #scraper.training_data = 
+    country_classes[scraper.country_name] = scraper
 
 def main():
+    init_countries()
     #report_all()
-    single_train()
+    scrape()
