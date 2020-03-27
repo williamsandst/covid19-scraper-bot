@@ -20,6 +20,14 @@ class DataObject:
     def __str__(self):
         """ Function to give nice printing results for print() """
         output = "{}: {} cases, {} deaths, {} recovered, {} tested, {} hospitalized, {} in ICU".format(self.country_name, self.cases, self.deaths, self.recovered, self.tested, self.hospitalised, self.intensive_care)
-        output += "\n{}: Source: [{}], updated at {}, retrieved at {}".format(self.country_name, self.source_website[12:35] + (self.source_website[35:] and '..'), 
-        self.source_update_date, self.scrape_date)
+        #output += "\n{}: Source: [{}], updated at {}, retrieved at {}".format(self.country_name, self.source_website[12:35] + (self.source_website[35:] and '..'), 
+        #self.source_update_date, self.scrape_date)
+        output += "\n Source: {}".format(self.source_website)
         return output
+
+    def update_by_str(self, string: str, value) -> None:
+        setattr(self, string, value)
+
+    def update_by_str_dict(self, str_dict):
+        for key, value in str_dict.items():
+            self.update_by_str(key, value)

@@ -38,7 +38,7 @@ Ukarine (UA) (CoronaCloud)
 Greece (GR) (CoronaCloud)
 """
 
-def test():
+def report_all():
     """Scrapes numbers for all programmed countries"""
     data = list()
 
@@ -104,9 +104,9 @@ def test():
     print("Scraping ", scraper.country_name)
     data.append(scraper.try_scrape(browser))
 
-    scraper = NovelScraperNL()
-    print("Scraping ", scraper.country_name)
-    data.append(scraper.try_scrape(browser))
+    #scraper = NovelScraperNL()
+    #print("Scraping ", scraper.country_name)
+    #data.append(scraper.try_scrape(browser))
 
     scraper = NovelScraperBE()
     print("Scraping ", scraper.country_name)
@@ -155,11 +155,33 @@ def test():
 
     browser.quit()
 
+def train():
+    pass
+
+def single_train():
+    browser = webdriver.Firefox()
+    #browser = None
+
+    scraper = NovelScraperAutomatic()
+    #scraper.source_website = "https://www.vg.no/spesial/2020/corona/"
+    #scraper.country_name = "Norway"
+    #data = {"cases": "3717", "deaths": "19", "hospitalised":"302", "intensive_care":"76", "tested":"78036"}
+    data = {"cases": "280", "tested": "11702", "hospitalised":"21"}
+    scraper.source_website = "https://arkartassituacija.gov.lv/"
+    scraper.country_name = "Latvia"
+    
+    scraper.train(browser, data)
+    data = scraper.scrape_auto(browser)
+
+    print(data)
+
+    browser.quit()
+
 def single_test():
     browser = webdriver.Firefox()
     #browser = None
 
-    scraper = NovelScraperRO()
+    scraper = NovelScraperNO()
     data = scraper.scrape(browser)
 
     print(data)
@@ -167,5 +189,5 @@ def single_test():
     browser.quit()
 
 def main():
-    test()
-    #single_test()
+    #report_all()
+    single_train()

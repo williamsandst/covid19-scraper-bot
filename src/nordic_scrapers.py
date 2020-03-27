@@ -107,7 +107,7 @@ class NovelScraperFI(NovelScraper):
 
         title = soup.find("title").string
         result.cases = clean_number(match(title, "tapaukset : {}"))
-        result.recovered = clean_number(match(title, "Parantuneet: {}"))
+        result.recovered = clean_number(match(title, "parantuneet: {}"))
         result.deaths = clean_number(match(title, "Menehtyneet: {}"))
 
         return result
@@ -138,6 +138,13 @@ class NovelScraperIS(NovelScraper):
 
         elem = soup.find("div", class_="igc-textual-fact", text=re.compile("sýni"))
         result.tested = clean_number(elem.previous)
+
+        elem = soup.find("div", class_="igc-textual-fact", text=re.compile("á gjörgæslu"))
+        result.intensive_care = clean_number(elem.previous)
+
+        #Updates daily 13:00
+        result.source_update_date = result.scrape_date
+        result.source_update_date = result.source_update_date.replace(hour=13, minute=0, second=0, microsecond=0)
 
         return result
 
@@ -178,10 +185,18 @@ class NovelScraperLV(NovelScraper):
         result = dataobject.DataObject(self)
         soup = getHTML(self.source_website)
 
-        paragraph = soup.find("span", style="font-family:inherit", text=re.compile("Iepriekšējā")).string
+        paragraph = soup.find("span", text=re.compile("laboratorisko")).string
 
-        result.tested = clean_number(match(paragraph, "Latvijā kopā veikti {} izmeklējumi"))
-        result.cases = clean_number(match(paragraph, "apstiptināti {} saslimšanas gadījumi"))
+        #result.tested = clean_number(match(paragraph, "Latvijā kopā veikti {} izmeklējumi"))
+        try:
+            result.cases = clean_number(match(paragraph, "apstiprināti {} saslimšanas"))
+        except:
+            try:
+                print("Trying fallback string on Latvia")
+                result.cases = clean_number(match(paragraph, "apstiprināts {} saslimšanas"))
+            except:
+                print("Trying second fallback string on Latvia") 
+                result.cases = clean_number(match(paragraph, "apstiptināti {} saslimšanas"))
 
         return result
 

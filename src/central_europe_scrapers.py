@@ -185,8 +185,8 @@ class NovelScraperCH(NovelScraper):
         
         post = soup.find_all("article", class_="clearfix")[1]
         result.source_update_date = date_formatter(post.find("b").string)
-        result.cases = clean_number(match(post.text, "Infected: {}"))
-        result.deaths = clean_number(match(post.text, "Died: {}"))
+        result.cases = clean_number(match(post.text, "positive (for coronavirus): {}"))
+        result.deaths = clean_number(match(post.text, "Deaths: {}"))
 
         return result
 
