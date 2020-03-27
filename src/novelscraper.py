@@ -12,6 +12,7 @@ import re
 import dataobject
 from stringhelpers import *
 import stringdist
+import random
 
 from lxml import etree
 
@@ -65,6 +66,25 @@ def getHTML(website):
         print("Scraping website complete")
 
     return BeautifulSoup(page.content, "html5lib")
+
+#Scramble variables
+wordInsertChance = 0.1
+charScrambleChance = 0.5
+
+def scramble_text(string):
+    wordlist = list(string)
+    for i, char in enumerate(wordlist):
+        if random.random() < charScrambleChance and not char.isdigit() and not char == ":" and not char == "." and not char == "," and not char == " ":
+            wordlist[i] = "x"
+    secondwordlist = []
+    for i, char in enumerate(wordlist):
+        if random.random() < wordInsertChance and not char.isdigit() and not char == ":" and not char == "." and not char == "," and not char == " ":
+            secondwordlist += [" ", "l", "a", "l", "a", "l", "a", " "]
+        else:
+            secondwordlist.append(char)
+    return "".join(wordlist)
+
+
 
 def saveToFile(string, filename):
     print("Saving to file {}...".format(filename))
@@ -234,6 +254,8 @@ class NovelScraperAutomatic(NovelScraper):
         """Automated scraping using a training approach"""
         result = dataobject.DataObject(self)
         text = self.retrieve_text(self.source_website, browser, False, True)
+        text = clean_text(text)
+        text = scramble_text(text)
         self.learned_data.load(self.country_name)
 
         result_dict = {}

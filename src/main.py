@@ -166,11 +166,13 @@ def single_train():
     #scraper.source_website = "https://www.vg.no/spesial/2020/corona/"
     #scraper.country_name = "Norway"
     #data = {"cases": "3717", "deaths": "19", "hospitalised":"302", "intensive_care":"76", "tested":"78036"}
-    data = {"cases": "280", "tested": "11702", "hospitalised":"21"}
-    scraper.source_website = "https://arkartassituacija.gov.lv/"
-    scraper.country_name = "Latvia"
+    #data = {"cases": "280", "tested": "11702", "hospitalised":"21"}
+    #scraper.source_website = "https://arkartassituacija.gov.lv/"
+    #scraper.country_name = "Latvia"
+    scraper.source_website = "https://fohm.maps.arcgis.com/apps/opsdashboard/index.html#/68d4537bf2714e63b646c37f152f1392"
+    scraper.country_name = "Sweden"
     
-    scraper.train(browser, data)
+    #scraper.train(browser, data)
     data = scraper.scrape_auto(browser)
 
     print(data)
