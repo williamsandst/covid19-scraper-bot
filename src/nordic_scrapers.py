@@ -22,7 +22,7 @@ class NovelScraperNO(NovelScraper):
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getParsedJavaScriptHTML(self.source_website, browser)
+        soup = get_parsed_javascript_html(self.source_website, browser)
 
         result.cases = clean_number(soup.find("span", class_="absolute confirmed").contents[0])
         result.deaths = clean_number(soup.find("span", class_="absolute dead").contents[0])
@@ -45,7 +45,7 @@ class NovelScraperSE(NovelScraper):
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getHTML(self.source_website)
+        soup = get_html(self.source_website)
 
         text = soup.find("p", text=re.compile("Totalt har"))
         result.cases = clean_number(match(text.get_text(), "Totalt har {} personer"))
@@ -62,11 +62,12 @@ class NovelScraperDK(NovelScraper):
         self.iso_code = "DK"
         #Source has plain html for cases
         self.source_website = "https://politi.dk/coronavirus-i-danmark/foelg-smittespredningen-globalt-regionalt-og-lokalt"
+        self.report_website = None
 
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getHTML(self.source_website)
+        soup = get_html(self.source_website)
 
         #saveToFile(soup.prettify(), "output.txt")
 
@@ -103,7 +104,7 @@ class NovelScraperFI(NovelScraper):
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getHTML(self.source_website)
+        soup = get_html(self.source_website)
 
         title = soup.find("title").string
         result.cases = clean_number(match(title, "tapaukset : {}"))
@@ -125,7 +126,7 @@ class NovelScraperIS(NovelScraper):
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getParsedJavaScriptHTML(self.source_website, browser, 6, True)
+        soup = get_parsed_javascript_html(self.source_website, browser, 6, True)
 
         elem = soup.find("div", class_="igc-textual-fact", text=re.compile("staðfest smit"))
         result.cases = clean_number(elem.previous)
@@ -160,7 +161,7 @@ class NovelScraperEE(NovelScraper):
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getParsedJavaScriptHTML(self.source_website, browser)
+        soup = get_parsed_javascript_html(self.source_website, browser)
 
 
         result.cases = clean_number(soup.find("h5", text=re.compile("Confirmed cases")).parent.nextSibling.string)
@@ -183,7 +184,7 @@ class NovelScraperLV(NovelScraper):
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getHTML(self.source_website)
+        soup = get_html(self.source_website)
 
         paragraph = soup.find("span", text=re.compile("laboratorisko")).string
 
@@ -212,7 +213,7 @@ class NovelScraperLI(NovelScraper):
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getHTML(self.source_website)
+        soup = get_html(self.source_website)
 
         paragraph = soup.find("div", class_="text").text
 

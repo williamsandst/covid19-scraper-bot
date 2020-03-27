@@ -19,7 +19,7 @@ surrounding_word_count = 5
 
 PRINT_PROGRESS = True
 
-def getParsedJavaScriptHTML(website, browser, wait_time = 4, scroll = False):
+def get_parsed_javascript_html(website, browser, wait_time = 4, scroll = False):
     """Returns the parsed javascript HTML source code for a website"""
     if PRINT_PROGRESS:
         print("Scraping website with Selenium: {}".format(website))
@@ -36,7 +36,7 @@ def getParsedJavaScriptHTML(website, browser, wait_time = 4, scroll = False):
 
     return BeautifulSoup(browser.page_source, "html5lib")
 
-def getVisibleText(website, browser, wait_time = 4, screenshot = False, parse_javscript = False, scroll=False):
+def get_visible_text(website, browser, wait_time = 4, screenshot = False, parse_javscript = False, scroll=False):
     # extract text
     
     browser.get(website)
@@ -58,7 +58,7 @@ def getVisibleText(website, browser, wait_time = 4, screenshot = False, parse_ja
         
     return text # extract text
 
-def getHTML(website):
+def get_html(website):
     if PRINT_PROGRESS:
         print("Scraping website for plain HTML: {}".format(website))
     
@@ -86,20 +86,20 @@ def scramble_text(string):
             secondwordlist.append(char)
     return "".join(wordlist)
 
-def saveToFile(string, filename):
+def save_to_file(string, filename):
     print("Saving to file {}...".format(filename))
     text_file = open(filename, "w")
     text_file.write(string)
     text_file.close()
     print("Saved to file {}".format(filename))
 
-def saveDictToFile(d: dict, filename: str):
+def save_dict_to_file(d: dict, filename: str):
     jsondata = json.dumps(d)
     f = open(filename + ".json","w")
     f.write(jsondata)
     f.close()
 
-def loadDictFromFile(filename: str) -> dict:
+def load_dict_from_file(filename: str) -> dict:
     f = open(filename + ".json")
     d = json.load(f)
     f.close()
@@ -112,7 +112,7 @@ class NovelScraper:
         self.country_name = "N/A (BASE CLASS)"
         self.iso_code = "N/A (BASE CLASS)"
         self.source_website = "N/A (BASE CLASS)"
-        self.report_website = "N/A (BASE CLASS)"
+        self.report_website = None
         self.javascript_required = False
         self.training_data = None
         self.website_scroll = False
@@ -133,7 +133,7 @@ class NovelScraperCoronaCloudTemplate(NovelScraper):
     def scrape(self, browser):
         """ Template for Coronacloud function. Returns a data object containing the cases"""
         result = dataobject.DataObject(self)
-        soup = getHTML(self.source_website)
+        soup = get_html(self.source_website)
 
         text = soup.find("div", class_="card border-left-danger h-100 py-2").parent.parent.text
         words = text.split('e')
@@ -154,12 +154,12 @@ class LearnedData():
         """ Save data to file """
         filename = "data/rm_{}".format(country.lower())
         save_data = {"register": self.data, "indices": self.indices}
-        saveDictToFile(save_data, filename)
+        save_dict_to_file(save_data, filename)
 
     def load(self, country: str):
         """ Load data from file """
         filename = "data/rm_{}".format(country.lower())
-        loaded_data = loadDictFromFile(filename)
+        loaded_data = load_dict_from_file(filename)
         self.data = loaded_data["register"]
         self.indices = loaded_data["indices"]
 
@@ -183,6 +183,8 @@ class NovelScraperAuto(NovelScraper):
         self.javascript_required = False
         self.learned_data = LearnedData()
         self.training_data = None
+        self.website_scroll = False
+        self.optimize_min_max_index_ratio = 0.3
 
     def learn(self, text, number, label):
         """ Learn the data surrounding a number to be able to find it in the future """
@@ -216,7 +218,7 @@ class NovelScraperAuto(NovelScraper):
         self.learned_data.save(self.country_name)
 
     def retrieve_text(self, website, browser, screenshot = False):
-        return getVisibleText(self.source_website, browser, 5, screenshot, self.javascript_required, self.website_scroll)
+        return get_visible_text(self.source_website, browser, 5, screenshot, self.javascript_required, self.website_scroll)
 
     def evaluate(self, words, register, ratio): #Ratio is % of way through word
         """ Give a score to a list of words based on how good a fit it is to the learned model """
@@ -236,6 +238,13 @@ class NovelScraperAuto(NovelScraper):
         words = combine_separate_numbers(words)
         words = divide_numbers(words)
         words = clean_if_number(words)
+
+        if self.optimize_min_max_index_ratio != 1: #Optimizing at potential loss of number
+            offset = int(len(words)*self.optimize_min_max_index_ratio)
+            start = max(0, index - offset)
+            end = min(len(words), index + offset)
+            words = words[start:end+1]
+
         #Find all numbers
         previousMaxScore = 0
         previousMaxNumber = -1
@@ -283,7 +292,7 @@ class NovelScraperGB(NovelScraper):
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getParsedJavaScriptHTML(self.source_website, browser)
+        soup = get_parsed_javascript_html(self.source_website, browser)
 
         result.cases = clean_number(soup.find("strong", text=re.compile("Total UK cases")).parent.parent.parent.parent.find("text").string)
         result.deaths = clean_number(soup.find("strong", text=re.compile("Total UK deaths")).parent.parent.parent.parent.find("text").string)
@@ -302,7 +311,7 @@ class NovelScraperIE(NovelScraper):
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getHTML(self.source_website)
+        soup = get_html(self.source_website)
 
 
         text = soup.find("div", class_="col-md-8 col-sm-8 padding-top-20 govie-markdown").text

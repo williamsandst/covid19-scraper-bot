@@ -15,7 +15,10 @@ class DataObject:
         self.scrape_date = datetime.datetime.now()
         self.country_name = scraper.country_name
         self.iso_code = scraper.iso_code
-        self.source_website = scraper.source_website
+        if scraper.report_website == None:
+            self.source_website = scraper.source_website
+        else:
+            self.source_website = scraper.report_website
 
     def __str__(self):
         """ Function to give nice printing results for print() """

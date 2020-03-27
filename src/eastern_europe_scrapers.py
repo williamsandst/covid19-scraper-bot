@@ -22,7 +22,7 @@ class NovelScraperRU(NovelScraper):
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getParsedJavaScriptHTML(self.source_website, browser)
+        soup = get_parsed_javascript_html(self.source_website, browser)
 
         result.cases = clean_number(soup.find("span", class_="d-map__indicator d-map__indicator_sick").parent.find("h3").next)
         result.recovered = clean_number(soup.find("span", class_="d-map__indicator d-map__indicator_healed").parent.find("h3").next)
@@ -53,7 +53,7 @@ class NovelScraperPL(NovelScraper):
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getHTML(self.source_website)
+        soup = get_html(self.source_website)
 
         elem = soup.find("div", class_="col-lg-8")
         result.cases = clean_number(elem.find("span", class_="badge badge-danger").text)
@@ -94,7 +94,7 @@ class NovelScraperCZ(NovelScraper):
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getHTML(self.source_website)
+        soup = get_html(self.source_website)
 
         result.source_update_date = date_formatter(soup.find("p", id="last-modified-datetime").text) #Minute is off
         result.tested = clean_number(soup.find("p", id="count-test").text)
@@ -116,7 +116,7 @@ class NovelScraperRO(NovelScraper):
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getParsedJavaScriptHTML(self.source_website, browser)
+        soup = get_parsed_javascript_html(self.source_website, browser)
 
         result.source_update_date = date_formatter(soup.find("strong").text)
 

@@ -9,6 +9,7 @@ from novelscraper import *
 from nordic_scrapers import *
 from central_europe_scrapers import *
 from eastern_europe_scrapers import *
+import interface
 
 """ 
 Countries with working scraping:
@@ -67,6 +68,9 @@ def scrape():
     for country, result in results.items():
         print(result)
 
+    submission_string = interface.create_submissions(results)
+    save_to_file(submission_string, "output/submissions.txt")
+
     browser.quit()
 
 def scrape_country(country: str, browser):
@@ -84,6 +88,7 @@ def init_countries():
     scraper.iso_code = "NO"
     scraper.javascript_required = True
     scraper.source_website = "https://www.vg.no/spesial/2020/corona/"
+    scraper.optimize_min_max_index_ratio = 0.1
     #scraper.training_data = {"cases": "3752", "deaths":"19", "tested":"78036", "hospitalised": "302", "intensive_care":"76"}
     country_classes[scraper.country_name] = scraper
 
@@ -100,6 +105,7 @@ def init_countries():
     scraper.country_name = "Sweden"
     scraper.iso_code = "SE"
     scraper.javascript_required = True
+    scraper.optimize_min_max_index_ratio = 0.1
     scraper.source_website = "https://fohm.maps.arcgis.com/apps/opsdashboard/index.html#/68d4537bf2714e63b646c37f152f1392"
     scraper.report_website = "https://www.folkhalsomyndigheten.se/smittskydd-beredskap/utbrott/aktuella-utbrott/covid-19/aktuellt-epidemiologiskt-lage/"
     #scraper.training_data = {"cases": "3046", "deaths": "92", "intensive_care": "209"}
@@ -116,7 +122,7 @@ def init_countries():
     scraper.iso_code = "FI"
     scraper.javascript_required = True
     scraper.source_website = "https://korona.kans.io/"
-    scraper.training_data = {"cases": "1056", "deaths": "7", "recovered": "10"}
+    #scraper.training_data = {"cases": "1056", "deaths": "7", "recovered": "10"}
     country_classes[scraper.country_name] = scraper
 
     # Iceland
@@ -127,17 +133,17 @@ def init_countries():
     scraper.website_scroll = True
     scraper.source_website = "https://e.infogram.com/7327507d-28f5-4e3c-b587-c1680bd790e6?src=embed"
     scraper.report_website = "https://www.covid.is/tolulegar-upplysingar"
-    scraper.training_data = {"cases": "890", "recovered": "97", "hospitalised":"18", "intensive_care":"6", "tested":"13613"}
+    #scraper.training_data = {"cases": "890", "recovered": "97", "hospitalised":"18", "intensive_care":"6", "tested":"13613"}
     country_classes[scraper.country_name] = scraper
 
 def main():
     init_countries()
     #report_all()
     #train()
-    #scrape()
-    browser = webdriver.Firefox()
+    scrape()
+    #browser = webdriver.Firefox()
 
-    train_country("Iceland", browser)
-    print(scrape_country("Iceland", browser))
+    #train_country("Iceland", browser)
+    #print(scrape_country("Iceland", browser))
 
-    browser.quit()
+    #browser.quit()

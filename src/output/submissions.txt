@@ -1,0 +1,12 @@
+Norway:
+= 3765 19 0 https://www.vg.no/spesial/2020/corona/
+Latvia:
+= 280 0 0 https://arkartassituacija.gov.lv/
+Sweden:
+= 3046 92 0 https://www.folkhalsomyndigheten.se/smittskydd-beredskap/utbrott/aktuella-utbrott/covid-19/aktuellt-epidemiologiskt-lage/
+Denmark:
+= 2199 52 0 https://politi.dk/coronavirus-i-danmark/foelg-smittespredningen-globalt-regionalt-og-lokalt
+Finland:
+= 1056 7 10 https://korona.kans.io/
+Iceland:
+= 890 0 97 https://www.covid.is/tolulegar-upplysingar

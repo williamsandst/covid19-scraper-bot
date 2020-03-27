@@ -21,7 +21,7 @@ class NovelScraperDE(NovelScraper):
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getParsedJavaScriptHTML(self.source_website, browser)
+        soup = get_parsed_javascript_html(self.source_website, browser)
 
         result.cases = clean_number(soup.find("div", class_="cases-item cases-item--confirmed").find("div", class_="cases-number").string)
         result.deaths = clean_number(soup.find("div", class_="cases-item cases-item--deaths").find("div", class_="cases-number").string)
@@ -40,7 +40,7 @@ class NovelScraperFR(NovelScraper):
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getHTML(self.source_website)
+        soup = get_html(self.source_website)
 
         #saveToFile(soup.prettify(), "output.txt")
         text = soup.find("div", class_="item__layout-inner").text
@@ -63,7 +63,7 @@ class NovelScraperES(NovelScraper):
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getHTML(self.source_website)
+        soup = get_html(self.source_website)
 
         text = soup.find("div", class_="artBody", itemprop="articleBody").text
 
@@ -85,7 +85,7 @@ class NovelScraperIT(NovelScraper):
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getParsedJavaScriptHTML(self.source_website, browser, 5)
+        soup = get_parsed_javascript_html(self.source_website, browser, 5)
 
         result.cases = clean_number(soup.find("div", class_="kpi-label ng-binding", text=re.compile("Total Cases")).parent.find("div", class_="valueLabel").string)
         result.deaths = clean_number(soup.find("div", class_="kpi-label ng-binding", text=re.compile("Deaths")).parent.find("div", class_="valueLabel").string)
@@ -108,7 +108,7 @@ class NovelScraperPT(NovelScraper):
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getParsedJavaScriptHTML(self.source_website, browser, 5)
+        soup = get_parsed_javascript_html(self.source_website, browser, 5)
 
         elem = soup.find("div", class_="dock-container ember-view").find("text", text=re.compile("Casos Confirmados")).parent.parent.parent.parent.parent
         result.cases = clean_number(match(elem.text, "Casos Confirmados {}"))
@@ -132,7 +132,7 @@ class NovelScraperNL(NovelScraper):
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getHTML(self.source_website)
+        soup = get_html(self.source_website)
 
         result.deaths = clean_number(match(soup.find("span", text=re.compile(" Er zijn in totaal")).text, "Er zijn in totaal {}"))
         paragraph2 = soup.find("span", text=re.compile("Sinds gisteren zijn")).text
@@ -154,7 +154,7 @@ class NovelScraperBE(NovelScraper):
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getHTML(self.source_website)
+        soup = get_html(self.source_website)
         
         post = soup.find("div", class_="blog-post")
         result.source_update_date = date_formatter(post.find("span", class_="blue").string)
@@ -181,7 +181,7 @@ class NovelScraperCH(NovelScraper):
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getHTML(self.source_website)
+        soup = get_html(self.source_website)
         
         post = soup.find_all("article", class_="clearfix")[1]
         result.source_update_date = date_formatter(post.find("b").string)
@@ -202,7 +202,7 @@ class NovelScraperAT(NovelScraper):
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
         result = dataobject.DataObject(self)
-        soup = getHTML(self.source_website)
+        soup = get_html(self.source_website)
         
         post = soup.find("p", class_="abstract")
         result.source_update_date = date_formatter(post.find("strong").next)
