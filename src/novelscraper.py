@@ -38,8 +38,6 @@ def getParsedJavaScriptHTML(website, browser, wait_time = 4, scroll = False):
 
 def getVisibleText(website, browser, wait_time = 4, screenshot = False, parse_javscript = False):
     # extract text
-    if PRINT_PROGRESS:
-        print("Scraping website with Selenium: {}".format(website))
     
     browser.get(website)
     if (parse_javscript):
@@ -47,12 +45,13 @@ def getVisibleText(website, browser, wait_time = 4, screenshot = False, parse_ja
     else:
         time.sleep(0.5)
 
-    if PRINT_PROGRESS:
-        print("Scraping website complete")
-
     root = html.document_fromstring(browser.page_source)
     Cleaner(kill_tags=['noscript'], style=True)(root) # lxml >= 2.3.1
     text = " ".join(etree.XPath("//text()")(root))
+
+    if PRINT_PROGRESS:
+        print("Retrieved website with Selenium: {}".format(website))
+        
     return text # extract text
 
 def getHTML(website):
@@ -82,8 +81,6 @@ def scramble_text(string):
         else:
             secondwordlist.append(char)
     return "".join(wordlist)
-
-
 
 def saveToFile(string, filename):
     print("Saving to file {}...".format(filename))
@@ -146,17 +143,16 @@ class LearnedData():
     def __init__(self, filename="none.txt"):
         self.data = dict()
         self.indices = dict()
-        self.filename = filename
 
-    def save(self, country):
+    def save(self, country: str):
         """ Save data to file """
-        filename = "data/"+country+"/lm"
+        filename = "data/rm_{}".format(country.lower())
         save_data = {"register": self.data, "indices": self.indices}
         saveDictToFile(save_data, filename)
 
-    def load(self, country):
+    def load(self, country: str):
         """ Load data from file """
-        filename = "data/"+country+"/lm"
+        filename = "data/rm_{}".format(country.lower())
         loaded_data = loadDictFromFile(filename)
         self.data = loaded_data["register"]
         self.indices = loaded_data["indices"]
