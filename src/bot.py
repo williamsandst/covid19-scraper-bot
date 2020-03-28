@@ -4,6 +4,10 @@ import discord
 from dotenv import load_dotenv
 from threading import Thread
 import asyncio
+from queue import Queue
+import datetime
+
+import interface
 
 # What should it do?
 # Send submission messages to any channel (text and images)
@@ -22,6 +26,23 @@ import asyncio
 
 country_to_channel_dict = {"czechia": "czech-republic"}
 
+channel_to_country_dict = {v: k for k, v in country_to_channel_dict.items()}
+
+channel_blacklist_set = {"general"}
+
+def convert_country_to_channel(country):
+    if country in country_to_channel_dict:
+        return country_to_channel_dict[country]
+    else:
+        return country
+
+def convert_channel_to_country(channel):
+    if channel in channel_to_country_dict:
+        return channel_to_country_dict[channel]
+    else:
+        return channel
+
+
 class InvestigatorBot():
     def __init__(self):
         load_dotenv()
@@ -32,22 +53,20 @@ class InvestigatorBot():
         self.asyncio_event_loop = asyncio.get_event_loop()
         self.thread = Thread(target = self.run)
 
+    def set_command_queue(self, command_queue: Queue):
+        self.command_queue = command_queue
+        self.client.command_queue = command_queue
+
     def start(self):
         self.asyncio_event_loop.create_task(self.start_client())
         self.thread.start()
         print("Started separate thread for Discord Bot")
 
-    def convert_country_to_channel(self, country):
-        if country in country_to_channel_dict:
-            return country_to_channel_dict[country]
-        else:
-            return country
-
     def run(self):
         self.asyncio_event_loop.run_forever()
 
     def submit(self, country, string, screenshot_path):
-        channel = self.convert_country_to_channel(country)
+        channel = convert_country_to_channel(country)
         self.asyncio_event_loop.create_task(self.client.send_submission(string, channel, screenshot_path))
 
     async def start_client(self):
@@ -68,6 +87,9 @@ class InvestigatorDiscordClient(discord.Client):
 
     async def on_ready(self):
         self.server = discord.utils.get(self.guilds, name=self.GUILD)
+        for member in self.server.members:
+            print('name: {}'.format(member.name) )
+        self.novel_bot_id = discord.utils.get(self.server.members, name="Wydal").id
         print(f'{self.user} is connected to the following server:')
         print(f'{self.server.name}(id: {self.server.id})')
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=self.bot_status_text))
@@ -76,3 +98,50 @@ class InvestigatorDiscordClient(discord.Client):
         channel = discord.utils.get(self.server.channels, name=channel) 
         await channel.send(self.bot_submission_text, file=discord.File(screenshot_path))
         await channel.send(string)
+
+    async def send_check(self, channel): #Send check
+        channel = discord.utils.get(self.server.channels, name=channel) 
+        await channel.send("chk")
+
+    async def fake_check(self, channel):
+        total_cases = 1000
+        total_recovered = 9
+        total_deaths = 10
+
+        embed = discord.Embed(title="🇦🇩 __{}__ 🇦🇩 Growth Rate: `D: 1.50` || `D-1: 1.50\n`".format(str(channel.name)), color=0x6ed010)
+        embed.add_field(name="`Cases`", value="Total: {} `|` Active: {}\n🆕 +{} `|`🔺 {}".format(total_cases,900,400,161), inline=True)
+        embed.add_field(name="`Deaths`", value="Total: {}\n🆕 +{} `|`🔺 {}".format(total_deaths, 10, -6), inline=True)
+        embed.add_field(name="`Recovered`", value="Total: {}\n🆕 +{} `|`🔺 {}".format(total_recovered, 0, 0), inline=True)
+        embed.add_field(name="`Deaths/Cases`", value="Total: {}% `|` Active: {}%".format(1.32,1.32), inline=True)
+        embed.add_field(name="`Deaths/(Deaths+Recovered)`", value="{}%".format(1.32), inline=True)
+        embed.add_field(name="`Recovered/Cases`", value="{}%".format(1.32), inline=True)
+        embed.add_field(name="`Total Pop`", value="10,078,802", inline=True)
+        embed.add_field(name="`% Cases`", value="1.32", inline=True)
+        embed.add_field(name="`% Deaths`", value="1.32", inline=True)
+        embed.timestamp = datetime.datetime.now()
+
+        await channel.send(embed=embed)
+
+    async def on_message(self, message):
+        # we do not want the bot to reply to itself
+
+        if message.author == self.user or str(message.channel) in channel_blacklist_set:
+            return
+
+        """if message.author.id == self.novel_bot_id: #Read check and save it
+            country = convert_channel_to_country(str(message.channel))
+            channel = message.channel
+            interface.process_check(country, str(message.content))
+            await channel.send("Praise the Creator")
+            return"""
+
+        if message.content.startswith('!scrape'):
+            channel = message.channel
+            country = convert_channel_to_country(str(message.channel))
+            country = country[0].upper() + country[1:]
+            await channel.send("Beep boop! Investigating Covid-19 cases in {}, please stand by...".format(country))
+            self.command_queue.put("scrape {} -d -disp".format(country))
+        
+        if message.content.startswith('check'):
+            channel = message.channel
+            await self.fake_check(channel)

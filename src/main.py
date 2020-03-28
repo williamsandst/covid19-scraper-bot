@@ -199,14 +199,15 @@ def main():
     add_command(["exit", "close"], lambda: cmd_exit(country_classes, flags, discord_bot))
 
     init_countries()
-    commandQueue = queue.Queue()
+    command_queue = queue.Queue()
 
-    scheduling_thread = SchedulingThread(commandQueue, flags)
+    scheduling_thread = SchedulingThread(command_queue, flags)
     scheduling_thread.start()
 
     # Start discord bot
     if (DISCORD_BOT_ENABLED):
         print("Starting the Investigator Discord Bot")
+        discord_bot.set_command_queue(command_queue)
         discord_bot.start()
         time.sleep(5)
         print("Bot started")
