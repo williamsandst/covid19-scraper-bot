@@ -271,7 +271,8 @@ class NovelScraperAuto(NovelScraper):
     def scrape(self, browser):
         """Automated scraping using the saved learned model from train()"""
         result = dataobject.DataObject(self)
-        text = self.retrieve_text(self.source_website, browser, self.country_name.lower())
+        screenshot_filename = self.country_name.lower() + "-" + result.scrape_date.__str__()
+        text = self.retrieve_text(self.source_website, browser, screenshot_filename)
         #Scramble testing
         #text = clean_text(text)
         #text = scramble_text(text)
