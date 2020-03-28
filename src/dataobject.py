@@ -15,6 +15,7 @@ class DataObject:
         self.scrape_date = datetime.datetime.now()
         self.country_name = scraper.country_name
         self.iso_code = scraper.iso_code
+        self.screenshot_path = None
         if scraper.report_website == None:
             self.source_website = scraper.source_website
         else:

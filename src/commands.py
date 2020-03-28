@@ -2,6 +2,7 @@ from selenium import webdriver
 import interface
 from novelscraper import *
 import bot
+import time
 
 def train(country_classes):
     browser = webdriver.Firefox()
@@ -65,12 +66,20 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
         error_message("The specified country {} is not registered".format(country))
         return
 
-    for country, result in results.items():
-        print(result)
+    if 'disp' in flags:
+        for country, result in results.items():
+            print(result)
 
     if 'f' in flags:
         submission_string = interface.create_submissions(results)
         save_to_file(submission_string, "output/submissions.txt")
+    
+    if 'd' in flags:
+        for country, result in results.items():
+            submission_string = interface.convert_dataobject_to_submission(result)
+            discord_bot.submit(country, submission_string, result.screenshot_path)
+            print("Sent submission to Discord")
+            time.sleep(1)
 
 
 def cmd_train(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBot):

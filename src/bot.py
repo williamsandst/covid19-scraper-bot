@@ -20,6 +20,7 @@ import asyncio
 
 # Read the check. 
 
+country_to_channel_dict = {"czechia": "czech-republic"}
 
 class InvestigatorBot():
     def __init__(self):
@@ -36,11 +37,18 @@ class InvestigatorBot():
         self.thread.start()
         print("Started separate thread for Discord Bot")
 
+    def convert_country_to_channel(self, country):
+        if country in country_to_channel_dict:
+            return country_to_channel_dict[country]
+        else:
+            return country
+
     def run(self):
         self.asyncio_event_loop.run_forever()
 
-    def submit(self, string):
-        self.asyncio_event_loop.create_task(self.client.send_submission(string, "general"))
+    def submit(self, country, string, screenshot_path):
+        channel = self.convert_country_to_channel(country)
+        self.asyncio_event_loop.create_task(self.client.send_submission(string, channel, screenshot_path))
 
     async def start_client(self):
         await self.client.start(self.TOKEN)
@@ -64,7 +72,7 @@ class InvestigatorDiscordClient(discord.Client):
         print(f'{self.server.name}(id: {self.server.id})')
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=self.bot_status_text))
 
-    async def send_submission(self, string, channel):
+    async def send_submission(self, string, channel, screenshot_path):
         channel = discord.utils.get(self.server.channels, name=channel) 
-        await channel.send(self.bot_submission_text, file=discord.File('output/sweden-2020-03-27 23:24:44.901708.png'))
+        await channel.send(self.bot_submission_text, file=discord.File(screenshot_path))
         await channel.send(string)
