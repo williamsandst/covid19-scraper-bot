@@ -3,10 +3,14 @@ Main file
 This is a program which scrapes the Coronavirus confirmed cases, deaths and recovered from various countries health ministry websites
 """
 
+import interface
+from threading import Thread
+import time
+import datetime
+
 from novelscraper import *
 from nordic_scrapers import *
 from commands import *
-import interface
 
 """ 
 Countries with working scraping:
@@ -38,6 +42,7 @@ Greece (GR) (CoronaCloud)
 
 country_classes = {}
 commands = {}
+scheduled_commands = []
 results = {}
 
 def init_countries():
@@ -117,6 +122,8 @@ def add_command(triggers : list, function):
         for trigger in triggers:
             commands[trigger] = function
 
+def add_scheduled_command(command: str, time: datetime):
+    scheduled_commands.append([command, time])
 
 def parse(input_list : list) -> dict:
     """Parse the flags of a written line into dictionary representing the flags
@@ -151,13 +158,45 @@ def parse(input_list : list) -> dict:
 
     return flags
 
+ENABLE_EXTERNAL_COMMANDS = True
+
+def time_is_approximate_equal(time1: datetime.datetime, time2: datetime.datetime):
+    allowed_offset = 2
+    seconds1 = time1.hour*3600 + time1.minute*60 + time1.second
+    seconds2 = time2.hour*3600 + time2.minute*60 + time2.second
+    if (seconds1 + allowed_offset) > seconds2 and (seconds1 - allowed_offset) < seconds2:
+        return True
+    return False
+
+def external_commands():
+    add_command(["scrape", "sc"], lambda: cmd_scrape(country_classes, flags))
+
+    while True:
+        timenow = datetime.datetime.now()
+        for command in scheduled_commands:
+            if time_is_approximate_equal(command[1], timenow):
+                #Execute command
+                command_list = command[0].split()
+                flags = parse(command_list)
+                print("{}: Executing scheduled command: {}".format(command[1], command[0]))
+                commands[command_list[0]]()
+        time.sleep(2)
+
 def main():
+    flags = {}
+    t = datetime.datetime(year=2020, month=1, day=1, hour=13, minute=14, second=0)
+    add_scheduled_command("scrape latvia", t)
+
     add_command(["scrape", "sc"], lambda: cmd_scrape(country_classes, flags))
     add_command(["train", "tr"], lambda: cmd_train(country_classes, flags))
     add_command(["help", "h"], lambda: cmd_help(country_classes, flags))
     add_command(["exit", "close"], lambda: cmd_exit(country_classes, flags))
 
     init_countries()
+
+    thread = Thread(target = external_commands)
+    thread.start()
+    #thread.join()
 
     # Main input loop. Grab input, parse and execute command
     while True:
