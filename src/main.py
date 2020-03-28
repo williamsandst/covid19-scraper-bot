@@ -46,6 +46,7 @@ country_classes = {}
 commands = {}
 scheduled_commands = []
 results = {}
+discord_bot = bot.InvestigatorBot()
 
 DISCORD_BOT_ENABLED = True
 
@@ -167,7 +168,7 @@ class SchedulingThread(Thread):
         self.queue = queue
 
     def run(self):
-        add_command(["scrape", "sc"], lambda: cmd_scrape(country_classes, self.flags), self.commands)
+        add_command(["scrape", "sc"], lambda: cmd_scrape(country_classes, self.flags, discord_bot), self.commands)
         while True:
             # Scheduling
             timenow = datetime.datetime.now()
@@ -192,10 +193,10 @@ def main():
     t = datetime.datetime(year=2020, month=1, day=1, hour=13, minute=14, second=0)
     add_scheduled_command("scrape latvia", t)
 
-    add_command(["scrape", "sc"], lambda: cmd_scrape(country_classes, flags))
-    add_command(["train", "tr"], lambda: cmd_train(country_classes, flags))
+    add_command(["scrape", "sc"], lambda: cmd_scrape(country_classes, flags, discord_bot))
+    add_command(["train", "tr"], lambda: cmd_train(country_classes, flags, discord_bot))
     add_command(["help", "h"], lambda: cmd_help(country_classes, flags))
-    add_command(["exit", "close"], lambda: cmd_exit(country_classes, flags))
+    add_command(["exit", "close"], lambda: cmd_exit(country_classes, flags, discord_bot))
 
     init_countries()
     commandQueue = queue.Queue()
@@ -206,9 +207,8 @@ def main():
     # Start discord bot
     if (DISCORD_BOT_ENABLED):
         print("Starting the Investigator Discord Bot")
-        discord_bot = bot.InvestigatorBot()
         discord_bot.start()
-        time.sleep(3)
+        time.sleep(5)
         print("Bot started")
 
     # Main input loop. Grab input, parse and execute command

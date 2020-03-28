@@ -18,6 +18,8 @@ import asyncio
 # Despite the command line input I should still be able to schedule automatic scrapes, so
 # scheduling -> scrape() -> bot
 
+# Read the check. 
+
 
 class InvestigatorBot():
     def __init__(self):
@@ -26,28 +28,29 @@ class InvestigatorBot():
         self.GUILD = os.getenv('DISCORD_GUILD')
         self.client = InvestigatorDiscordClient()
         self.client.init(self.GUILD)
-        # Thread
+        self.asyncio_event_loop = asyncio.get_event_loop()
+        self.thread = Thread(target = self.run)
 
     def start(self):
-        asyncio.get_child_watcher()
-
-        loop = asyncio.get_event_loop()
-        loop.create_task(self.start_client())
-
-        self.thread = Thread(target = self.run, args=(loop,))
+        self.asyncio_event_loop.create_task(self.start_client())
         self.thread.start()
         print("Started separate thread for Discord Bot")
 
-    def run(self, loop):
-        loop.run_forever()
+    def run(self):
+        self.asyncio_event_loop.run_forever()
+
+    def submit(self, string):
+        self.asyncio_event_loop.create_task(self.client.send_submission(string, "general"))
 
     async def start_client(self):
         await self.client.start(self.TOKEN)
         #self.client.run(self.TOKEN)
 
     def stop(self):
+        self.asyncio_event_loop.create_task(self.client.close())
+        self.asyncio_event_loop.stop()
         self.thread.join()
-        self.client.close()
+        print("Discord Bot stopped")
 
 class InvestigatorDiscordClient(discord.Client):
     def init(self, guild):
@@ -56,12 +59,12 @@ class InvestigatorDiscordClient(discord.Client):
         self.bot_status_text = "the web for Covid-19"
 
     async def on_ready(self):
-        server = discord.utils.get(self.guilds, name=self.GUILD)
+        self.server = discord.utils.get(self.guilds, name=self.GUILD)
         print(f'{self.user} is connected to the following server:')
-        print(f'{server.name}(id: {server.id})')
-        channel = discord.utils.get(server.channels, name="general") 
+        print(f'{self.server.name}(id: {self.server.id})')
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=self.bot_status_text))
-        await channel.send(self.bot_submission_text, file=discord.File('output/sweden-2020-03-27 23:24:44.901708.png'))
-        await channel.send('= 3046 209 92 https://www.folkhalsomyndigheten.se/smittskydd-beredskap/utbrott/aktuella-utbrott/covid-19/aktuellt-epidemiologiskt-lage/')
 
-        
+    async def send_submission(self, string, channel):
+        channel = discord.utils.get(self.server.channels, name=channel) 
+        await channel.send(self.bot_submission_text, file=discord.File('output/sweden-2020-03-27 23:24:44.901708.png'))
+        await channel.send(string)

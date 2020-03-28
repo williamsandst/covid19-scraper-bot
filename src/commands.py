@@ -1,6 +1,7 @@
 from selenium import webdriver
 import interface
 from novelscraper import *
+import bot
 
 def train(country_classes):
     browser = webdriver.Firefox()
@@ -47,7 +48,7 @@ scrape <country/ALL> [-f]           Scrape a selected country, or 'ALL' for all 
 train <country> [train_dict]        Train a country with their internal training dictionary or supply one as argument
 """
 
-def cmd_scrape(country_classes: dict, flags: dict):
+def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBot):
     if "default" not in flags or not isinstance(flags["default"], str):
         error_message("The required arguments are missing or are incorrectly formated")
         return
@@ -72,7 +73,7 @@ def cmd_scrape(country_classes: dict, flags: dict):
         save_to_file(submission_string, "output/submissions.txt")
 
 
-def cmd_train(country_classes: dict, flags: dict):
+def cmd_train(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBot):
     if "default" not in flags or not isinstance(flags["default"], str):
         error_message("The required arguments are missing or are incorrectly formated")
         return
@@ -83,9 +84,10 @@ def cmd_help(country_classes: dict, flags: dict):
     """cmd: help. Print the help string, containing command descriptions"""
     print(command_list)
 
-def cmd_exit(country_classes: dict, flags: dict):
+def cmd_exit(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBot):
     """cmd: exit. Exit the program"""
-    print("Exiting Novel-Scraper...")
+    print("Exiting Novel-Scraper... This can take a few seconds.")
+    discord_bot.stop()
     exit()
 
 def error_message(reason):
