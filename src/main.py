@@ -12,6 +12,7 @@ import queue
 from novelscraper import *
 from nordic_scrapers import *
 from commands import *
+import bot
 
 """ 
 Countries with working scraping:
@@ -45,6 +46,8 @@ country_classes = {}
 commands = {}
 scheduled_commands = []
 results = {}
+
+DISCORD_BOT_ENABLED = True
 
 def init_countries():
     """ Initiate the various country classes """
@@ -103,19 +106,7 @@ def init_countries():
     #scraper.training_data = {"cases": "890", "recovered": "97", "hospitalised":"18", "intensive_care":"6", "tested":"13613"}
     country_classes[scraper.country_name.lower()] = scraper
 
-"""def main():
-    init_countries()
-    #report_all()
-    #train()
-    scrape()
-    #browser = webdriver.Firefox()
-
-    #train_country("Iceland", browser)
-    #print(scrape_country("Iceland", browser))
-
-    #browser.quit()"""
-
-def add_command(triggers : list, function):
+def add_command(triggers : list, function, commands=commands):
     """Add a command to the global players dictionary"""
     if isinstance(triggers, str):
         commands[triggers] = function
@@ -172,10 +163,11 @@ def time_is_approximate_equal(time1: datetime.datetime, time2: datetime.datetime
 class SchedulingThread(Thread):
     def __init__(self, queue, flags, args=(), kwargs=None):
         Thread.__init__(self, args=(), kwargs=None)
+        self.commands = {}
         self.queue = queue
 
     def run(self):
-        add_command(["scrape", "sc"], lambda: cmd_scrape(country_classes, flags))
+        add_command(["scrape", "sc"], lambda: cmd_scrape(country_classes, self.flags), self.commands)
         while True:
             # Scheduling
             timenow = datetime.datetime.now()
@@ -183,17 +175,17 @@ class SchedulingThread(Thread):
                 if time_is_approximate_equal(command[1], timenow):
                     #Execute command
                     command_list = command[0].split()
-                    flags = parse(command_list)
+                    self.flags = parse(command_list)
                     print("{}: Executing scheduled command: {}".format(command[1], command[0]))
-                    commands[command_list[0]]()
+                    self.commands[command_list[0]]()
             time.sleep(2)
             # Go through external commands
             while not self.queue.empty():
                 command = self.queue.get()
                 command_list = command.split()
-                flags = parse(command_list)
+                self.flags = parse(command_list)
                 print("Executing external command: {}".format(command))
-                commands[command_list[0]]()
+                self.commands[command_list[0]]()
 
 def main():
     flags = {}
@@ -210,6 +202,14 @@ def main():
 
     scheduling_thread = SchedulingThread(commandQueue, flags)
     scheduling_thread.start()
+
+    # Start discord bot
+    if (DISCORD_BOT_ENABLED):
+        print("Starting the Investigator Discord Bot")
+        discord_bot = bot.InvestigatorBot()
+        discord_bot.start()
+        time.sleep(3)
+        print("Bot started")
 
     # Main input loop. Grab input, parse and execute command
     while True:

@@ -1,12 +1,12 @@
-Norway:
-= 3796 20 0 https://www.vg.no/spesial/2020/corona/
-Latvia:
-= 280 0 0 https://arkartassituacija.gov.lv/
-Sweden:
-= 3046 92 0 https://www.folkhalsomyndigheten.se/smittskydd-beredskap/utbrott/aktuella-utbrott/covid-19/aktuellt-epidemiologiskt-lage/
-Denmark:
-= 42 35 0 https://politi.dk/coronavirus-i-danmark/foelg-smittespredningen-globalt-regionalt-og-lokalt
-Finland:
-= 1165 7 10 https://korona.kans.io/
-Iceland:
-= 890 0 97 https://www.covid.is/tolulegar-upplysingar
+norway:
+= 3970 20 0 https://www.vg.no/spesial/2020/corona/
+latvia:
+= 305 0 0 https://arkartassituacija.gov.lv/
+sweden:
+= 3447 102 0 https://www.folkhalsomyndigheten.se/smittskydd-beredskap/utbrott/aktuella-utbrott/covid-19/aktuellt-epidemiologiskt-lage/
+denmark:
+= 49 42 0 https://politi.dk/coronavirus-i-danmark/foelg-smittespredningen-globalt-regionalt-og-lokalt
+finland:
+= 1167 8 10 https://korona.kans.io/
+iceland:
+= 963 0 114 https://www.covid.is/tolulegar-upplysingar
