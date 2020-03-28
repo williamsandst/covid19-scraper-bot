@@ -66,7 +66,7 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
         error_message("The specified country {} is not registered".format(country))
         return
 
-    if 'disp' in flags:
+    if 'nodisp' not in flags:
         for country, result in results.items():
             print(result)
 
@@ -87,6 +87,9 @@ def cmd_train(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorB
         error_message("The required arguments are missing or are incorrectly formated")
         return
     country = flags["default"]
+    browser = webdriver.Firefox()
+    train_country(country.lower(), browser, country_classes)
+    browser.quit()
 
 
 def cmd_help(country_classes: dict, flags: dict):

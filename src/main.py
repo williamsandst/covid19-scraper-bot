@@ -10,7 +10,7 @@ import datetime
 import queue
 
 from novelscraper import *
-from nordic_scrapers import *
+from manual_scrapers import *
 from commands import *
 import bot
 
@@ -48,7 +48,7 @@ scheduled_commands = []
 results = {}
 discord_bot = bot.InvestigatorBot()
 
-DISCORD_BOT_ENABLED = True
+DISCORD_BOT_ENABLED = False
 
 def init_countries():
     """ Initiate the various country classes """
@@ -61,14 +61,6 @@ def init_countries():
     scraper.source_website = "https://www.vg.no/spesial/2020/corona/"
     scraper.optimize_min_max_index_ratio = 0.1
     #scraper.training_data = {"cases": "3752", "deaths":"19", "tested":"78036", "hospitalised": "302", "intensive_care":"76"}
-    country_classes[scraper.country_name.lower()] = scraper
-
-    # Latvia
-    scraper = NovelScraperAuto()
-    scraper.country_name = "Latvia" 
-    scraper.iso_code = "LV"
-    scraper.source_website = "https://arkartassituacija.gov.lv/"
-    #scraper.training_data = {"cases": "280", "tested":"11702", "hospitalised": "21"}
     country_classes[scraper.country_name.lower()] = scraper
 
     # Sweden
@@ -87,6 +79,17 @@ def init_countries():
     scraper = NovelScraperDK()
     country_classes[scraper.country_name.lower()] = scraper
 
+    # Iceland
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Iceland"
+    scraper.iso_code = "IS"
+    scraper.javascript_required = True
+    scraper.website_scroll = 6
+    scraper.source_website = "https://e.infogram.com/7327507d-28f5-4e3c-b587-c1680bd790e6?src=embed"
+    scraper.report_website = "https://www.covid.is/tolulegar-upplysingar"
+    #scraper.training_data = {"cases": "890", "recovered": "97", "hospitalised":"18", "intensive_care":"6", "tested":"13613"}
+    country_classes[scraper.country_name.lower()] = scraper
+
     # Finland
     scraper = NovelScraperAuto()
     scraper.country_name = "Finland"
@@ -96,16 +99,52 @@ def init_countries():
     #scraper.training_data = {"cases": "1056", "deaths": "7", "recovered": "10"}
     country_classes[scraper.country_name.lower()] = scraper
 
-    # Iceland
+    # Estonia
     scraper = NovelScraperAuto()
-    scraper.country_name = "Iceland"
-    scraper.iso_code = "IS"
-    scraper.javascript_required = True
-    scraper.website_scroll = True
-    scraper.source_website = "https://e.infogram.com/7327507d-28f5-4e3c-b587-c1680bd790e6?src=embed"
-    scraper.report_website = "https://www.covid.is/tolulegar-upplysingar"
-    #scraper.training_data = {"cases": "890", "recovered": "97", "hospitalised":"18", "intensive_care":"6", "tested":"13613"}
+    scraper.country_name = "Estonia" 
+    scraper.iso_code = "EE"
+    scraper.source_website = "https://www.koroonakaart.ee/en"
+    #scraper.training_data = {"cases": "640",  "deaths": "1", "recovered":"20", "tested":"9364", "hospitalised": "48"}
     country_classes[scraper.country_name.lower()] = scraper
+
+    # Lithuania
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Lithuania" 
+    scraper.iso_code = "LI"
+    scraper.source_website = "https://sam.lrv.lt/lt/naujienos/koronavirusas"
+    scraper.scroll = 7
+    scraper.training_data = {"cases": "382",  "deaths": "5", "recovered":"1", "tested":"6900"}
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Latvia
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Latvia" 
+    scraper.iso_code = "LV"
+    scraper.source_website = "https://arkartassituacija.gov.lv/"
+    #scraper.training_data = {"cases": "280", "tested":"11702", "hospitalised": "21"}
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Central Europe
+    # The United Kingdom
+    scraper = NovelScraperAuto()
+    scraper.country_name = "United-Kingdom"
+    scraper.iso_code = "GB"
+    scraper.javascript_required = True
+    scraper.report_link = "https://www.gov.uk/government/publications/covid-19-track-coronavirus-cases"
+    scraper.source_website = "https://www.arcgis.com/apps/opsdashboard/index.html#/f94c3c90da5b4e9f9a0b19484dd4bb14"
+    #scraper.training_data = {"cases": "17089", "recovered":"135", "deaths": "1019"}
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Ireland
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Ireland"
+    scraper.iso_code = "IE"
+    scraper.javascript_required = True
+    scraper.source_website = "https://www.gov.ie/en/news/7e0924-latest-updates-on-covid-19-coronavirus/"
+    scraper.training_data = {"cases": "2415", "deaths": "36"}
+    country_classes[scraper.country_name.lower()] = scraper
+
+
 
 def add_command(triggers : list, function, commands=commands):
     """Add a command to the global players dictionary"""

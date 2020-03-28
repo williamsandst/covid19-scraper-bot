@@ -24,7 +24,7 @@ import interface
 
 # Read the check. 
 
-country_to_channel_dict = {"czechia": "czech-republic"}
+country_to_channel_dict = {"czechia": "czech-republic", "united kingdom": "uk"}
 
 channel_to_country_dict = {v: k for k, v in country_to_channel_dict.items()}
 
@@ -52,12 +52,14 @@ class InvestigatorBot():
         self.client.init(self.GUILD)
         self.asyncio_event_loop = asyncio.get_event_loop()
         self.thread = Thread(target = self.run)
+        self.active = False
 
     def set_command_queue(self, command_queue: Queue):
         self.command_queue = command_queue
         self.client.command_queue = command_queue
 
     def start(self):
+        self.active = True
         self.asyncio_event_loop.create_task(self.start_client())
         self.thread.start()
         print("Started separate thread for Discord Bot")
@@ -66,8 +68,9 @@ class InvestigatorBot():
         self.asyncio_event_loop.run_forever()
 
     def submit(self, country, string, screenshot_path):
-        channel = convert_country_to_channel(country)
-        self.asyncio_event_loop.create_task(self.client.send_submission(string, channel, screenshot_path))
+        if self.active:
+            channel = convert_country_to_channel(country)
+            self.asyncio_event_loop.create_task(self.client.send_submission(string, channel, screenshot_path))
 
     async def start_client(self):
         await self.client.start(self.TOKEN)
