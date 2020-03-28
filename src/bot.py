@@ -87,8 +87,6 @@ class InvestigatorDiscordClient(discord.Client):
 
     async def on_ready(self):
         self.server = discord.utils.get(self.guilds, name=self.GUILD)
-        for member in self.server.members:
-            print('name: {}'.format(member.name) )
         self.novel_bot_id = discord.utils.get(self.server.members, name="Wydal").id
         print(f'{self.user} is connected to the following server:')
         print(f'{self.server.name}(id: {self.server.id})')
@@ -96,7 +94,10 @@ class InvestigatorDiscordClient(discord.Client):
 
     async def send_submission(self, string, channel, screenshot_path):
         channel = discord.utils.get(self.server.channels, name=channel) 
-        await channel.send(self.bot_submission_text, file=discord.File(screenshot_path))
+        if screenshot_path != None:
+            await channel.send(self.bot_submission_text, file=discord.File(screenshot_path))
+        else:
+            await channel.send(self.bot_submission_text)
         await channel.send(string)
 
     async def send_check(self, channel): #Send check
