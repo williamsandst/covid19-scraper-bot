@@ -7,6 +7,7 @@ import interface
 from threading import Thread
 import time
 import datetime
+import queue
 
 from novelscraper import *
 from nordic_scrapers import *
@@ -168,19 +169,31 @@ def time_is_approximate_equal(time1: datetime.datetime, time2: datetime.datetime
         return True
     return False
 
-def external_commands():
-    add_command(["scrape", "sc"], lambda: cmd_scrape(country_classes, flags))
+class SchedulingThread(Thread):
+    def __init__(self, queue, flags, args=(), kwargs=None):
+        Thread.__init__(self, args=(), kwargs=None)
+        self.queue = queue
 
-    while True:
-        timenow = datetime.datetime.now()
-        for command in scheduled_commands:
-            if time_is_approximate_equal(command[1], timenow):
-                #Execute command
-                command_list = command[0].split()
+    def run(self):
+        add_command(["scrape", "sc"], lambda: cmd_scrape(country_classes, flags))
+        while True:
+            # Scheduling
+            timenow = datetime.datetime.now()
+            for command in scheduled_commands:
+                if time_is_approximate_equal(command[1], timenow):
+                    #Execute command
+                    command_list = command[0].split()
+                    flags = parse(command_list)
+                    print("{}: Executing scheduled command: {}".format(command[1], command[0]))
+                    commands[command_list[0]]()
+            time.sleep(2)
+            # Go through external commands
+            while not self.queue.empty():
+                command = self.queue.get()
+                command_list = command.split()
                 flags = parse(command_list)
-                print("{}: Executing scheduled command: {}".format(command[1], command[0]))
+                print("Executing external command: {}".format(command))
                 commands[command_list[0]]()
-        time.sleep(2)
 
 def main():
     flags = {}
@@ -193,15 +206,16 @@ def main():
     add_command(["exit", "close"], lambda: cmd_exit(country_classes, flags))
 
     init_countries()
+    commandQueue = queue.Queue()
 
-    thread = Thread(target = external_commands)
-    thread.start()
-    #thread.join()
+    scheduling_thread = SchedulingThread(commandQueue, flags)
+    scheduling_thread.start()
 
     # Main input loop. Grab input, parse and execute command
     while True:
         input_list = input("\nnvlscrpr: ").split()
         flags = parse(input_list)
+        #scheduling_thread.queue.put("scrape latvia")
         if len(input_list) > 0:
             command = input_list[0]
             if command in commands:
