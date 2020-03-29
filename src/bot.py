@@ -144,7 +144,11 @@ class InvestigatorDiscordClient(discord.Client):
             country = convert_channel_to_country(str(message.channel))
             country = country[0].upper() + country[1:]
             await channel.send("Beep boop! Investigating Covid-19 cases in {}, please stand by...".format(country))
-            self.command_queue.put("scrape {} -d -disp".format(country))
+            if str(channel) == "europe":
+                self.command_queue.put("scrape all -d -disp".format(country))
+            else:
+                self.command_queue.put("scrape {} -d -disp".format(country))
+    
         
         if message.content.startswith('check'):
             channel = message.channel

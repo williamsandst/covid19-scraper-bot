@@ -15,7 +15,7 @@ from commands import *
 import bot
 
 """ 
-Countries with working scraping:
+Countries with working automated scraping:
 Norway (NO)
 Sweden (SE)
 Denmark (DK)
@@ -33,6 +33,7 @@ Netherlands (NL)
 Belgium (BE)
 Switzerland (CH)
 Austria (AT)
+Left:
 Russia (RU)
 Poland (PL)
 Czechia (CZ)
@@ -48,7 +49,7 @@ scheduled_commands = []
 results = {}
 discord_bot = bot.InvestigatorBot()
 
-DISCORD_BOT_ENABLED = False
+DISCORD_BOT_ENABLED = True
 
 def init_countries():
     """ Initiate the various country classes """
@@ -68,6 +69,7 @@ def init_countries():
     scraper.country_name = "Sweden"
     scraper.iso_code = "SE"
     scraper.javascript_required = True
+    scraper.wait_time = 10
     scraper.optimize_min_max_index_ratio = 0.1
     scraper.source_website = "https://fohm.maps.arcgis.com/apps/opsdashboard/index.html#/68d4537bf2714e63b646c37f152f1392"
     scraper.report_website = "https://www.folkhalsomyndigheten.se/smittskydd-beredskap/utbrott/aktuella-utbrott/covid-19/aktuellt-epidemiologiskt-lage/"
@@ -184,16 +186,6 @@ def init_countries():
     #scraper.training_data = {"cases": "92472", "deaths": "10023", "recovered":"12384", "intensive_care":"3856", "hospitalsied":"30532", "tested":"429526"}
     country_classes[scraper.country_name.lower()] = scraper
 
-    # Italy
-    scraper = NovelScraperAuto()
-    scraper.country_name = "Italy"
-    scraper.iso_code = "IT"
-    scraper.javascript_required = True
-    scraper.optimize_min_max_index_ratio = 0.05
-    scraper.source_website = "https://datastudio.google.com/u/0/reporting/91350339-2c97-49b5-92b8-965996530f00/page/RdlHB"
-    #scraper.training_data = {"cases": "92472", "deaths": "10023", "recovered":"12384", "intensive_care":"3856", "hospitalsied":"30532", "tested":"429526"}
-    country_classes[scraper.country_name.lower()] = scraper
-
     # Portugal
     scraper = NovelScraperAuto()
     scraper.country_name = "Portugal"
@@ -229,7 +221,7 @@ def init_countries():
     scraper.iso_code = "CH"
     scraper.optimize_min_max_index_ratio = 0.2
     scraper.source_website = "https://www.bag.admin.ch/bag/en/home/krankheiten/ausbrueche-epidemien-pandemien/aktuelle-ausbrueche-epidemien/novel-cov/situation-schweiz-und-international.html"
-    scraper.training_data = {"cases": "13213", "deaths": "235"}
+    #scraper.training_data = {"cases": "13213", "deaths": "235"}
     country_classes[scraper.country_name.lower()] = scraper
 
     # Austria
@@ -237,8 +229,9 @@ def init_countries():
     scraper.country_name = "Austria"
     scraper.iso_code = "AT"
     scraper.optimize_min_max_index_ratio = 0.2
+    scraper.website_scroll = 5
     scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
-    scraper.training_data = {"cases": "7995", "deaths": "68", "tested":"42750"}
+    #scraper.training_data = {"cases": "7995", "deaths": "68", "tested":"42750"}
     country_classes[scraper.country_name.lower()] = scraper
 
 

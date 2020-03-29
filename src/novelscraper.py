@@ -48,12 +48,12 @@ def get_visible_text(website, browser, wait_time = 4, screenshot = False, parse_
     else:
         time.sleep(0.5)
 
-    if ALLOW_SCREENSHOTS and screenshot != None:
-        browser.save_screenshot('output/{}.png'.format(screenshot))
-
     if scroll: #Scroll down page to load in potential deferred javascript elements
         browser.execute_script("window.scrollTo(0, document.body.scrollHeight/{});".format(scroll)) 
         time.sleep(2)
+
+    if ALLOW_SCREENSHOTS and screenshot != None:
+        browser.save_screenshot('output/{}.png'.format(screenshot))
 
     root = html.document_fromstring(browser.page_source)
     Cleaner(kill_tags=['noscript'], style=True)(root) # lxml >= 2.3.1
@@ -190,6 +190,7 @@ class NovelScraperAuto(NovelScraper):
         self.learned_data = LearnedData()
         self.training_data = None
         self.website_scroll = False
+        self.wait_time = 5
         self.optimize_min_max_index_ratio = 0.3
 
     def learn(self, text, number, label):
@@ -224,7 +225,7 @@ class NovelScraperAuto(NovelScraper):
         self.learned_data.save(self.country_name)
 
     def retrieve_text(self, website, browser, screenshot = None):
-        return get_visible_text(self.source_website, browser, 5, screenshot, self.javascript_required, self.website_scroll)
+        return get_visible_text(self.source_website, browser, self.wait_time, screenshot, self.javascript_required, self.website_scroll)
 
     def evaluate(self, words, register, ratio): #Ratio is % of way through word
         """ Give a score to a list of words based on how good a fit it is to the learned model """
