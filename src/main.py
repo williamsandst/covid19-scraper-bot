@@ -141,7 +141,104 @@ def init_countries():
     scraper.iso_code = "IE"
     scraper.javascript_required = True
     scraper.source_website = "https://www.gov.ie/en/news/7e0924-latest-updates-on-covid-19-coronavirus/"
-    scraper.training_data = {"cases": "2415", "deaths": "36"}
+    #scraper.training_data = {"cases": "2415", "deaths": "36"}
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Germany
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Germany"
+    scraper.iso_code = "DE"
+    scraper.javascript_required = True
+    scraper.source_website = "https://interaktiv.morgenpost.de/corona-virus-karte-infektionen-deutschland-weltweit-teaser/"
+    #scraper.training_data = {"cases": "54268", "deaths": "398", "recovered":"3781"}
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # France
+    """# Can't scrape images. Should probably do a custom one
+    scraper = NovelScraperAuto()
+    scraper.country_name = "France"
+    scraper.iso_code = "FR"
+    scraper.javascript_required = True
+    scraper.source_website = "https://www.santepubliquefrance.fr/maladies-et-traumatismes/maladies-et-infections-respiratoires/infection-a-coronavirus/articles/infection-au-nouveau-coronavirus-sars-cov-2-covid-19-france-et-monde"
+    #scraper.training_data = {"cases": "54268", "deaths": "398", "recovered":"3781"}
+    country_classes[scraper.country_name.lower()] = scraper
+    """
+
+    # Spain
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Spain"
+    scraper.iso_code = "ES"
+    scraper.javascript_required = True
+    scraper.optimize_min_max_index_ratio = 0.1
+    scraper.source_website = "https://www.rtve.es/noticias/20200328/mapa-del-coronavirus-espana/2004681.shtml"
+    #scraper.training_data = {"cases": "73235", "deaths": "5982", "recovered":"12285", "intensive_care":"4575"}
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Italy
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Italy"
+    scraper.iso_code = "IT"
+    scraper.javascript_required = True
+    scraper.optimize_min_max_index_ratio = 0.05
+    scraper.source_website = "https://datastudio.google.com/u/0/reporting/91350339-2c97-49b5-92b8-965996530f00/page/RdlHB"
+    #scraper.training_data = {"cases": "92472", "deaths": "10023", "recovered":"12384", "intensive_care":"3856", "hospitalsied":"30532", "tested":"429526"}
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Italy
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Italy"
+    scraper.iso_code = "IT"
+    scraper.javascript_required = True
+    scraper.optimize_min_max_index_ratio = 0.05
+    scraper.source_website = "https://datastudio.google.com/u/0/reporting/91350339-2c97-49b5-92b8-965996530f00/page/RdlHB"
+    #scraper.training_data = {"cases": "92472", "deaths": "10023", "recovered":"12384", "intensive_care":"3856", "hospitalsied":"30532", "tested":"429526"}
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Portugal
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Portugal"
+    scraper.iso_code = "PT"
+    scraper.javascript_required = True
+    scraper.report_website = "https://covid19.min-saude.pt/ponto-de-situacao-atual-em-portugal/"
+    scraper.source_website = "https://esriportugal.maps.arcgis.com/apps/opsdashboard/index.html#/e9dd1dea8d1444b985d38e58076d197a"
+    #scraper.training_data = {"cases": "5170", "deaths": "100", "recovered":"43"}
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # The Netherlands
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Netherlands"
+    scraper.iso_code = "NL"
+    scraper.optimize_min_max_index_ratio = 0.2
+    scraper.source_website = "https://www.rivm.nl/nieuws/actuele-informatie-over-coronavirus"
+    #scraper.training_data = {"cases": "9762", "deaths": "639", "hospitalised":"2954"}
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Belgium
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Belgium"
+    scraper.iso_code = "BE"
+    scraper.optimize_min_max_index_ratio = 0.2
+    scraper.source_website = "https://www.info-coronavirus.be/fr/2020/03/24/526-nouvelles-infections-au-covid-19/"
+    #scraper.training_data = {"cases": "4269", "deaths": "122", "recovered":"410", "hospitalised":"1859", "intensive_care":"381"}
+    country_classes[scraper.country_name.lower()] = scraper
+
+
+    # Switzerland
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Switzerland"
+    scraper.iso_code = "CH"
+    scraper.optimize_min_max_index_ratio = 0.2
+    scraper.source_website = "https://www.bag.admin.ch/bag/en/home/krankheiten/ausbrueche-epidemien-pandemien/aktuelle-ausbrueche-epidemien/novel-cov/situation-schweiz-und-international.html"
+    scraper.training_data = {"cases": "13213", "deaths": "235"}
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Austria
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Austria"
+    scraper.iso_code = "AT"
+    scraper.optimize_min_max_index_ratio = 0.2
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    scraper.training_data = {"cases": "7995", "deaths": "68", "tested":"42750"}
     country_classes[scraper.country_name.lower()] = scraper
 
 

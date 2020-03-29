@@ -27,7 +27,7 @@ class NovelScraperDK(NovelScraper):
 
         #saveToFile(soup.prettify(), "output.txt")
 
-        objects = soup.find("td", text=re.compile("Geografisk område")).parent.parent.find_all("td")
+        objects = soup.find("td", text=re.compile("Geografsk område")).parent.parent.find_all("td")
         table = [i.text for i in objects]
 
         denmark_cases = clean_number(table[6])
@@ -46,4 +46,27 @@ class NovelScraperDK(NovelScraper):
         result.deaths = denmark_deaths + faraoe_deaths + greenland_deaths
         result.tested = denmark_tested + faraoe_tested + greenland_tested
 
+        return result
+
+class NovelScraperFR(NovelScraper):
+    """France Coronavirus Scraper. Plain HTML"""
+    def __init__(self):
+        """Initializes class members to match the country the class is designed for"""
+        self.country_name = "France"
+        self.iso_code = "FR"
+        self.source_website = "https://www.santepubliquefrance.fr/maladies-et-traumatismes/maladies-et-infections-respiratoires/infection-a-coronavirus/articles/infection-au-nouveau-coronavirus-sars-cov-2-covid-19-france-et-monde"
+
+    def scrape(self, browser):
+        """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
+        result = dataobject.DataObject(self)
+        soup = get_html(self.source_website)
+
+        #saveToFile(soup.prettify(), "output.txt")
+        text = soup.find("div", class_="item__layout-inner").text
+        result.cases = clean_number(match(text, "{} cas de COVID-19 ont été diagnostiqués"))
+        result.deaths = -1
+        #result.deaths = clean_number(match(text, "incluant {} décès survenus"))
+        #result.hospitalised = clean_number(match(text, "{} cas de COVID-19 étaient hospitalisés"))
+        #result.intensive_care = clean_number(match(text, "dont {} en"))
+        
         return result
