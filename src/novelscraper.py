@@ -157,10 +157,10 @@ class NovelScraperCoronaCloud(NovelScraper):
         return result
 
 class NovelScraperCovidTracking(NovelScraper):
-    def scrape_covidtracking(self):
+    def scrape_covidtracking(self, time = datetime.datetime.now()):
         result = dataobject.DataObject(self)
 
-        result = covidtracking_downloader.scrape(self.iso_code, result)
+        result = covidtracking_downloader.scrape(self.iso_code, result, time)
 
         result.source_website = "https://covidtracking.com/"
         result.report_website = "https://covidtracking.com/"

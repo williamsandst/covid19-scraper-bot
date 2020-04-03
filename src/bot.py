@@ -35,6 +35,10 @@ channel_blacklist_set = {"welcome", "info", "rules", "general", "lounge", "music
                         "moldova", "monaco", "montenegro", "netherlands", "north-macedonia", "norway", "poland", "portugal", "romania", "russia",
                         "san-marino", "slovenia", "spain", "serbia", "slovakia", "sweden", "switzerland", "uk", "ukraine"}
 
+user_whitelist = {"SlipShady", "Wydal"}
+
+role_whitelist = {"staff", "the real slip shady"}
+
 RELEASE_BOT = False
 
 def convert_country_to_channel(country):
@@ -95,9 +99,9 @@ class InvestigatorBot():
 
 class InvestigatorDiscordClient(discord.Client):
     def init(self, guild):
-        self.GUILD = guild
-        self.bot_submission_text = "Beep boop! Submitting my investigations for inspection!"
         self.bot_status_text = "the web for Covid-19"
+        self.bot_submission_text = "Beep boop! Submitting my investigations for inspection!"
+        self.GUILD = guild
 
     async def on_ready(self):
         self.server = discord.utils.get(self.guilds, name=self.GUILD)
@@ -156,7 +160,13 @@ class InvestigatorDiscordClient(discord.Client):
         """
         # we do not want the bot to reply to itself
 
-        if message.author == self.user or str(message.channel) in channel_blacklist_set:
+        if (message.author == self.user or str(message.channel) in channel_blacklist_set or message.author.name not in user_whitelist):
+            return
+        has_permission = False
+        for role in message.author.roles:
+            if role.name.lower() in role_whitelist:
+                has_permission = True
+        if not has_permission:
             return
 
         """if message.author.id == self.novel_bot_id: #Read check and save it
@@ -173,11 +183,21 @@ class InvestigatorDiscordClient(discord.Client):
 
             words = message.content.split()
             if len(words) >= 2 and (words[1] == "covidtracker" or words[1] == "covidtracking" or words[1] == "ct"): 
+                time = datetime.datetime.now()
+                date = interface.convert_datetime_to_string(time)
+                if len(words) >= 3: #Date argument
+                    date = words[2]
+                    if len(words) > 5:
+                        print("!scrape date incorrectly formatted")
+                        return
+                    date = words[2]
+                    
+
                 await channel.send("Beep boop! Investigating Covid-19 cases in {}, please stand by...".format(country))
                 if str(channel) == "usa":
-                    self.command_queue.put("scrape all covidtracking -d -disp")
+                    self.command_queue.put("scrape all covidtracking -d -disp -t {}".format(date))
                 else:
-                    self.command_queue.put("scrape {} -d -disp".format(country))
+                    self.command_queue.put("scrape {} ct -d -disp -t {}".format(country, date))
         
         #if message.content.startswith('check'):
             #channel = message.channel

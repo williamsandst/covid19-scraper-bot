@@ -22,7 +22,7 @@ def train_country(country, browser, country_classes):
     country_classes[country].train(browser)
     print("{}: Training complete!".format(country_name))
 
-def scrape(country_classes, scrape_type="default"):
+def scrape(country_classes, scrape_type="default", date=datetime.datetime.now()):
 
     results = {}
 
@@ -38,7 +38,7 @@ def scrape(country_classes, scrape_type="default"):
     elif scrape_type == "covidtracking" or scrape_type == "ct" or scrape_type == "covidtracker":
         for country in country_classes:
             if country_classes[country].has_covidtracking:
-                results[country] = scrape_country_coronatracking(country, country_classes)
+                results[country] = scrape_country_coronatracking(country, country_classes, date)
 
     return results
 
@@ -50,10 +50,10 @@ def scrape_country_default(country: str, browser, country_classes):
     print("{}: Scraping complete!".format(country_name))
     return result
 
-def scrape_country_coronatracking(country: str, country_classes):
+def scrape_country_coronatracking(country: str, country_classes, date):
     country_name = country_classes[country].country_name
     print("{}: Scraping from Covidtracking.com...".format(country_name))
-    result = country_classes[country].scrape_covidtracking()
+    result = country_classes[country].scrape_covidtracking(date)
     print("{}: Scraping complete!".format(country_name))
     return result
 
@@ -82,13 +82,18 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
     else:
         country = flags["default"]
 
+    if 't' in flags and isinstance(flags["t"], str):
+        date = interface.convert_string_to_datetime(flags['t'])
+    else:
+        date = datetime.datetime.now()
+
     results = {}
     if country.lower() == "all":
         #Scraping all registered countries
-        results = scrape(country_classes, scraping_type)
+        results = scrape(country_classes, scraping_type, date)
     elif country in country_classes:
         class_dict = {country: country_classes[country]}
-        results = scrape(class_dict, scraping_type)
+        results = scrape(class_dict, scraping_type, date)
     else:
         error_message("The specified country {} is not registered".format(country))
         return

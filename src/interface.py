@@ -9,6 +9,12 @@ def convert_datetime_to_string(date: datetime.datetime):
     day = date.day if date.day >= 10 else ("0" + str(date.day))
     return "{}/{}".format(day, month)
 
+def convert_string_to_datetime(date_str: str):
+    numbers = date_str.split("/")
+    time = datetime.datetime.now()
+    time = time.replace(month=int(numbers[1]), day=int(numbers[0]))
+    return time
+
 def convert_dataobject_to_submission(dataobject: dataobject.DataObject):
     if dataobject.source_update_date == datetime.datetime.today().day: #Today
         return "= {} {} {} {}".format(dataobject.cases, dataobject.deaths, dataobject.recovered, dataobject.source_website)
