@@ -41,6 +41,22 @@ def convert_datetime_to_datestring(date: datetime.datetime):
     day = date.day if date.day >= 10 else ("0" + str(date.day))
     return "{}{}{}".format(date.year, month, day)
 
+def add_state_data_to_dict(data, date_str):
+    final_dict = {}
+    for i in data:
+        state2 = i["state"]
+        if 'death' in i:
+            death = 0 if i["death"] == None else i["death"]
+        else:
+            death = 0
+        if 'recovered' in i:
+            recovered = 0 if i["recovered"] == None else i["recovered"]
+        else:
+            recovered = 0
+        total = 0 if i["positive"] == None else i["positive"]
+        final_dict.setdefault(state2, [])
+        final_dict[state2] += [state2, date_str, total, death, recovered]
+    return final_dict
 
 def scrape(state: str, result, date = datetime.datetime.now(), check_yesterday_if_error=False):
     now_date = date
@@ -50,6 +66,8 @@ def scrape(state: str, result, date = datetime.datetime.now(), check_yesterday_i
 
     result.cases = -1
     result.deaths = -1
+    result.recovered = -1
+    result.source_update_date = date
 
     now_cache = check_for_file_cache(now_date)
     save_now_cache = False
@@ -70,16 +88,7 @@ def scrape(state: str, result, date = datetime.datetime.now(), check_yesterday_i
             now_cache = {}
         else:
             date_str = now_date_str
-            for i in data:
-                state2 = i["state"]
-                if 'death' in i:
-                    death = 0 if i["death"] == None else i["death"]
-                else:
-                    death = -1
-                total = 0 if i["positive"] == None else i["positive"]
-                final_dict.setdefault(state2, [])
-                final_dict[state2] += [state2, date_str, total, death]
-            now_cache = final_dict
+            now_cache = add_state_data_to_dict(data, date_str)
         save_now_cache = True
  
     if yesterday_cache == None:
@@ -91,16 +100,7 @@ def scrape(state: str, result, date = datetime.datetime.now(), check_yesterday_i
             yesterday_cache = {}
         else:
             date_str = yesterday_date_str
-            for i in data:
-                state2 = i["state"]
-                if 'death' in i:
-                    death = 0 if i["death"] == None else i["death"]
-                else:
-                    death = -1
-                total = 0 if i["positive"] == None else i["positive"]
-                final_dict.setdefault(state2, [])
-                final_dict[state2] += [state2, date_str, total, death]
-            yesterday_cache = final_dict
+            yesterday_cache = add_state_data_to_dict(data, date_str)
         save_yesterday_cache = True
 
     for final_dict, date2 in [(now_cache, now_date), (yesterday_cache, yesterday_date)]:
@@ -108,7 +108,7 @@ def scrape(state: str, result, date = datetime.datetime.now(), check_yesterday_i
             state_data = final_dict[state]
             result.cases = state_data[2]
             result.deaths = state_data[3]
-            #result.recovered = state_data[3]
+            result.recovered = state_data[4]
             result.source_update_date = date2
 
     if save_now_cache:

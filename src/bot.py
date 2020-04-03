@@ -39,7 +39,7 @@ user_whitelist = {"SlipShady", "Wydal"}
 
 role_whitelist = {"staff", "the real slip shady"}
 
-RELEASE_BOT = False
+RELEASE_BOT = True
 
 def convert_country_to_channel(country):
     if country in country_to_channel_dict:
@@ -84,8 +84,13 @@ class InvestigatorBot():
 
     def submit(self, country, string, screenshot_path):
         if self.active:
-            channel = convert_country_to_channel(country)
-            self.asyncio_event_loop.create_task(self.client.send_submission(string, channel, screenshot_path))
+            split_string = string.split()
+            if len(split_string) <= 1 or split_string[1] == "-1":
+                channel = convert_country_to_channel(country)
+                self.asyncio_event_loop.create_task(self.client.send_error_message("Error retrieving data from covidtracking.com for date {}".format(split_string[4]), channel))
+            else:
+                channel = convert_country_to_channel(country)
+                self.asyncio_event_loop.create_task(self.client.send_submission(string, channel, screenshot_path))
 
     async def start_client(self):
         await self.client.start(self.TOKEN)
@@ -101,6 +106,7 @@ class InvestigatorDiscordClient(discord.Client):
     def init(self, guild):
         self.bot_status_text = "the web for Covid-19"
         self.bot_submission_text = "Beep boop! Submitting my investigations for inspection!"
+        self.bot_error_text = "Tzzzt! My investigations failed due to"
         self.GUILD = guild
 
     async def on_ready(self):
@@ -118,6 +124,13 @@ class InvestigatorDiscordClient(discord.Client):
             else:
                 await channel.send(self.bot_submission_text)
             await channel.send(string)
+        else:
+            print("Bot: Cannot find channel {}".format(channel_input))
+
+    async def send_error_message(self, reason, channel_input):
+        channel = discord.utils.get(self.server.channels, name=channel_input)
+        if channel != None: 
+            await channel.send("{}: `{}`".format(self.bot_error_text, reason))
         else:
             print("Bot: Cannot find channel {}".format(channel_input))
 
