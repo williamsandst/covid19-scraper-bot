@@ -252,7 +252,7 @@ def init_us_scrapers():
     # Arizona
     scraper = NovelScraperAuto()
     scraper.country_name = "Arizona" 
-    scraper.iso_code = "A>"
+    scraper.iso_code = "AZ"
     scraper.has_covidtracking = True
     country_classes[scraper.country_name.lower()] = scraper
 

@@ -1,9 +1,21 @@
 """ Interface between the Discord Bot and the script functions """
+import datetime
+
 import dataobject
 import novelscraper
 
+def convert_datetime_to_string(date: datetime.datetime):
+    month = date.month if date.month >= 10 else ("0" + str(date.month))
+    day = date.day if date.day >= 10 else ("0" + str(date.day))
+    return "{}/{}".format(day, month)
+
 def convert_dataobject_to_submission(dataobject: dataobject.DataObject):
-    return "= {} {} {} {}".format(dataobject.cases, dataobject.deaths, dataobject.recovered, dataobject.source_website)
+    if dataobject.source_update_date == datetime.datetime.today().day: #Today
+        return "= {} {} {} {}".format(dataobject.cases, dataobject.deaths, dataobject.recovered, dataobject.source_website)
+    else: #Not today
+        date = convert_datetime_to_string(dataobject.source_update_date)
+        return "= {} {} {} {} {}".format(dataobject.cases, dataobject.deaths, dataobject.recovered, date, dataobject.source_website)
+
 
 def create_submissions(datadict: dict):
     submissions = ""

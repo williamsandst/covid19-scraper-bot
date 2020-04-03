@@ -9,9 +9,9 @@ import dateutil.parser
 
 CACHE_TIME_LIMIT_SECONDS = 20
 
-def check_for_file_cache():
+def check_for_file_cache(date):
     try:
-        data = novelscraper.load_dict_from_file("data/covidtracking_cache.cache")
+        data = novelscraper.load_dict_from_file("data/covidtracking_cache_{}_{}_{}.cache".format(date.day, date.month, date.hour))
         seconds = data["time"]
         now = datetime.datetime.now()
         now_seconds = int(now.hour * 3600 + now.minute * 60 + now.second)
@@ -24,10 +24,10 @@ def check_for_file_cache():
         print("Covidtracking Cache Error")
         return None
 
-def save_cache(data):
+def save_cache(data, savedate):
     date = datetime.datetime.now()
     data["time"] = int(date.hour * 3600 + date.minute * 60 + date.second)
-    novelscraper.save_dict_to_file(data, "data/covidtracking_cache.cache", )
+    novelscraper.save_dict_to_file(data, "data/covidtracking_cache_{}_{}_{}.cache".format(savedate.day, savedate.month, savedate.hour))
 
 def getJSONFromLink(link):
     s = requests.Session()
@@ -42,53 +42,79 @@ def convert_datetime_to_datestring(date: datetime.datetime):
     return "{}{}{}".format(date.year, month, day)
 
 
-def scrape(state: str, result, date = datetime.datetime.now()):
+def scrape(state: str, result, date = datetime.datetime.now(), check_yesterday_if_error=False):
+    now_date = date
     now_date_str = convert_datetime_to_datestring(date)
-    yesterday_date_str = convert_datetime_to_datestring(date - datetime.timedelta(days=1))
+    yesterday_date = date - datetime.timedelta(days=1)
+    yesterday_date_str = convert_datetime_to_datestring(yesterday_date)
 
-    print("Retrieving {} data for {} from the Covidtracking.com API".format(state, now_date_str))
+    result.cases = -1
+    result.deaths = -1
 
-    final_dict = {}
-    data = check_for_file_cache()
-    cache = True
-
-    if data == None:
-        cache = False
-    else:
-        final_dict = data
-
-    if cache == False:
-        data = getJSONFromLink("https://covidtracking.com/api/states/daily?date=" + now_date_str)
-        date_str = now_date_str
-        if data["error"] == True:
-            print("No data at this date, trying the date before")
-            print("Retrieving {} data for {} from the Covidtracking.com API".format(state, yesterday_date_str))
-            data = getJSONFromLink("https://covidtracking.com/api/states/daily?date=" + yesterday_date_str)
-            date = date - datetime.timedelta(days=1)
-            date_str = yesterday_date_str
+    now_cache = check_for_file_cache(now_date)
+    save_now_cache = False
     
-
-        for i in data:
-            state2 = i["state"]
-            if 'death' in i:
-                death = 0 if i["death"] == None else i["death"]
-            else:
-                death = -1
-            total = 0 if i["positive"] == None else i["positive"]
-            final_dict.setdefault(state2, [])
-            final_dict[state2] += [state2, date_str, total, death]
-
-    if state in final_dict:
-        state_data = final_dict[state]
-        result.cases = state_data[2]
-        result.deaths = state_data[3]
-        #result.recovered = state_data[3]
-        result.source_update_date = date
+    if check_yesterday_if_error:
+        yesterday_cache = check_for_file_cache(yesterday_date)
     else:
-        print("Error: State not found in API data")
+        yesterday_cache = {}
 
-    if not cache:
-        save_cache(final_dict)
+    save_yesterday_cache = False
+
+    if now_cache == None:
+        final_dict = {}
+        print("Retrieving {} data for {} from the Covidtracking.com API".format(state, now_date_str))
+        data = getJSONFromLink("https://covidtracking.com/api/states/daily?date=" + now_date_str)
+        if not isinstance(data, list) and data["error"] == True:
+            print("No data at this date")
+            now_cache = {}
+        else:
+            date_str = now_date_str
+            for i in data:
+                state2 = i["state"]
+                if 'death' in i:
+                    death = 0 if i["death"] == None else i["death"]
+                else:
+                    death = -1
+                total = 0 if i["positive"] == None else i["positive"]
+                final_dict.setdefault(state2, [])
+                final_dict[state2] += [state2, date_str, total, death]
+            now_cache = final_dict
+        save_now_cache = True
+ 
+    if yesterday_cache == None:
+        final_dict = {}
+        print("Retrieving {} data for {} from the Covidtracking.com API".format(state, yesterday_date_str))
+        data = getJSONFromLink("https://covidtracking.com/api/states/daily?date=" + yesterday_date_str)
+        if not isinstance(data, list) and data["error"] == True:
+            print("No data at this date")
+            yesterday_cache = {}
+        else:
+            date_str = yesterday_date_str
+            for i in data:
+                state2 = i["state"]
+                if 'death' in i:
+                    death = 0 if i["death"] == None else i["death"]
+                else:
+                    death = -1
+                total = 0 if i["positive"] == None else i["positive"]
+                final_dict.setdefault(state2, [])
+                final_dict[state2] += [state2, date_str, total, death]
+            yesterday_cache = final_dict
+        save_yesterday_cache = True
+
+    for final_dict, date2 in [(now_cache, now_date), (yesterday_cache, yesterday_date)]:
+        if state in final_dict:
+            state_data = final_dict[state]
+            result.cases = state_data[2]
+            result.deaths = state_data[3]
+            #result.recovered = state_data[3]
+            result.source_update_date = date2
+
+    if save_now_cache:
+        save_cache(now_cache, now_date)
+    if save_yesterday_cache:
+        save_cache(yesterday_cache, yesterday_date)
         
 
     return result
