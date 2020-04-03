@@ -1,36 +1,112 @@
-norway:
-= 4247 26 0 https://www.vg.no/spesial/2020/corona/
-sweden:
-= 3700 186 0 https://www.folkhalsomyndigheten.se/smittskydd-beredskap/utbrott/aktuella-utbrott/covid-19/aktuellt-epidemiologiskt-lage/
-denmark:
-= 2564 72 0 https://politi.dk/coronavirus-i-danmark/foelg-smittespredningen-globalt-regionalt-og-lokalt
-iceland:
-= 1020 0 135 https://www.covid.is/tolulegar-upplysingar
-finland:
-= 1240 11 10 https://korona.kans.io/
-estonia:
-= 679 3 20 https://www.koroonakaart.ee/en
-lithuania:
-= 437 7 1 https://sam.lrv.lt/lt/naujienos/koronavirusas
-latvia:
-= 347 0 0 https://arkartassituacija.gov.lv/
-united-kingdom:
-= 19522 1228 135 https://www.arcgis.com/apps/opsdashboard/index.html#/f94c3c90da5b4e9f9a0b19484dd4bb14
-ireland:
-= 0 46 0 https://www.gov.ie/en/news/7e0924-latest-updates-on-covid-19-coronavirus/
-germany:
-= 58655 456 456 https://interaktiv.morgenpost.de/corona-virus-karte-infektionen-deutschland-weltweit-teaser/
-spain:
-= 78799 6606 14709 https://www.rtve.es/noticias/20200328/mapa-del-coronavirus-espana/2004681.shtml
-italy:
-= 10779 10779 13030 https://datastudio.google.com/u/0/reporting/91350339-2c97-49b5-92b8-965996530f00/page/RdlHB
-portugal:
-= 5962 119 43 https://covid19.min-saude.pt/ponto-de-situacao-atual-em-portugal/
-netherlands:
-= 10866 771 0 https://www.rivm.nl/nieuws/actuele-informatie-over-coronavirus
-belgium:
-= -1 -1 -1 https://www.info-coronavirus.be/fr/2020/03/24/526-nouvelles-infections-au-covid-19/
-switzerland:
-= 14336 257 0 https://www.bag.admin.ch/bag/en/home/krankheiten/ausbrueche-epidemien-pandemien/aktuelle-ausbrueche-epidemien/novel-cov/situation-schweiz-und-international.html
-austria:
-= 8536 86 0 https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html
+alabama:
+= 1233 32 0 https://covidtracking.com/
+alaska:
+= 143 3 0 https://covidtracking.com/
+arizona:
+= 0 0 0 https://covidtracking.com/
+arkansas:
+= 643 12 0 https://covidtracking.com/
+california:
+= 9191 203 0 https://covidtracking.com/
+colorado:
+= 3342 80 0 https://covidtracking.com/
+conneticut:
+= 3824 112 0 https://covidtracking.com/
+delaware:
+= 393 12 0 https://covidtracking.com/
+florida:
+= 8010 128 0 https://covidtracking.com/
+georgia:
+= 5348 163 0 https://covidtracking.com/
+hawaii:
+= 258 1 0 https://covidtracking.com/
+idaho:
+= 669 9 0 https://covidtracking.com/
+illinois:
+= 7695 157 0 https://covidtracking.com/
+indiana:
+= 3039 78 0 https://covidtracking.com/
+iowa:
+= 614 11 0 https://covidtracking.com/
+kansas:
+= 552 13 0 https://covidtracking.com/
+kentucky:
+= 680 20 0 https://covidtracking.com/
+louisiana:
+= 9150 310 0 https://covidtracking.com/
+maine:
+= 376 7 0 https://covidtracking.com/
+maryland:
+= 2331 36 0 https://covidtracking.com/
+massachusetts:
+= 8966 154 0 https://covidtracking.com/
+michigan:
+= 10791 417 0 https://covidtracking.com/
+minnesota:
+= 742 18 0 https://covidtracking.com/
+mississippi:
+= 1177 26 0 https://covidtracking.com/
+missouri:
+= 1834 19 0 https://covidtracking.com/
+montana:
+= 1233 32 0 https://covidtracking.com/
+nebraska:
+= 246 5 0 https://covidtracking.com/
+nevada:
+= 1458 38 0 https://covidtracking.com/
+new-hampshire:
+= 415 4 0 https://covidtracking.com/
+new-jersey:
+= 25590 537 0 https://covidtracking.com/
+new-mexico:
+= 363 6 0 https://covidtracking.com/
+new-york:
+= 92381 2373 0 https://covidtracking.com/
+north-carolina:
+= 1857 16 0 https://covidtracking.com/
+north-dakota:
+= 159 3 0 https://covidtracking.com/
+ohio:
+= 2902 81 0 https://covidtracking.com/
+oklahoma:
+= 879 34 0 https://covidtracking.com/
+oregon:
+= 736 19 0 https://covidtracking.com/
+pennsylvania:
+= 7016 90 0 https://covidtracking.com/
+rhode-island:
+= 657 12 0 https://covidtracking.com/
+south-carlonia:
+= 1554 31 0 https://covidtracking.com/
+south-dakota:
+= 165 2 0 https://covidtracking.com/
+tennessee:
+= 2845 32 0 https://covidtracking.com/
+texas:
+= 4669 70 0 https://covidtracking.com/
+utah:
+= 1074 7 0 https://covidtracking.com/
+vermont:
+= 338 17 0 https://covidtracking.com/
+virginia:
+= 1706 41 0 https://covidtracking.com/
+washington:
+= 5984 247 0 https://covidtracking.com/
+west-virginia:
+= 217 2 0 https://covidtracking.com/
+wisconsin:
+= 1730 31 0 https://covidtracking.com/
+wyoming:
+= 150 0 0 https://covidtracking.com/
+district-of-colombia:
+= 653 12 0 https://covidtracking.com/
+american-samoa:
+= 0 0 0 https://covidtracking.com/
+guam:
+= 82 3 0 https://covidtracking.com/
+northern-mariana-islands:
+= 8 1 0 https://covidtracking.com/
+puerto-rico:
+= 316 12 0 https://covidtracking.com/
+us-virgin-islands:
+= 33 -1 0 https://covidtracking.com/

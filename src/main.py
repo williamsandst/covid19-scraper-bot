@@ -49,7 +49,7 @@ scheduled_commands = []
 results = {}
 discord_bot = bot.InvestigatorBot()
 
-DISCORD_BOT_ENABLED = False
+DISCORD_BOT_ENABLED = True
 
 def init_europe_scrapers():
     """ Initiate the various country classes """
@@ -241,6 +241,394 @@ def init_us_scrapers():
     scraper.iso_code = "AL"
     scraper.has_covidtracking = True
     country_classes[scraper.country_name.lower()] = scraper
+
+    # Alaska
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Alaska" 
+    scraper.iso_code = "AK"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+    
+    # Arizona
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Arizona" 
+    scraper.iso_code = "A>"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Arkansas
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Arkansas" 
+    scraper.iso_code = "AR"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # California
+    scraper = NovelScraperAuto()
+    scraper.country_name = "California" 
+    scraper.iso_code = "CA"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Colorado
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Colorado" 
+    scraper.iso_code = "CO"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Conneticut
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Conneticut" 
+    scraper.iso_code = "CT"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Delaware
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Delaware" 
+    scraper.iso_code = "DE"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Florida
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Florida" 
+    scraper.iso_code = "FL"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Georgia
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Georgia" 
+    scraper.iso_code = "GA"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Hawaii
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Hawaii" 
+    scraper.iso_code = "HI"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Idaho
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Idaho" 
+    scraper.iso_code = "ID"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Illinois
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Illinois" 
+    scraper.iso_code = "IL"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Indiana
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Indiana" 
+    scraper.iso_code = "IN"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Iowa
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Iowa" 
+    scraper.iso_code = "IA"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Kansas
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Kansas" 
+    scraper.iso_code = "KS"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Kentucky
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Kentucky" 
+    scraper.iso_code = "KY"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Louisiana
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Louisiana" 
+    scraper.iso_code = "LA"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Maine
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Maine" 
+    scraper.iso_code = "ME"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Maryland
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Maryland" 
+    scraper.iso_code = "MD"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Massachusetts
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Massachusetts" 
+    scraper.iso_code = "MA"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Michigan
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Michigan" 
+    scraper.iso_code = "MI"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Minnesota
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Minnesota" 
+    scraper.iso_code = "MN"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Mississippi
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Mississippi" 
+    scraper.iso_code = "MS"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Missouri
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Missouri" 
+    scraper.iso_code = "MO"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Montana
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Montana" 
+    scraper.iso_code = "AL"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Nebraska
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Nebraska" 
+    scraper.iso_code = "NE"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Nevada
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Nevada" 
+    scraper.iso_code = "NV"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # New Hampshire
+    scraper = NovelScraperAuto()
+    scraper.country_name = "New-Hampshire" 
+    scraper.iso_code = "NH"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # New Jersey
+    scraper = NovelScraperAuto()
+    scraper.country_name = "New-Jersey" 
+    scraper.iso_code = "NJ"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # New Mexico
+    scraper = NovelScraperAuto()
+    scraper.country_name = "New-Mexico" 
+    scraper.iso_code = "NM"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # New York
+    scraper = NovelScraperAuto()
+    scraper.country_name = "New-York" 
+    scraper.iso_code = "NY"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # North Carolina
+    scraper = NovelScraperAuto()
+    scraper.country_name = "North-Carolina" 
+    scraper.iso_code = "NC"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # North Dakota
+    scraper = NovelScraperAuto()
+    scraper.country_name = "North-Dakota" 
+    scraper.iso_code = "ND"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Ohio
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Ohio" 
+    scraper.iso_code = "OH"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Oklahoma
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Oklahoma" 
+    scraper.iso_code = "OK"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Oregon
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Oregon" 
+    scraper.iso_code = "OR"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Pennsylvania
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Pennsylvania" 
+    scraper.iso_code = "PA"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Rhode Island
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Rhode-Island" 
+    scraper.iso_code = "RI"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # South Carlonia
+    scraper = NovelScraperAuto()
+    scraper.country_name = "South-Carlonia" 
+    scraper.iso_code = "SC"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # South Dakota
+    scraper = NovelScraperAuto()
+    scraper.country_name = "South-Dakota" 
+    scraper.iso_code = "SD"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Tennessee
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Tennessee" 
+    scraper.iso_code = "TN"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Texas
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Texas" 
+    scraper.iso_code = "TX"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Utah
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Utah" 
+    scraper.iso_code = "UT"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Vermont
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Vermont" 
+    scraper.iso_code = "VT"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Virginia
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Virginia" 
+    scraper.iso_code = "VA"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Washington
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Washington" 
+    scraper.iso_code = "WA"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # West Virginia
+    scraper = NovelScraperAuto()
+    scraper.country_name = "West-Virginia" 
+    scraper.iso_code = "WV"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Wisconsin
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Wisconsin" 
+    scraper.iso_code = "WI"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Wyoming
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Wyoming" 
+    scraper.iso_code = "WY"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # District of Colombia
+    scraper = NovelScraperAuto()
+    scraper.country_name = "District-of-Colombia" 
+    scraper.iso_code = "DC"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # American Samoa
+    scraper = NovelScraperAuto()
+    scraper.country_name = "American-Samoa" 
+    scraper.iso_code = "AS"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Guam
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Guam" 
+    scraper.iso_code = "GU"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Northern Mariana Islands
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Northern-Mariana-Islands" 
+    scraper.iso_code = "MP"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Puerto Rico
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Puerto-Rico" 
+    scraper.iso_code = "PR"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # US Virgin Islands
+    scraper = NovelScraperAuto()
+    scraper.country_name = "US-Virgin-Islands" 
+    scraper.iso_code = "VI"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
+    
+    
+    
 
 
 def add_command(triggers : list, function, commands=commands):

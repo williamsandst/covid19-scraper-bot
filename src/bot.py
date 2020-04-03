@@ -28,7 +28,14 @@ country_to_channel_dict = {"czechia": "czech-republic", "united kingdom": "uk"}
 
 channel_to_country_dict = {v: k for k, v in country_to_channel_dict.items()}
 
-channel_blacklist_set = {"general"}
+channel_blacklist_set = {"welcome", "info", "rules", "general", "lounge", "music", "dev-bot", "bot-suggestions", "sheet-suggestions",
+                        "europe", "andorra", "albania", "austria", "belarus", "belgium", "bosnia-and-herzegovina", "bulgaria",
+                        "croatia", "cyprus", "czech-republic", "denmark", "estonia", "finland", "france", "germany", "greece", "hungary",
+                        "holy-see", "iceland", "ireland", "italy", "kosovo", "latvia", "liechtenstein", "lithuania", "luxembourg", "malta",
+                        "moldova", "monaco", "montenegro", "netherlands", "north-macedonia", "norway", "poland", "portugal", "romania", "russia",
+                        "san-marino", "slovenia", "spain", "serbia", "slovakia", "sweden", "switzerland", "uk", "ukraine"}
+
+RELEASE_BOT = False
 
 def convert_country_to_channel(country):
     if country in country_to_channel_dict:
@@ -46,8 +53,12 @@ def convert_channel_to_country(channel):
 class InvestigatorBot():
     def __init__(self):
         load_dotenv()
-        self.TOKEN = os.getenv('DISCORD_TOKEN')
-        self.GUILD = os.getenv('DISCORD_GUILD')
+        if RELEASE_BOT:
+            self.TOKEN = os.getenv('DISCORD_TOKEN')
+            self.GUILD = os.getenv('DISCORD_GUILD')
+        else:
+            self.TOKEN = os.getenv('DISCORD_DEV_TOKEN')
+            self.GUILD = os.getenv('DISCORD_DEV_GUILD')
         self.client = InvestigatorDiscordClient()
         self.client.init(self.GUILD)
         self.asyncio_event_loop = asyncio.get_event_loop()
@@ -95,13 +106,16 @@ class InvestigatorDiscordClient(discord.Client):
         print(f'{self.server.name}(id: {self.server.id})')
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=self.bot_status_text))
 
-    async def send_submission(self, string, channel, screenshot_path):
-        channel = discord.utils.get(self.server.channels, name=channel) 
-        if screenshot_path != None:
-            await channel.send(self.bot_submission_text, file=discord.File(screenshot_path))
+    async def send_submission(self, string, channel_input, screenshot_path):
+        channel = discord.utils.get(self.server.channels, name=channel_input)
+        if channel != None: 
+            if screenshot_path != None:
+                await channel.send(self.bot_submission_text, file=discord.File(screenshot_path))
+            else:
+                await channel.send(self.bot_submission_text)
+            await channel.send(string)
         else:
-            await channel.send(self.bot_submission_text)
-        await channel.send(string)
+            print("Bot: Cannot find channel {}".format(channel_input))
 
     async def send_check(self, channel): #Send check
         channel = discord.utils.get(self.server.channels, name=channel) 
@@ -156,13 +170,15 @@ class InvestigatorDiscordClient(discord.Client):
             channel = message.channel
             country = convert_channel_to_country(str(message.channel))
             country = country[0].upper() + country[1:]
-            await channel.send("Beep boop! Investigating Covid-19 cases in {}, please stand by...".format(country))
-            if str(channel) == "europe":
-                self.command_queue.put("scrape all -d -disp".format(country))
-            else:
-                self.command_queue.put("scrape {} -d -disp".format(country))
-    
+
+            words = message.content.split()
+            if len(words) >= 2 and (words[1] == "covidtracker" or words[1] == "covidtracking" or words[1] == "ct"): 
+                await channel.send("Beep boop! Investigating Covid-19 cases in {}, please stand by...".format(country))
+                if str(channel) == "usa":
+                    self.command_queue.put("scrape all covidtracking -d -disp")
+                else:
+                    self.command_queue.put("scrape {} -d -disp".format(country))
         
-        if message.content.startswith('check'):
-            channel = message.channel
-            await self.fake_check(channel)
+        #if message.content.startswith('check'):
+            #channel = message.channel
+            #await self.fake_check(channel)
