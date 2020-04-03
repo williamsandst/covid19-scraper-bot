@@ -32,7 +32,7 @@ class NovelScraperRU(NovelScraper):
 
         return result
 
-class NovelScraperBY(NovelScraperCoronaCloudTemplate):
+class NovelScraperBY(NovelScraperCoronaCloud):
     """Belarus Coronavirus Scraper. Plain HTML. Inherits scraper from template as it it uses CoronaCloud"""
     def __init__(self):
         """Initializes class members to match the country the class is designed for"""
@@ -64,7 +64,7 @@ class NovelScraperPL(NovelScraper):
 
         return result
 
-class NovelScraperUA(NovelScraperCoronaCloudTemplate):
+class NovelScraperUA(NovelScraperCoronaCloud):
     """Ukraine Coronavirus Scraper. Plain HTML"""
     def __init__(self):
         """Initializes class members to match the country the class is designed for"""
@@ -75,7 +75,7 @@ class NovelScraperUA(NovelScraperCoronaCloudTemplate):
 
 
 
-class NovelScraperGR(NovelScraperCoronaCloudTemplate):
+class NovelScraperGR(NovelScraperCoronaCloud):
     """Greece Coronavirus Scraper. Plain HTML"""
     def __init__(self):
         """Initializes class members to match the country the class is designed for"""

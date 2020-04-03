@@ -127,6 +127,19 @@ class InvestigatorDiscordClient(discord.Client):
         await channel.send(embed=embed)
 
     async def on_message(self, message):
+        """ 
+        Open to all:
+        !scrape
+        !screenshot
+        !worldometer
+        !covidtracking
+        !hopkins
+        !coronacloud
+        Admin only:
+        !train CASES DEATHS RECOVERED
+        !scrape (in Europe!)
+        !disabletracker
+        """
         # we do not want the bot to reply to itself
 
         if message.author == self.user or str(message.channel) in channel_blacklist_set:

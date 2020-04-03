@@ -14,6 +14,7 @@ import random
 
 import dataobject
 from stringhelpers import *
+import covidtracking_downloader
 
 # Constants
 PRINT_PROGRESS = True
@@ -122,6 +123,10 @@ class NovelScraper:
         self.javascript_required = False
         self.training_data = None
         self.website_scroll = False
+        self.has_covidtracking = False
+        self.has_coronacloud = False
+        self.has_worldometer = False
+        self.has_default = True
 
     def try_scrape(self, browser, count = 3):
         for i in range(3):
@@ -135,7 +140,7 @@ class NovelScraper:
         result = dataobject.DataObject(self)
         return result
 
-class NovelScraperCoronaCloudTemplate(NovelScraper):
+class NovelScraperCoronaCloud(NovelScraper):
     def scrape(self, browser):
         """ Template for Coronacloud function. Returns a data object containing the cases"""
         result = dataobject.DataObject(self)
@@ -150,6 +155,19 @@ class NovelScraperCoronaCloudTemplate(NovelScraper):
         #Date needs javascript.
 
         return result
+
+class NovelScraperCovidTracking(NovelScraper):
+    def scrape_covidtracking(self):
+        result = dataobject.DataObject(self)
+
+        result = covidtracking_downloader.scrape(self.iso_code, result)
+
+        result.source_website = "https://covidtracking.com/"
+        result.report_website = "https://covidtracking.com/"
+        return result
+
+class NovelScraperWorldOMeter(NovelScraper):
+    pass
 
 class LearnedData():
     def __init__(self, filename="none.txt"):
@@ -169,7 +187,8 @@ class LearnedData():
         self.data = loaded_data["register"]
         self.indices = loaded_data["indices"]
 
-class NovelScraperAuto(NovelScraper):
+
+class NovelScraperAuto(NovelScraperCovidTracking):
     """ Automated scraping through a training approach
         #Steps:
         #Learning:
@@ -192,6 +211,10 @@ class NovelScraperAuto(NovelScraper):
         self.website_scroll = False
         self.wait_time = 5
         self.optimize_min_max_index_ratio = 0.3
+        self.has_covidtracking = False
+        self.has_coronacloud = False
+        self.has_worldometer = False
+        self.has_default = True
 
     def learn(self, text, number, label):
         """ Learn the data surrounding a number to be able to find it in the future """
@@ -288,3 +311,4 @@ class NovelScraperAuto(NovelScraper):
         result.update_by_str_dict(result_dict)
 
         return result
+

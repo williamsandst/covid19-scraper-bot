@@ -49,9 +49,9 @@ scheduled_commands = []
 results = {}
 discord_bot = bot.InvestigatorBot()
 
-DISCORD_BOT_ENABLED = True
+DISCORD_BOT_ENABLED = False
 
-def init_countries():
+def init_europe_scrapers():
     """ Initiate the various country classes """
     # Nordic countries:
     # Norway
@@ -234,6 +234,13 @@ def init_countries():
     #scraper.training_data = {"cases": "7995", "deaths": "68", "tested":"42750"}
     country_classes[scraper.country_name.lower()] = scraper
 
+def init_us_scrapers():
+    # Alabama
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Alabama" 
+    scraper.iso_code = "AL"
+    scraper.has_covidtracking = True
+    country_classes[scraper.country_name.lower()] = scraper
 
 
 def add_command(triggers : list, function, commands=commands):
@@ -327,7 +334,8 @@ def main():
     add_command(["help", "h"], lambda: cmd_help(country_classes, flags))
     add_command(["exit", "close"], lambda: cmd_exit(country_classes, flags, discord_bot))
 
-    init_countries()
+    init_europe_scrapers()
+    init_us_scrapers()
     command_queue = queue.Queue()
 
     scheduling_thread = SchedulingThread(command_queue, flags)
