@@ -279,7 +279,7 @@ def init_us_scrapers():
 
     # Conneticut
     scraper = NovelScraperAuto()
-    scraper.country_name = "Conneticut" 
+    scraper.country_name = "Connecticut" 
     scraper.iso_code = "CT"
     scraper.has_covidtracking = True
     country_classes[scraper.country_name.lower()] = scraper
@@ -413,7 +413,7 @@ def init_us_scrapers():
     # Montana
     scraper = NovelScraperAuto()
     scraper.country_name = "Montana" 
-    scraper.iso_code = "AL"
+    scraper.iso_code = "MT"
     scraper.has_covidtracking = True
     country_classes[scraper.country_name.lower()] = scraper
 
@@ -510,7 +510,7 @@ def init_us_scrapers():
 
     # South Carlonia
     scraper = NovelScraperAuto()
-    scraper.country_name = "South-Carlonia" 
+    scraper.country_name = "South-Carolina" 
     scraper.iso_code = "SC"
     scraper.has_covidtracking = True
     country_classes[scraper.country_name.lower()] = scraper
@@ -587,7 +587,7 @@ def init_us_scrapers():
 
     # District of Colombia
     scraper = NovelScraperAuto()
-    scraper.country_name = "District-of-Colombia" 
+    scraper.country_name = "District-of-Columbia" 
     scraper.iso_code = "DC"
     scraper.has_covidtracking = True
     country_classes[scraper.country_name.lower()] = scraper
@@ -651,12 +651,33 @@ def parse(input_list : list) -> dict:
     the flag 'default'
     """
     flags = {}
+    #Combine items marked in "" into one item
+    new_input_list = []
+    combine = False
+    for i in input_list:
+        if i.startswith("\""):
+            new_input_list.append(i + " ")
+            combine = True
+        elif i.endswith("\""):
+            combine = False
+            new_input_list[-1] += i + " "
+        else:
+            if combine:
+                new_input_list[-1] += i + " "
+            else:
+                new_input_list.append(i)
+
+    input_list = new_input_list
+        
     if len(input_list) > 1:
         i = 1
         while i < len(input_list) and not (input_list[i][0] == '-' and input_list[i][1].isalpha()):
             flags.setdefault("default", [])
             if isinstance(input_list[i], str):
-                input_list[i] = input_list[i].lower()
+                if input_list[i].startswith("\""):
+                    input_list[i] = input_list[i][1:-2]
+                else:
+                    input_list[i] = input_list[i].lower()
             flags["default"].append(input_list[i])
             i += 1
         flag = ''
@@ -721,6 +742,7 @@ def main():
     add_command(["train", "tr"], lambda: cmd_train(country_classes, flags, discord_bot))
     add_command(["help", "h"], lambda: cmd_help(country_classes, flags))
     add_command(["exit", "close"], lambda: cmd_exit(country_classes, flags, discord_bot))
+    add_command(["chat", "ch"], lambda: cmd_discord_chat(country_classes, flags, discord_bot))
 
     init_europe_scrapers()
     init_us_scrapers()

@@ -92,6 +92,9 @@ class InvestigatorBot():
                 channel = convert_country_to_channel(country)
                 self.asyncio_event_loop.create_task(self.client.send_submission(string, channel, screenshot_path))
 
+    def chat(self, message, channel):
+        self.asyncio_event_loop.create_task(self.client.send_message(message, channel))
+
     async def start_client(self):
         await self.client.start(self.TOKEN)
         #self.client.run(self.TOKEN)
@@ -131,6 +134,13 @@ class InvestigatorDiscordClient(discord.Client):
         channel = discord.utils.get(self.server.channels, name=channel_input)
         if channel != None: 
             await channel.send("{}: `{}`".format(self.bot_error_text, reason))
+        else:
+            print("Bot: Cannot find channel {}".format(channel_input))
+
+    async def send_message(self, message, channel_input):
+        channel = discord.utils.get(self.server.channels, name=channel_input, type=discord.ChannelType.text)
+        if channel != None: 
+            await channel.send(message)
         else:
             print("Bot: Cannot find channel {}".format(channel_input))
 

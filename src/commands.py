@@ -134,6 +134,14 @@ def cmd_exit(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBo
     discord_bot.stop()
     exit()
 
+def cmd_discord_chat(country_classes, flags, discord_bot: bot.InvestigatorBot):
+    if "default" not in flags or not isinstance(flags["default"], list) or len(flags["default"]) != 2:
+        error_message("The required arguments are missing or are incorrectly formated")
+        return
+    message = flags["default"][0]
+    channel = flags["default"][1]
+    discord_bot.chat(message, channel)
+
 def error_message(reason):
     """Support function for logging error messages related to functions"""
     print("Command failure: {}. Please try again.".format(reason))
