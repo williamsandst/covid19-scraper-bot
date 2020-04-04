@@ -86,7 +86,7 @@ def init_europe_scrapers():
     scraper.country_name = "Iceland"
     scraper.iso_code = "IS"
     scraper.javascript_required = True
-    scraper.website_scroll = 6
+    scraper.website_height = 700
     scraper.source_website = "https://e.infogram.com/7327507d-28f5-4e3c-b587-c1680bd790e6?src=embed"
     scraper.report_website = "https://www.covid.is/tolulegar-upplysingar"
     #scraper.training_data = {"cases": "890", "recovered": "97", "hospitalised":"18", "intensive_care":"6", "tested":"13613"}
@@ -740,9 +740,10 @@ def main():
 
     add_command(["scrape", "sc"], lambda: cmd_scrape(country_classes, flags, discord_bot))
     add_command(["train", "tr"], lambda: cmd_train(country_classes, flags, discord_bot))
+    add_command(["screenshot", "ss"], lambda: cmd_screenshot(country_classes, flags, discord_bot))
+    add_command(["chat", "ch"], lambda: cmd_discord_chat(country_classes, flags, discord_bot))
     add_command(["help", "h"], lambda: cmd_help(country_classes, flags))
     add_command(["exit", "close"], lambda: cmd_exit(country_classes, flags, discord_bot))
-    add_command(["chat", "ch"], lambda: cmd_discord_chat(country_classes, flags, discord_bot))
 
     init_europe_scrapers()
     init_us_scrapers()

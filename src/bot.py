@@ -8,6 +8,7 @@ from queue import Queue
 import datetime
 
 import interface
+from bot_data import *
 
 # What should it do?
 # Send submission messages to any channel (text and images)
@@ -28,18 +29,13 @@ country_to_channel_dict = {"czechia": "czech-republic", "united kingdom": "uk"}
 
 channel_to_country_dict = {v: k for k, v in country_to_channel_dict.items()}
 
-channel_blacklist_set = {"welcome", "info", "rules", "general", "lounge", "music", "dev-bot", "bot-suggestions", "sheet-suggestions",
-                        "europe", "andorra", "albania", "austria", "belarus", "belgium", "bosnia-and-herzegovina", "bulgaria",
-                        "croatia", "cyprus", "czech-republic", "denmark", "estonia", "finland", "france", "germany", "greece", "hungary",
-                        "holy-see", "iceland", "ireland", "italy", "kosovo", "latvia", "liechtenstein", "lithuania", "luxembourg", "malta",
-                        "moldova", "monaco", "montenegro", "netherlands", "north-macedonia", "norway", "poland", "portugal", "romania", "russia",
-                        "san-marino", "slovenia", "spain", "serbia", "slovakia", "sweden", "switzerland", "uk", "ukraine"}
+staff_user_whitelist = {"SlipShady", "Wydal"}
 
-user_whitelist = {"SlipShady", "Wydal"}
+staff_role_whitelist = {"staff", "the real slip shady"}
 
-role_whitelist = {"staff", "the real slip shady"}
+normal_role_whitelist = {"interpol"}
 
-RELEASE_BOT = True
+RELEASE_BOT = False
 
 def convert_country_to_channel(country):
     if country in country_to_channel_dict:
@@ -91,6 +87,9 @@ class InvestigatorBot():
             else:
                 channel = convert_country_to_channel(country)
                 self.asyncio_event_loop.create_task(self.client.send_submission(string, channel, screenshot_path))
+
+    def send_screenshot(self, country, screenshot_path):
+        self.asyncio_event_loop.create_task(self.client.send_submission(string, channel, screenshot_path))
 
     def chat(self, message, channel):
         self.asyncio_event_loop.create_task(self.client.send_message(message, channel))
@@ -144,9 +143,29 @@ class InvestigatorDiscordClient(discord.Client):
         else:
             print("Bot: Cannot find channel {}".format(channel_input))
 
+    async def send_screenshot(self, message, screenshot_path, channel_input):
+        
+
     async def send_check(self, channel): #Send check
         channel = discord.utils.get(self.server.channels, name=channel) 
         await channel.send("chk")
+
+    def is_staff(self, user):
+        staff = False
+        if user.name in staff_user_whitelist:
+            for role in user.roles:
+                if role.name.lower() in staff_role_whitelist:
+                    staff = True
+                    break
+        return staff
+
+    def is_normal_user(self, user):
+        normal_user = False
+        for role in user.roles:
+            if role.name.lower() in normal_role_whitelist:
+                normal_user = True
+                break
+        return normal_user
 
     async def fake_check(self, channel):
         total_cases = 1000
@@ -181,16 +200,6 @@ class InvestigatorDiscordClient(discord.Client):
         !scrape (in Europe!)
         !disabletracker
         """
-        # we do not want the bot to reply to itself
-
-        if (message.author == self.user or str(message.channel) in channel_blacklist_set or message.author.name not in user_whitelist):
-            return
-        has_permission = False
-        for role in message.author.roles:
-            if role.name.lower() in role_whitelist:
-                has_permission = True
-        if not has_permission:
-            return
 
         """if message.author.id == self.novel_bot_id: #Read check and save it
             country = convert_channel_to_country(str(message.channel))
@@ -198,29 +207,46 @@ class InvestigatorDiscordClient(discord.Client):
             interface.process_check(country, str(message.content))
             await channel.send("Praise the Creator")
             return"""
+        # we do not want the bot to reply to itself
 
-        if message.content.startswith('!scrape'):
-            channel = message.channel
-            country = convert_channel_to_country(str(message.channel))
-            country = country[0].upper() + country[1:]
+        if (message.author == self.user or str(message.channel) in other_channels):
+            return
 
-            words = message.content.split()
-            if len(words) >= 2 and (words[1] == "covidtracker" or words[1] == "covidtracking" or words[1] == "ct"): 
-                time = datetime.datetime.now()
-                date = interface.convert_datetime_to_string(time)
-                if len(words) >= 3: #Date argument
-                    date = words[2]
-                    if len(words) > 5:
-                        print("!scrape date incorrectly formatted")
+        if self.is_normal_user(message.author): #Does this user have permission for normal commands?
+            if message.content.startswith('!screenshot'):
+                channel = message.channel
+                country = convert_channel_to_country(str(message.channel))
+                country = country[0].upper() + country[1:]
+                await channel.send("Beep boop! Taking Screenshot of primary source for {}, please stand by...".format(country))
+                self.command_queue.put("screenshot {} -d".format(country))
+            pass
+
+        if self.is_staff(message.author): #Does this user have permission for staff commands?
+            if message.content.startswith('!scrape'):
+                channel = message.channel
+                country = convert_channel_to_country(str(message.channel))
+                country = country[0].upper() + country[1:]
+
+                words = message.content.split()
+                if len(words) >= 2 and (words[1] == "covidtracker" or words[1] == "covidtracking" or words[1] == "ct"): 
+                    if channel not in us_channels:
+                        await self.send_error_message("Covidtracking.com only has data on US states", channel.name)
                         return
-                    date = words[2]
-                    
+                    time = datetime.datetime.now()
+                    date = interface.convert_datetime_to_string(time)
+                    if len(words) >= 3: #Date argument
+                        date = words[2]
+                        if len(words) > 5:
+                            print("!scrape date incorrectly formatted")
+                            return
+                        date = words[2]
+                        
 
-                await channel.send("Beep boop! Investigating Covid-19 cases in {}, please stand by...".format(country))
-                if str(channel) == "usa":
-                    self.command_queue.put("scrape all covidtracking -d -disp -t {}".format(date))
-                else:
-                    self.command_queue.put("scrape {} ct -d -disp -t {}".format(country, date))
+                    await channel.send("Beep boop! Investigating Covid-19 cases in {}, please stand by...".format(country))
+                    if str(channel) == "usa":
+                        self.command_queue.put("scrape all covidtracking -d -disp -t {}".format(date))
+                    else:
+                        self.command_queue.put("scrape {} ct -d -disp -t {}".format(country, date))
         
         #if message.content.startswith('check'):
             #channel = message.channel

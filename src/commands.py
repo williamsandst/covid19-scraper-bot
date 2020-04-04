@@ -57,6 +57,9 @@ def scrape_country_coronatracking(country: str, country_classes, date):
     print("{}: Scraping complete!".format(country_name))
     return result
 
+def screenshot_country(country, browser, country_classes):
+    return country_classes[country].screenshot(browser)
+
 
 #List of commands
 command_list = """List of commands for Novel-Scraper:
@@ -113,7 +116,6 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
             print("Sent submission to Discord")
             time.sleep(1)
 
-
 def cmd_train(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBot):
     if "default" not in flags or not isinstance(flags["default"], str):
         error_message("The required arguments are missing or are incorrectly formated")
@@ -123,6 +125,17 @@ def cmd_train(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorB
     train_country(country.lower(), browser, country_classes)
     browser.quit()
 
+def cmd_screenshot(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBot):
+    if "default" not in flags or not isinstance(flags["default"], str):
+        error_message("The required arguments are missing or are incorrectly formated")
+        return
+    country = flags["default"]
+    browser = webdriver.Firefox()
+    path = screenshot_country(country.lower(), browser, country_classes)
+    if 'nodisp' not in flags:
+        print("Took screenshot of {}, saved at {}".format(country, path))
+    if 'd' in flags:
+    browser.quit()
 
 def cmd_help(country_classes: dict, flags: dict):
     """cmd: help. Print the help string, containing command descriptions"""

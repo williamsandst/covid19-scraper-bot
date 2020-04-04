@@ -40,18 +40,21 @@ def get_parsed_javascript_html(website, browser, wait_time = 4, scroll = False):
 
     return BeautifulSoup(browser.page_source, "html5lib")
 
-def get_visible_text(website, browser, wait_time = 4, screenshot = False, parse_javscript = False, scroll=False):
+def get_screenshot(website, browser, screenshot_path, viewport_width=1200, viewport_height=900, wait_time = 4):
+    browser.set_window_size(viewport_width, viewport_height) 
+    browser.get(website)
+    time.sleep(wait_time)
+    if ALLOW_SCREENSHOTS and screenshot_path != None:
+        browser.save_screenshot(screenshot_path)
+
+def get_visible_text(website, browser, viewport_width=1200, viewport_height=900, wait_time = 4, screenshot = False, parse_javscript = False):
     # extract text
-    
+    browser.set_window_size(viewport_width, viewport_height) 
     browser.get(website)
     if (parse_javscript):
         time.sleep(wait_time)
     else:
         time.sleep(0.5)
-
-    if scroll: #Scroll down page to load in potential deferred javascript elements
-        browser.execute_script("window.scrollTo(0, document.body.scrollHeight/{});".format(scroll)) 
-        time.sleep(2)
 
     if ALLOW_SCREENSHOTS and screenshot != None:
         browser.save_screenshot('output/{}.png'.format(screenshot))
@@ -122,11 +125,13 @@ class NovelScraper:
         self.report_website = None
         self.javascript_required = False
         self.training_data = None
-        self.website_scroll = False
+        self.website_height = 900
+        self.website_width = 1200
         self.has_covidtracking = False
         self.has_coronacloud = False
         self.has_worldometer = False
         self.has_default = True
+        self.wait_time = 4
 
     def try_scrape(self, browser, count = 3):
         for i in range(3):
@@ -139,6 +144,13 @@ class NovelScraper:
         """ Template for scrape function. Returns a data object containing the cases"""
         result = dataobject.DataObject(self)
         return result
+
+    def screenshot(self, browser):
+        screenshot_path = "screenshots/{}-{}.png".format(self.country_name.lower(), datetime.datetime.now().__str__())
+        get_screenshot(self.source_website, browser, screenshot_path, self.website_width, self.website_height, self.wait_time)
+        return screenshot_path
+
+
 
 class NovelScraperCoronaCloud(NovelScraper):
     def scrape(self, browser):
@@ -208,7 +220,8 @@ class NovelScraperAuto(NovelScraperCovidTracking):
         self.javascript_required = False
         self.learned_data = LearnedData()
         self.training_data = None
-        self.website_scroll = False
+        self.website_height = 900
+        self.website_width = 1200
         self.wait_time = 5
         self.optimize_min_max_index_ratio = 0.3
         self.has_covidtracking = False
@@ -248,7 +261,7 @@ class NovelScraperAuto(NovelScraperCovidTracking):
         self.learned_data.save(self.country_name)
 
     def retrieve_text(self, website, browser, screenshot = None):
-        return get_visible_text(self.source_website, browser, self.wait_time, screenshot, self.javascript_required, self.website_scroll)
+        return get_visible_text(self.source_website, browser, self.website_width, self.website_height, self.wait_time, screenshot, self.javascript_required)
 
     def evaluate(self, words, register, ratio): #Ratio is % of way through word
         """ Give a score to a list of words based on how good a fit it is to the learned model """
