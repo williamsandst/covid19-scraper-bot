@@ -133,16 +133,22 @@ def cmd_screenshot(country_classes: dict, flags: dict, discord_bot: bot.Investig
 
     saved_wait_time = country_classes[country].wait_time
     if 'f' in flags: #Flag for decreasing wait time for faster screenshots
-        country_classes[country].wait_time = 0.5
+        country_classes[country].wait_time = 0
 
-    browser = webdriver.Firefox()
-    path = screenshot_country(country.lower(), browser, country_classes)
-    if 'nodisp' not in flags:
-        print("Took screenshot of {}, saved at {}".format(country, path))
+    if country_classes[country].source_website != None:
+        browser = webdriver.Firefox()
+        path = screenshot_country(country.lower(), browser, country_classes)
+        browser.quit()    
+        if 'nodisp' not in flags:
+            print("Took screenshot of {}, saved at {}".format(country, path))
+            
     if 'd' in flags:
         source = country_classes[country].report_website if country_classes[country].report_website != None else country_classes[country].source_website
-        discord_bot.send_screenshot(country, path, source)
-    browser.quit()
+        if source != None:
+            discord_bot.send_screenshot(country, path, source)
+        else:
+            discord_bot.send_error("This country does not yet have a source specified", country)
+
     country_classes[country].wait_time = saved_wait_time
 
 def cmd_help(country_classes: dict, flags: dict):

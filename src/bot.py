@@ -94,8 +94,11 @@ class InvestigatorBot():
         message = "Screenshot of {}, taken at {} from {}".format(country_formatted, date, source)
         self.asyncio_event_loop.create_task(self.client.send_image(message, screenshot_path, country))
 
-    def chat(self, message, channel):
+    def send_message(self, message, channel):
         self.asyncio_event_loop.create_task(self.client.send_message(message, channel))
+
+    def send_error(self, reason, channel):
+        self.asyncio_event_loop.create_task(self.client.send_error_message(reason, channel))
 
     async def start_client(self):
         await self.client.start(self.TOKEN)

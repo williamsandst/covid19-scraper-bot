@@ -121,7 +121,7 @@ class NovelScraper:
         """Initializes class members to match the country the class is designed for"""
         self.country_name = "N/A (BASE CLASS)"
         self.iso_code = "N/A (BASE CLASS)"
-        self.source_website = "N/A (BASE CLASS)"
+        self.source_website = None
         self.report_website = None
         self.javascript_required = False
         self.training_data = None
@@ -146,6 +146,8 @@ class NovelScraper:
         return result
 
     def screenshot(self, browser):
+        if self.source_website == None:
+            return None
         time = datetime.datetime.now()
         time = time.replace(microsecond=0)
         screenshot_path = "screenshots/{}|{}.png".format(self.country_name.lower(), time.__str__())
@@ -217,7 +219,7 @@ class NovelScraperAuto(NovelScraperCovidTracking):
         """Initializes class members to match the country the class is designed for"""
         self.country_name = "N/A (BASE CLASS)"
         self.iso_code = "N/A (BASE CLASS)"
-        self.source_website = "N/A (BASE CLASS)"
+        self.source_website = None
         self.report_website = None
         self.javascript_required = False
         self.learned_data = LearnedData()
