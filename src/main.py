@@ -33,14 +33,36 @@ Netherlands (NL)
 Belgium (BE)
 Switzerland (CH)
 Austria (AT)
+
 Left:
 Russia (RU)
 Poland (PL)
-Czechia (CZ)
+Czech Republic (CZ)
 Romania (RO)
 Belarus (BY) (CoronaCloud)
 Ukarine (UA) (CoronaCloud)
 Greece (GR) (CoronaCloud)
+
+Andorra
+Albania
+Bosnia and Herzegovina
+Bulgaria
+Croatia
+Cyprus
+Hungary
+Holy-see
+Kosovo
+Liechtenstein
+Luxembourg
+Malta
+Moldova
+Monaco
+Montenegro
+North Macedonia
+San Marino
+Slovenia
+Serbia
+Slovakia
 """
 
 country_classes = {}
@@ -233,6 +255,196 @@ def init_europe_scrapers():
     scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
     #scraper.training_data = {"cases": "7995", "deaths": "68", "tested":"42750"}
     country_classes[scraper.country_name.lower()] = scraper
+
+    # Russia (RU)
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Russia"
+    scraper.iso_code = "RU"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Poland (PL)
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Poland"
+    scraper.iso_code = "PL"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Czech Republic (CZ)
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Czech-Republic"
+    scraper.iso_code = "CZ"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Romania (RO)
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Romania"
+    scraper.iso_code = "RO"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+    
+    # Belarus (BY)
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Russia"
+    scraper.iso_code = "BY"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Ukarine (UA) (CoronaCloud)
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Ukraine"
+    scraper.iso_code = "UA"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Greece (GR) (CoronaCloud)
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Greece"
+    scraper.iso_code = "GR"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Andorra
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Andorra"
+    scraper.iso_code = "RU"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Albania
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Albania"
+    scraper.iso_code = "RU"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Bosnia and Herzegovina
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Bosnia-and-herzegovina"
+    scraper.iso_code = "RU"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Bulgaria
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Bulgaria"
+    scraper.iso_code = "RU"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Croatia
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Croatia"
+    scraper.iso_code = "RU"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Cyprus
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Cyprus"
+    scraper.iso_code = "RU"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Hungary
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Hungary"
+    scraper.iso_code = "RU"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Holy-see
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Holy-see"
+    scraper.iso_code = "RU"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Kosovo
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Kosovo"
+    scraper.iso_code = "RU"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Liechtenstein
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Liechtenstein"
+    scraper.iso_code = "RU"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Luxembourg
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Luxembourg"
+    scraper.iso_code = "RU"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Malta
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Malta"
+    scraper.iso_code = "RU"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Moldova
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Moldova"
+    scraper.iso_code = "RU"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Monaco
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Monaco"
+    scraper.iso_code = "RU"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Montenegro
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Montenegro"
+    scraper.iso_code = "RU"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # North Macedonia
+    scraper = NovelScraperAuto()
+    scraper.country_name = "North-Macedonia"
+    scraper.iso_code = "RU"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # San Marino
+    scraper = NovelScraperAuto()
+    scraper.country_name = "San-Marino"
+    scraper.iso_code = "RU"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Slovenia
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Slovenia"
+    scraper.iso_code = "RU"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Serbia
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Serbia"
+    scraper.iso_code = "RU"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Slovakia
+    scraper = NovelScraperAuto()
+    scraper.country_name = "Slovakia"
+    scraper.iso_code = "RU"
+    scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    country_classes[scraper.country_name.lower()] = scraper    
+    
 
 def init_us_scrapers():
     # Alabama
@@ -626,10 +838,6 @@ def init_us_scrapers():
     scraper.iso_code = "VI"
     scraper.has_covidtracking = True
     country_classes[scraper.country_name.lower()] = scraper
-    
-    
-    
-
 
 def add_command(triggers : list, function, commands=commands):
     """Add a command to the global players dictionary"""
