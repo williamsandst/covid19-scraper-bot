@@ -19,10 +19,15 @@ class NovelScraperDK(NovelScraper):
         #Source has plain html for cases
         self.source_website = "https://politi.dk/coronavirus-i-danmark/foelg-smittespredningen-globalt-regionalt-og-lokalt"
         self.report_website = None
+        self.javascript_required = False
+        self.training_data = None
+        self.website_height = 900
+        self.website_width = 1200
         self.has_covidtracking = False
-        self.has_coronacloud = False
-        self.has_worldometer = False
+        self.has_hopkins = False
         self.has_default = True
+        self.wait_time = 4
+        self.scroll_height = None
 
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 

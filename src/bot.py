@@ -25,7 +25,7 @@ from bot_data import *
 
 # Read the check. 
 
-country_to_channel_dict = {"czechia": "czech-republic", "united kingdom": "uk"}
+country_to_channel_dict = {}
 
 channel_to_country_dict = {v: k for k, v in country_to_channel_dict.items()}
 
@@ -91,7 +91,7 @@ class InvestigatorBot():
     def send_screenshot(self, country, screenshot_path, source):
         date = screenshot_path.split("|")[1][:-4]
         country_formatted = country[0].upper() + country[1:] 
-        message = "Screenshot of {}, taken at {} from {}".format(country_formatted, date, source)
+        message = "Screenshot of {}, taken at {} from <{}>".format(country_formatted, date, source)
         self.asyncio_event_loop.create_task(self.client.send_image(message, screenshot_path, country))
 
     def send_message(self, message, channel):
@@ -232,11 +232,11 @@ class InvestigatorDiscordClient(discord.Client):
                 channel = message.channel
                 country = convert_channel_to_country(str(message.channel))
                 country = country[0].upper() + country[1:]
-                await channel.send("Beep boop! Taking screenshot of primary source for {}, please stand by...".format(country))
-                if len(words) > 1 and (words[1] == "f" or words[1] == "fast"):
-                    self.command_queue.put("screenshot {} -d -f".format(country))
-                else:
+                await channel.send("Beep boop! Taking a screenshot, please stand by...".format(country))
+                if len(words) > 1 and (words[1] == "s" or words[1] == "slow"):
                     self.command_queue.put("screenshot {} -d".format(country))
+                else:
+                    self.command_queue.put("screenshot {} -d -f".format(country))
 
         if user_is_staff: #Staff only commands
             if message.content.startswith('!scrape'):

@@ -40,14 +40,17 @@ def get_parsed_javascript_html(website, browser, wait_time = 4, scroll = False):
 
     return BeautifulSoup(browser.page_source, "html5lib")
 
-def get_screenshot(website, browser, screenshot_path, viewport_width=1200, viewport_height=900, wait_time = 4):
+def get_screenshot(website, browser, screenshot_path, viewport_width=1200, viewport_height=900, wait_time = 4, scroll_height = None):
     browser.set_window_size(viewport_width, viewport_height) 
     browser.get(website)
     time.sleep(wait_time)
+    if scroll_height != None: #Scroll on page
+        browser.execute_script("window.scrollTo(0, {})".format(scroll_height)) 
+        time.sleep(0.3)
     if ALLOW_SCREENSHOTS and screenshot_path != None:
         browser.save_screenshot(screenshot_path)
 
-def get_visible_text(website, browser, viewport_width=1200, viewport_height=900, wait_time = 4, screenshot = False, parse_javscript = False):
+def get_visible_text(website, browser, viewport_width=1200, viewport_height=900, wait_time = 4, screenshot = False, parse_javscript = False, scroll_height = None):
     # extract text
     browser.set_window_size(viewport_width, viewport_height) 
     browser.get(website)
@@ -56,8 +59,12 @@ def get_visible_text(website, browser, viewport_width=1200, viewport_height=900,
     else:
         time.sleep(0.5)
 
+    if scroll_height != None: #Scroll on page
+        browser.execute_script("window.scrollTo(0, {})".format(scroll_height)) 
+        time.sleep(0.3)
+
     if ALLOW_SCREENSHOTS and screenshot != None:
-        browser.save_screenshot('output/{}.png'.format(screenshot))
+        browser.save_screenshot('screenshots/{}.png'.format(screenshot))
 
     root = html.document_fromstring(browser.page_source)
     Cleaner(kill_tags=['noscript'], style=True)(root) # lxml >= 2.3.1
@@ -128,10 +135,10 @@ class NovelScraper:
         self.website_height = 900
         self.website_width = 1200
         self.has_covidtracking = False
-        self.has_coronacloud = False
-        self.has_worldometer = False
+        self.has_hopkins = False
         self.has_default = True
         self.wait_time = 4
+        self.scroll_height = None
 
     def try_scrape(self, browser, count = 3):
         for i in range(3):
@@ -151,7 +158,7 @@ class NovelScraper:
         time = datetime.datetime.now()
         time = time.replace(microsecond=0)
         screenshot_path = "screenshots/{}|{}.png".format(self.country_name.lower(), time.__str__())
-        get_screenshot(self.source_website, browser, screenshot_path, self.website_width, self.website_height, self.wait_time)
+        get_screenshot(self.source_website, browser, screenshot_path, self.website_width, self.website_height, self.wait_time, self.scroll_height)
         return screenshot_path
 
 
@@ -226,12 +233,13 @@ class NovelScraperAuto(NovelScraperCovidTracking):
         self.training_data = None
         self.website_height = 900
         self.website_width = 1200
-        self.wait_time = 5
+        self.wait_time = 4
         self.optimize_min_max_index_ratio = 0.3
         self.has_covidtracking = False
         self.has_coronacloud = False
         self.has_worldometer = False
         self.has_default = True
+        self.scroll_height = None
 
     def learn(self, text, number, label):
         """ Learn the data surrounding a number to be able to find it in the future """
@@ -265,7 +273,7 @@ class NovelScraperAuto(NovelScraperCovidTracking):
         self.learned_data.save(self.country_name)
 
     def retrieve_text(self, website, browser, screenshot = None):
-        return get_visible_text(self.source_website, browser, self.website_width, self.website_height, self.wait_time, screenshot, self.javascript_required)
+        return get_visible_text(self.source_website, browser, self.website_width, self.website_height, self.wait_time, screenshot, self.javascript_required, self.scroll_height)
 
     def evaluate(self, words, register, ratio): #Ratio is % of way through word
         """ Give a score to a list of words based on how good a fit it is to the learned model """
