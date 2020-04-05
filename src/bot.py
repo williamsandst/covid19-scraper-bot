@@ -88,8 +88,11 @@ class InvestigatorBot():
                 channel = convert_country_to_channel(country)
                 self.asyncio_event_loop.create_task(self.client.send_submission(string, channel, screenshot_path))
 
-    def send_screenshot(self, country, screenshot_path):
-        self.asyncio_event_loop.create_task(self.client.send_submission(string, channel, screenshot_path))
+    def send_screenshot(self, country, screenshot_path, source):
+        date = screenshot_path.split("|")[1][:-4]
+        country_formatted = country[0].upper() + country[1:] 
+        message = "Screenshot of {}, taken at {} from {}".format(country_formatted, date, source)
+        self.asyncio_event_loop.create_task(self.client.send_image(message, screenshot_path, country))
 
     def chat(self, message, channel):
         self.asyncio_event_loop.create_task(self.client.send_message(message, channel))
@@ -143,8 +146,13 @@ class InvestigatorDiscordClient(discord.Client):
         else:
             print("Bot: Cannot find channel {}".format(channel_input))
 
-    async def send_screenshot(self, message, screenshot_path, channel_input):
-        
+    async def send_image(self, message, path, channel_input):
+        channel = discord.utils.get(self.server.channels, name=channel_input, type=discord.ChannelType.text)
+        if channel != None: 
+            if path != None:
+                await channel.send(message, file=discord.File(path))
+        else:
+            print("Bot: Cannot find channel {}".format(channel_input))
 
     async def send_check(self, channel): #Send check
         channel = discord.utils.get(self.server.channels, name=channel) 
@@ -212,16 +220,22 @@ class InvestigatorDiscordClient(discord.Client):
         if (message.author == self.user or str(message.channel) in other_channels):
             return
 
-        if self.is_normal_user(message.author): #Does this user have permission for normal commands?
-            if message.content.startswith('!screenshot'):
+        user_is_staff = self.is_staff(message.author)
+        user_is_normal =  self.is_normal_user(message.author)
+
+        if user_is_normal or user_is_staff: #Normal user commands
+            if message.content.startswith('!screenshot'):    
+                words = message.content.split()  
                 channel = message.channel
                 country = convert_channel_to_country(str(message.channel))
                 country = country[0].upper() + country[1:]
-                await channel.send("Beep boop! Taking Screenshot of primary source for {}, please stand by...".format(country))
-                self.command_queue.put("screenshot {} -d".format(country))
-            pass
+                await channel.send("Beep boop! Taking screenshot of primary source for {}, please stand by...".format(country))
+                if len(words) > 1 and (words[1] == "f" or words[1] == "fast"):
+                    self.command_queue.put("screenshot {} -d -f".format(country))
+                else:
+                    self.command_queue.put("screenshot {} -d".format(country))
 
-        if self.is_staff(message.author): #Does this user have permission for staff commands?
+        if user_is_staff: #Staff only commands
             if message.content.startswith('!scrape'):
                 channel = message.channel
                 country = convert_channel_to_country(str(message.channel))

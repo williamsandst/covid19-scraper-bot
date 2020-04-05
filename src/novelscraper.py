@@ -146,7 +146,9 @@ class NovelScraper:
         return result
 
     def screenshot(self, browser):
-        screenshot_path = "screenshots/{}-{}.png".format(self.country_name.lower(), datetime.datetime.now().__str__())
+        time = datetime.datetime.now()
+        time = time.replace(microsecond=0)
+        screenshot_path = "screenshots/{}|{}.png".format(self.country_name.lower(), time.__str__())
         get_screenshot(self.source_website, browser, screenshot_path, self.website_width, self.website_height, self.wait_time)
         return screenshot_path
 

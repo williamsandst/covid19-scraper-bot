@@ -130,12 +130,20 @@ def cmd_screenshot(country_classes: dict, flags: dict, discord_bot: bot.Investig
         error_message("The required arguments are missing or are incorrectly formated")
         return
     country = flags["default"]
+
+    saved_wait_time = country_classes[country].wait_time
+    if 'f' in flags: #Flag for decreasing wait time for faster screenshots
+        country_classes[country].wait_time = 0.5
+
     browser = webdriver.Firefox()
     path = screenshot_country(country.lower(), browser, country_classes)
     if 'nodisp' not in flags:
         print("Took screenshot of {}, saved at {}".format(country, path))
     if 'd' in flags:
+        source = country_classes[country].report_website if country_classes[country].report_website != None else country_classes[country].source_website
+        discord_bot.send_screenshot(country, path, source)
     browser.quit()
+    country_classes[country].wait_time = saved_wait_time
 
 def cmd_help(country_classes: dict, flags: dict):
     """cmd: help. Print the help string, containing command descriptions"""

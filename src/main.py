@@ -714,6 +714,7 @@ class SchedulingThread(Thread):
 
     def run(self):
         add_command(["scrape", "sc"], lambda: cmd_scrape(country_classes, self.flags, discord_bot), self.commands)
+        add_command(["screenshot", "ss"], lambda: cmd_screenshot(country_classes, self.flags, discord_bot), self.commands)
         while True:
             # Scheduling
             timenow = datetime.datetime.now()
