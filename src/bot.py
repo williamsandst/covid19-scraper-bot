@@ -35,7 +35,7 @@ staff_role_whitelist = {"staff", "the real slip shady"}
 
 normal_role_whitelist = {"interpol"}
 
-RELEASE_BOT = False
+RELEASE_BOT = True
 
 def convert_country_to_channel(country):
     if country in country_to_channel_dict:
@@ -246,7 +246,7 @@ class InvestigatorDiscordClient(discord.Client):
 
                 words = message.content.split()
                 if len(words) >= 2 and (words[1] == "covidtracker" or words[1] == "covidtracking" or words[1] == "ct"): 
-                    if channel not in us_channels:
+                    if str(channel) not in us_channels:
                         await self.send_error_message("Covidtracking.com only has data on US states", channel.name)
                         return
                     time = datetime.datetime.now()

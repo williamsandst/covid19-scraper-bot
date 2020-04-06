@@ -2,6 +2,8 @@
 Main file
 This is a program which scrapes the Coronavirus confirmed cases, deaths and recovered from various countries health ministry websites
 """
+import selenium
+from selenium.webdriver.firefox.options import Options
 
 import interface
 from threading import Thread
@@ -71,7 +73,17 @@ scheduled_commands = []
 results = {}
 discord_bot = bot.InvestigatorBot()
 
-DISCORD_BOT_ENABLED = True
+DISCORD_BOT_ENABLED = False
+SELENIUM_BROWSER_ALWAYS_ON = False
+SELENIUM_FIREFOX_HEADLESS = True
+
+if SELENIUM_BROWSER_ALWAYS_ON:
+    options = Options()
+    if SELENIUM_FIREFOX_HEADLESS:
+        options.headless = True
+    browser = webdriver.Firefox(options=options)
+else:
+    browser = None
 
 def add_command(triggers : list, function, commands=commands):
     """Add a command to the global players dictionary"""
@@ -155,8 +167,8 @@ class SchedulingThread(Thread):
         self.queue = queue
 
     def run(self):
-        add_command(["scrape", "sc"], lambda: cmd_scrape(country_classes, self.flags, discord_bot), self.commands)
-        add_command(["screenshot", "ss"], lambda: cmd_screenshot(country_classes, self.flags, discord_bot), self.commands)
+        add_command(["scrape", "sc"], lambda: cmd_scrape(country_classes, self.flags, discord_bot, browser), self.commands)
+        add_command(["screenshot", "ss"], lambda: cmd_screenshot(country_classes, self.flags, discord_bot, browser), self.commands)
         while True:
             # Scheduling
             timenow = datetime.datetime.now()
@@ -167,6 +179,7 @@ class SchedulingThread(Thread):
                     self.flags = parse(command_list)
                     print("{}: Executing scheduled command: {}".format(command[1], command[0]))
                     self.commands[command_list[0]]()
+                    print("\nnvlscrpr: ")
             time.sleep(2)
             # Go through external commands
             while not self.queue.empty():
@@ -175,18 +188,20 @@ class SchedulingThread(Thread):
                 self.flags = parse(command_list)
                 print("Executing external command: {}".format(command))
                 self.commands[command_list[0]]()
+                print("\nnvlscrpr: ")
 
 def main():
+
     flags = {}
     t = datetime.datetime(year=2020, month=1, day=1, hour=13, minute=14, second=0)
     add_scheduled_command("scrape latvia", t)
 
-    add_command(["scrape", "sc"], lambda: cmd_scrape(country_classes, flags, discord_bot))
-    add_command(["train", "tr"], lambda: cmd_train(country_classes, flags, discord_bot))
-    add_command(["screenshot", "ss"], lambda: cmd_screenshot(country_classes, flags, discord_bot))
+    add_command(["scrape", "sc"], lambda: cmd_scrape(country_classes, flags, discord_bot, browser))
+    add_command(["train", "tr"], lambda: cmd_train(country_classes, flags, discord_bot, browser))
+    add_command(["screenshot", "ss"], lambda: cmd_screenshot(country_classes, flags, discord_bot, browser))
     add_command(["chat", "ch"], lambda: cmd_discord_chat(country_classes, flags, discord_bot))
     add_command(["help", "h"], lambda: cmd_help(country_classes, flags))
-    add_command(["exit", "close"], lambda: cmd_exit(country_classes, flags, discord_bot))
+    add_command(["exit", "close", "quit"], lambda: cmd_exit(country_classes, flags, discord_bot, browser))
 
     init_europe_scrapers()
     init_us_scrapers()

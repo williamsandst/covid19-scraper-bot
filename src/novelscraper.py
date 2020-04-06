@@ -189,8 +189,15 @@ class NovelScraperCovidTracking(NovelScraper):
         result.report_website = "https://covidtracking.com/"
         return result
 
-class NovelScraperWorldOMeter(NovelScraper):
-    pass
+class NovelScraperHopkins(NovelScraper):
+    def scrape_hopkins(self, time = datetime.datetime.now()):
+        result = dataobject.DataObject(self)
+
+        result = covidtracking_downloader.scrape_hopkins(self.country_name, self.iso_code, result, time)
+
+        result.source_website = "https://github.com/CSSEGISandData/COVID-19"
+        result.report_website = "https://github.com/CSSEGISandData/COVID-19"
+        return result
 
 class LearnedData():
     def __init__(self, filename="none.txt"):
@@ -211,7 +218,7 @@ class LearnedData():
         self.indices = loaded_data["indices"]
 
 
-class NovelScraperAuto(NovelScraperCovidTracking):
+class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins):
     """ Automated scraping through a training approach
         #Steps:
         #Learning:

@@ -24,7 +24,7 @@ def init_europe_scrapers():
     scraper.javascript_required = True
     scraper.wait_time = 10
     scraper.optimize_min_max_index_ratio = 0.1
-    scraper.website_height = 500
+    scraper.website_height = 800
     scraper.source_website = "https://fohm.maps.arcgis.com/apps/opsdashboard/index.html#/68d4537bf2714e63b646c37f152f1392"
     scraper.report_website = "https://www.folkhalsomyndigheten.se/smittskydd-beredskap/utbrott/aktuella-utbrott/covid-19/aktuellt-epidemiologiskt-lage/"
     #scraper.training_data = {"cases": "3046", "deaths": "92", "intensive_care": "209"}
@@ -42,6 +42,7 @@ def init_europe_scrapers():
     scraper.country_name = "Iceland"
     scraper.iso_code = "IS"
     scraper.javascript_required = True
+    scraper.has_hopkins = True
     scraper.website_height = 700
     scraper.source_website = "https://e.infogram.com/7327507d-28f5-4e3c-b587-c1680bd790e6?src=embed"
     scraper.report_website = "https://www.covid.is/tolulegar-upplysingar"
@@ -395,6 +396,7 @@ def init_us_scrapers():
     scraper.country_name = "Alabama" 
     scraper.iso_code = "AL"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://alpublichealth.maps.arcgis.com/apps/opsdashboard/index.html#/6d2771faa9da4a2786a509d82c8cf0f7"
     country_classes[scraper.country_name.lower()] = scraper
 
     # Alaska
@@ -402,6 +404,11 @@ def init_us_scrapers():
     scraper.country_name = "Alaska" 
     scraper.iso_code = "AK"
     scraper.has_covidtracking = True
+    scraper.javascript_required = True
+    scraper.report_website = "https://coronavirus-response-alaska-dhss.hub.arcgis.com/"
+    scraper.source_website = "https://www.arcgis.com/apps/opsdashboard/index.html#/83c63cfec8b24397bdf359f49b11f218"
+    scraper.scroll_height = 800
+    scraper.website_height = 1200
     country_classes[scraper.country_name.lower()] = scraper
     
     # Arizona
@@ -409,6 +416,9 @@ def init_us_scrapers():
     scraper.country_name = "Arizona" 
     scraper.iso_code = "AZ"
     scraper.has_covidtracking = True
+    scraper.javascript_required = True
+    scraper.report_website = "https://www.azdhs.gov/preparedness/epidemiology-disease-control/infectious-disease-epidemiology/index.php#novel-coronavirus-home"
+    scraper.source_website = "https://tableau.azdhs.gov/views/UpdatedCOVIDdashboardV3/Story1?:embed=y&:showVizHome=no&:host_url=https%3A%2F%2Ftableau.azdhs.gov%2F&:embed_code_version=3&:tabs=no&:toolbar=no&:showAppBanner=false&:display_spinner=no&iframeSizedToWindow=true&:loadOrderID=0"
     country_classes[scraper.country_name.lower()] = scraper
 
     # Arkansas
@@ -416,13 +426,17 @@ def init_us_scrapers():
     scraper.country_name = "Arkansas" 
     scraper.iso_code = "AR"
     scraper.has_covidtracking = True
+    scraper.report_website = "https://www.healthy.arkansas.gov/programs-services/topics/novel-coronavirus"
+    scraper.source_website = "https://adem.maps.arcgis.com/apps/opsdashboard/index.html#/f533ac8a8b6040e5896b05b47b17a647"
+    scraper.javascript_required = True
     country_classes[scraper.country_name.lower()] = scraper
 
-    # California
+    # California (not official source but updates faster)
     scraper = NovelScraperAuto()
     scraper.country_name = "California" 
     scraper.iso_code = "CA"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://www.latimes.com/projects/california-coronavirus-cases-tracking-outbreak/"
     country_classes[scraper.country_name.lower()] = scraper
 
     # Colorado
@@ -430,13 +444,17 @@ def init_us_scrapers():
     scraper.country_name = "Colorado" 
     scraper.iso_code = "CO"
     scraper.has_covidtracking = True
+    scraper.report_website = "https://covid19.colorado.gov/case-data"
+    scraper.source_website = "https://public.tableau.com/views/COVID19_CaseSummary_TP/COVID-19CaseSummary-TP?:embed=y&:showVizHome=no&:host_url=https%3A%2F%2Fpublic.tableau.com%2F&:embed_code_version=3&:tabs=no&:toolbar=yes&:animate_transition=yes&:display_static_image=no&:display_spinner=no&:display_overlay=yes&:display_count=yes&publish=yes&:loadOrderID=0"
     country_classes[scraper.country_name.lower()] = scraper
 
-    # Conneticut
+    # Conneticut (primary source is in pdf, ugh)
     scraper = NovelScraperAuto()
     scraper.country_name = "Connecticut" 
     scraper.iso_code = "CT"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://www.nytimes.com/interactive/2020/us/connecticut-coronavirus-cases.html"
+    #scraper.source_website = https://portal.ct.gov/coronavirus
     country_classes[scraper.country_name.lower()] = scraper
 
     # Delaware
@@ -444,6 +462,8 @@ def init_us_scrapers():
     scraper.country_name = "Delaware" 
     scraper.iso_code = "DE"
     scraper.has_covidtracking = True
+    scraper.report_website = "https://coronavirus.delaware.gov/"
+    scraper.source_website = "https://dshs.maps.arcgis.com/apps/opsdashboard/index.html#/f2b22615feeb442aa2975900f8f2d4a1"
     country_classes[scraper.country_name.lower()] = scraper
 
     # Florida
@@ -451,6 +471,9 @@ def init_us_scrapers():
     scraper.country_name = "Florida" 
     scraper.iso_code = "FL"
     scraper.has_covidtracking = True
+    scraper.javascript_required = True
+    scraper.wait_time = 14
+    scraper.source_website = "https://experience.arcgis.com/experience/96dd742462124fa0b38ddedb9b25e429/"
     country_classes[scraper.country_name.lower()] = scraper
 
     # Georgia
@@ -458,6 +481,10 @@ def init_us_scrapers():
     scraper.country_name = "Georgia" 
     scraper.iso_code = "GA"
     scraper.has_covidtracking = True
+    scraper.report_website = "https://dph.georgia.gov/covid-19-daily-status-report"
+    scraper.javascript_required = True
+    scraper.scroll_height = 200
+    scraper.source_website = "https://d20s4vd27d0hk0.cloudfront.net/?initialWidth=746&childId=covid19dashdph&parentTitle=COVID-19%20Daily%20Status%20Report%20%7C%20Georgia%20Department%20of%20Public%20Health&parentUrl=https%3A%2F%2Fdph.georgia.gov%2Fcovid-19-daily-status-report"
     country_classes[scraper.country_name.lower()] = scraper
 
     # Hawaii
@@ -465,6 +492,7 @@ def init_us_scrapers():
     scraper.country_name = "Hawaii" 
     scraper.iso_code = "HI"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://health.hawaii.gov/coronavirusdisease2019/"
     country_classes[scraper.country_name.lower()] = scraper
 
     # Idaho
@@ -472,6 +500,9 @@ def init_us_scrapers():
     scraper.country_name = "Idaho" 
     scraper.iso_code = "ID"
     scraper.has_covidtracking = True
+    scraper.javascript_required = True
+    scraper.report_website = "https://coronavirus.idaho.gov/"
+    scraper.source_website = "https://public.tableau.com/profile/idaho.division.of.public.health#!/vizhome/DPHIdahoCOVID-19Dashboard_V2/DPHCOVID19Dashboard2"
     country_classes[scraper.country_name.lower()] = scraper
 
     # Illinois
@@ -479,6 +510,9 @@ def init_us_scrapers():
     scraper.country_name = "Illinois" 
     scraper.iso_code = "IL"
     scraper.has_covidtracking = True
+    scraper.source_website = "http://www.dph.illinois.gov/topics-services/diseases-and-conditions/diseases-a-z-list/coronavirus"
+    scraper.scroll_height = 200
+    scraper.javascript_required = True
     country_classes[scraper.country_name.lower()] = scraper
 
     # Indiana
@@ -486,13 +520,23 @@ def init_us_scrapers():
     scraper.country_name = "Indiana" 
     scraper.iso_code = "IN"
     scraper.has_covidtracking = True
+    scraper.javascript_required = True
+    scraper.source_website = "https://coronavirus.in.gov/"
+    scraper.scroll_height = 2200
+    scraper.website_width = 1500
     country_classes[scraper.country_name.lower()] = scraper
 
-    # Iowa
+    # Iowa (No deaths reported here?)
     scraper = NovelScraperAuto()
     scraper.country_name = "Iowa" 
     scraper.iso_code = "IA"
     scraper.has_covidtracking = True
+    #scraper.report_website = https://idph.iowa.gov/Emerging-Health-Issues/Novel-Coronavirus
+    scraper.source_website = "https://idph.iowa.gov/Emerging-Health-Issues/Novel-Coronavirus"
+    scraper.javascript_required = True
+    scraper.wait_time = 7
+    scraper.website_height = 1200
+    scraper.scroll_height = 200
     country_classes[scraper.country_name.lower()] = scraper
 
     # Kansas
@@ -500,6 +544,8 @@ def init_us_scrapers():
     scraper.country_name = "Kansas" 
     scraper.iso_code = "KS"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://public.tableau.com/profile/kdhe.epidemiology#!/vizhome/COVID-19Data_15851817634470/KSCOVID-19CaseData"
+    scraper.javascript_required = True
     country_classes[scraper.country_name.lower()] = scraper
 
     # Kentucky
@@ -507,6 +553,7 @@ def init_us_scrapers():
     scraper.country_name = "Kentucky" 
     scraper.iso_code = "KY"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://govstatus.egov.com/kycovid19"
     country_classes[scraper.country_name.lower()] = scraper
 
     # Louisiana
@@ -514,6 +561,9 @@ def init_us_scrapers():
     scraper.country_name = "Louisiana" 
     scraper.iso_code = "LA"
     scraper.has_covidtracking = True
+    scraper.report_website = "https://www.arcgis.com/apps/opsdashboard/index.html#/69b726e2b82e408f89c3a54f96e8f776"
+    scraper.source_website = "http://ldh.la.gov/Coronavirus/"
+    scraper.javascript_required = True
     country_classes[scraper.country_name.lower()] = scraper
 
     # Maine
@@ -521,6 +571,9 @@ def init_us_scrapers():
     scraper.country_name = "Maine" 
     scraper.iso_code = "ME"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://www.maine.gov/dhhs/mecdc/infectious-disease/epi/airborne/coronavirus.shtml"
+    scraper.scroll_height = 400
+    scraper.website_height = 1200
     country_classes[scraper.country_name.lower()] = scraper
 
     # Maryland
@@ -528,6 +581,9 @@ def init_us_scrapers():
     scraper.country_name = "Maryland" 
     scraper.iso_code = "MD"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://maryland.maps.arcgis.com/apps/opsdashboard/index.html#/c34e541dd8b742d993159dbebb094d8b"
+    scraper.report_website = "https://coronavirus.maryland.gov/"
+    scraper.javascript_required = True
     country_classes[scraper.country_name.lower()] = scraper
 
     # Massachusetts
@@ -535,6 +591,9 @@ def init_us_scrapers():
     scraper.country_name = "Massachusetts" 
     scraper.iso_code = "MA"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://www.mass.gov/info-details/covid-19-cases-quarantine-and-monitoring#covid-19-cases-in-massachusetts-"
+    scraper.scroll_height = 800
+    scraper.website_height = 1200
     country_classes[scraper.country_name.lower()] = scraper
 
     # Michigan
@@ -542,6 +601,9 @@ def init_us_scrapers():
     scraper.country_name = "Michigan" 
     scraper.iso_code = "MI"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://www.michigan.gov/coronavirus/0,9753,7-406-98163_98173---,00.html"
+    scraper.website_height = 1200
+    scraper.scroll_height = 2200
     country_classes[scraper.country_name.lower()] = scraper
 
     # Minnesota
@@ -549,6 +611,9 @@ def init_us_scrapers():
     scraper.country_name = "Minnesota" 
     scraper.iso_code = "MN"
     scraper.has_covidtracking = True
+    scraper.report_website = "https://www.health.state.mn.us/diseases/coronavirus/situation.html"
+    scraper.source_website = "https://mndps.maps.arcgis.com/apps/opsdashboard/index.html#/f28f84968c1148129932c3bebb1d3a1a"
+    scraper.javascript_required = True
     country_classes[scraper.country_name.lower()] = scraper
 
     # Mississippi
@@ -556,6 +621,10 @@ def init_us_scrapers():
     scraper.country_name = "Mississippi" 
     scraper.iso_code = "MS"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://msdh.ms.gov/msdhsite/_static/14,0,420.html"
+    scraper.scroll_height = 1300
+    scraper.website_height = 1200
+    scraper.javascript_required = True
     country_classes[scraper.country_name.lower()] = scraper
 
     # Missouri
@@ -563,6 +632,7 @@ def init_us_scrapers():
     scraper.country_name = "Missouri" 
     scraper.iso_code = "MO"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://health.mo.gov/living/healthcondiseases/communicable/novel-coronavirus/results.php"
     country_classes[scraper.country_name.lower()] = scraper
 
     # Montana
@@ -570,6 +640,8 @@ def init_us_scrapers():
     scraper.country_name = "Montana" 
     scraper.iso_code = "MT"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://montana.maps.arcgis.com/apps/MapSeries/index.html?appid=7c34f3412536439491adcc2103421d4b"
+    scraper.javascript_required = True
     country_classes[scraper.country_name.lower()] = scraper
 
     # Nebraska
@@ -577,6 +649,8 @@ def init_us_scrapers():
     scraper.country_name = "Nebraska" 
     scraper.iso_code = "NE"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://nebraska.maps.arcgis.com/apps/opsdashboard/index.html#/4213f719a45647bc873ffb58783ffef3"
+    scraper.javascript_required = True
     country_classes[scraper.country_name.lower()] = scraper
 
     # Nevada
@@ -584,6 +658,9 @@ def init_us_scrapers():
     scraper.country_name = "Nevada" 
     scraper.iso_code = "NV"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://app.powerbigov.us/view?r=eyJrIjoiMjA2ZThiOWUtM2FlNS00MGY5LWFmYjUtNmQwNTQ3Nzg5N2I2IiwidCI6ImU0YTM0MGU2LWI4OWUtNGU2OC04ZWFhLTE1NDRkMjcwMzk4MCJ9"
+    scraper.javascript_required = True
+    scraper.wait_time = 10
     country_classes[scraper.country_name.lower()] = scraper
 
     # New Hampshire
@@ -591,6 +668,8 @@ def init_us_scrapers():
     scraper.country_name = "New-Hampshire" 
     scraper.iso_code = "NH"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://www.nh.gov/covid19/"
+    scraper.scroll_height = 200
     country_classes[scraper.country_name.lower()] = scraper
 
     # New Jersey
@@ -598,6 +677,8 @@ def init_us_scrapers():
     scraper.country_name = "New-Jersey" 
     scraper.iso_code = "NJ"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://covid19.nj.gov/#live-updates"
+    scraper.javascript_required = True
     country_classes[scraper.country_name.lower()] = scraper
 
     # New Mexico
@@ -605,6 +686,9 @@ def init_us_scrapers():
     scraper.country_name = "New-Mexico" 
     scraper.iso_code = "NM"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://cv.nmhealth.org/"
+    scraper.scroll_height = 100
+    scraper.website_height = 1200
     country_classes[scraper.country_name.lower()] = scraper
 
     # New York
@@ -612,6 +696,8 @@ def init_us_scrapers():
     scraper.country_name = "New-York" 
     scraper.iso_code = "NY"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://covid19tracker.health.ny.gov/views/NYS-COVID19-Tracker/NYSDOHCOVID-19Tracker-Map?%3Aembed=yes&%3Atoolbar=no&%3Atabs=n"
+    scraper.javascript_required = True
     country_classes[scraper.country_name.lower()] = scraper
 
     # North Carolina
@@ -619,6 +705,9 @@ def init_us_scrapers():
     scraper.country_name = "North-Carolina" 
     scraper.iso_code = "NC"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://www.ncdhhs.gov/divisions/public-health/covid19/covid-19-nc-case-count"
+    scraper.scroll_height = 100
+    scraper.website_height = 1200
     country_classes[scraper.country_name.lower()] = scraper
 
     # North Dakota
@@ -626,6 +715,9 @@ def init_us_scrapers():
     scraper.country_name = "North-Dakota" 
     scraper.iso_code = "ND"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://www.health.nd.gov/diseases-conditions/coronavirus/north-dakota-coronavirus-cases"
+    scraper.website_height = 1200
+    scraper.scroll_height = 100
     country_classes[scraper.country_name.lower()] = scraper
 
     # Ohio
@@ -633,6 +725,8 @@ def init_us_scrapers():
     scraper.country_name = "Ohio" 
     scraper.iso_code = "OH"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://coronavirus.ohio.gov/wps/portal/gov/covid-19/home"
+    scraper.scroll_height = 600
     country_classes[scraper.country_name.lower()] = scraper
 
     # Oklahoma
@@ -640,6 +734,9 @@ def init_us_scrapers():
     scraper.country_name = "Oklahoma" 
     scraper.iso_code = "OK"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://coronavirus.health.ok.gov/"
+    scraper.scroll_height = 500
+    scraper.website_width = 1600
     country_classes[scraper.country_name.lower()] = scraper
 
     # Oregon
@@ -647,6 +744,9 @@ def init_us_scrapers():
     scraper.country_name = "Oregon" 
     scraper.iso_code = "OR"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://govstatus.egov.com/OR-OHA-COVID-19"
+    scraper.scroll_height = 1000
+    scraper.website_width = 1600
     country_classes[scraper.country_name.lower()] = scraper
 
     # Pennsylvania
@@ -654,6 +754,8 @@ def init_us_scrapers():
     scraper.country_name = "Pennsylvania" 
     scraper.iso_code = "PA"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://www.health.pa.gov/topics/disease/coronavirus/Pages/Cases.aspx"
+    scraper.scroll_height = 200
     country_classes[scraper.country_name.lower()] = scraper
 
     # Rhode Island
@@ -661,6 +763,9 @@ def init_us_scrapers():
     scraper.country_name = "Rhode-Island" 
     scraper.iso_code = "RI"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://health.ri.gov/data/covid-19/"
+    scraper.scroll_height = 300
+    scraper.javascript_required = True
     country_classes[scraper.country_name.lower()] = scraper
 
     # South Carlonia
@@ -668,6 +773,9 @@ def init_us_scrapers():
     scraper.country_name = "South-Carolina" 
     scraper.iso_code = "SC"
     scraper.has_covidtracking = True
+    scraper.report_website = "https://scdhec.gov/infectious-diseases/viruses/coronavirus-disease-2019-covid-19/testing-sc-data-covid-19"
+    scraper.source_website = "https://sc-dhec.maps.arcgis.com/apps/opsdashboard/index.html#/3732035614af4246877e20c3a496e397"
+    scraper.javascript_required = True
     country_classes[scraper.country_name.lower()] = scraper
 
     # South Dakota
@@ -675,6 +783,8 @@ def init_us_scrapers():
     scraper.country_name = "South-Dakota" 
     scraper.iso_code = "SD"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://doh.sd.gov/news/Coronavirus.aspx"
+    scraper.scroll_height = 1200
     country_classes[scraper.country_name.lower()] = scraper
 
     # Tennessee
@@ -682,6 +792,10 @@ def init_us_scrapers():
     scraper.country_name = "Tennessee" 
     scraper.iso_code = "TN"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://www.tn.gov/health/cedep/ncov.html"
+    scraper.scroll_height = 1150
+    scraper.website_height = 1200
+    scraper.javascript_required = True
     country_classes[scraper.country_name.lower()] = scraper
 
     # Texas
@@ -689,6 +803,8 @@ def init_us_scrapers():
     scraper.country_name = "Texas" 
     scraper.iso_code = "TX"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://txdshs.maps.arcgis.com/apps/opsdashboard/index.html#/ed483ecd702b4298ab01e8b9cafc8b83"
+    scraper.javascript_required = True
     country_classes[scraper.country_name.lower()] = scraper
 
     # Utah
@@ -696,6 +812,8 @@ def init_us_scrapers():
     scraper.country_name = "Utah" 
     scraper.iso_code = "UT"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://coronavirus-dashboard.utah.gov/"
+    scraper.javascript_required = True
     country_classes[scraper.country_name.lower()] = scraper
 
     # Vermont
@@ -703,6 +821,8 @@ def init_us_scrapers():
     scraper.country_name = "Vermont" 
     scraper.iso_code = "VT"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://www.nytimes.com/interactive/2020/us/vermont-coronavirus-cases.html"
+    scraper.javascript_required = True
     country_classes[scraper.country_name.lower()] = scraper
 
     # Virginia
@@ -710,6 +830,8 @@ def init_us_scrapers():
     scraper.country_name = "Virginia" 
     scraper.iso_code = "VA"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://public.tableau.com/views/VirginiaCOVID-19Dashboard/VirginiaCOVID-19Dashboard?:embed=yes&:display_count=yes&:showVizHome=no&:toolbar=no"
+    scraper.javascript_required = True
     country_classes[scraper.country_name.lower()] = scraper
 
     # Washington
@@ -717,6 +839,10 @@ def init_us_scrapers():
     scraper.country_name = "Washington" 
     scraper.iso_code = "WA"
     scraper.has_covidtracking = True
+    scraper.report_website = "https://www.doh.wa.gov/Emergencies/Coronavirus"
+    scraper.source_website = "https://msit.powerbi.com/view?r=eyJrIjoiMDIzODNkZDQtOTM0MC00ZmMzLWI2N2YtYTgzOWU3MTkxNTU1IiwidCI6IjcyZjk4OGJmLTg2ZjEtNDFhZi05MWFiLTJkN2NkMDExZGI0NyIsImMiOjV9"
+    scraper.javascript_required = True
+    scraper.wait_time = 10
     country_classes[scraper.country_name.lower()] = scraper
 
     # West Virginia
@@ -724,6 +850,10 @@ def init_us_scrapers():
     scraper.country_name = "West-Virginia" 
     scraper.iso_code = "WV"
     scraper.has_covidtracking = True
+    scraper.report_website = "https://dhhr.wv.gov/COVID-19/Pages/default.aspx"
+    scraper.source_website = "https://app.powerbigov.us/view?r=eyJrIjoiMTg3YjRkZTgtNzhlZi00MGJlLTk1MTAtN2ZhOWExZWY4OWYyIiwidCI6IjhhMjZjZjAyLTQzNGEtNDMxZS04Y2FkLTdlYWVmOTdlZjQ4NCJ9"
+    scraper.javascript_required = True
+    scraper.wait_time = 10
     country_classes[scraper.country_name.lower()] = scraper
 
     # Wisconsin
@@ -731,6 +861,9 @@ def init_us_scrapers():
     scraper.country_name = "Wisconsin" 
     scraper.iso_code = "WI"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://www.dhs.wisconsin.gov/outbreaks/index.htm"
+    scraper.javascript_required = True
+    scraper.scroll_height = 800
     country_classes[scraper.country_name.lower()] = scraper
 
     # Wyoming
@@ -738,6 +871,9 @@ def init_us_scrapers():
     scraper.country_name = "Wyoming" 
     scraper.iso_code = "WY"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://health.wyo.gov/publichealth/infectious-disease-epidemiology-unit/disease/novel-coronavirus/covid-19-map-and-statistics/"
+    scraper.javascript_required = True
+    scraper.wait_time = 10
     country_classes[scraper.country_name.lower()] = scraper
 
     # District of Colombia
@@ -745,6 +881,7 @@ def init_us_scrapers():
     scraper.country_name = "District-of-Columbia" 
     scraper.iso_code = "DC"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://coronavirus.dc.gov/page/coronavirus-data"
     country_classes[scraper.country_name.lower()] = scraper
 
     # American Samoa
@@ -752,6 +889,7 @@ def init_us_scrapers():
     scraper.country_name = "American-Samoa" 
     scraper.iso_code = "AS"
     scraper.has_covidtracking = True
+    #scraper.source_website = 
     country_classes[scraper.country_name.lower()] = scraper
 
     # Guam
@@ -759,6 +897,7 @@ def init_us_scrapers():
     scraper.country_name = "Guam" 
     scraper.iso_code = "GU"
     scraper.has_covidtracking = True
+    #scraper.source_website = 
     country_classes[scraper.country_name.lower()] = scraper
 
     # Northern Mariana Islands
@@ -766,6 +905,8 @@ def init_us_scrapers():
     scraper.country_name = "Northern-Mariana-Islands" 
     scraper.iso_code = "MP"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://www.chcc.gov.mp/coronavirusinformation.php"
+    scraper.javascript_required = True
     country_classes[scraper.country_name.lower()] = scraper
 
     # Puerto Rico
@@ -773,6 +914,8 @@ def init_us_scrapers():
     scraper.country_name = "Puerto-Rico" 
     scraper.iso_code = "PR"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://estadisticas.pr/en/covid-19"
+    scraper.javascript_required = True
     country_classes[scraper.country_name.lower()] = scraper
 
     # US Virgin Islands
@@ -780,4 +923,6 @@ def init_us_scrapers():
     scraper.country_name = "US-Virgin-Islands" 
     scraper.iso_code = "VI"
     scraper.has_covidtracking = True
+    scraper.source_website = "https://doh.vi.gov/covid19usvi"
+    scraper.scroll_height = 500
     country_classes[scraper.country_name.lower()] = scraper

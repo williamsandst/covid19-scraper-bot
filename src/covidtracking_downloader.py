@@ -2,10 +2,14 @@ import requests
 import json
 import time
 import datetime
+import csv
+import dateutil.parser
+
+import codecs
+from contextlib import closing
 
 import dataobject
 import novelscraper
-import dateutil.parser
 
 CACHE_TIME_LIMIT_SECONDS = 20
 
@@ -116,5 +120,58 @@ def scrape(state: str, result, date = datetime.datetime.now(), check_yesterday_i
     if save_yesterday_cache:
         save_cache(yesterday_cache, yesterday_date)
         
+
+    return result
+
+def get_csv_from_link(link):
+    page = requests.get(link)
+    csvreader = csv.reader(codecs.iterdecode(page.iter_lines(), 'utf-8'))
+
+    fields = [] 
+    rows = [] 
+  
+    fields = next(csvreader) 
+
+    # extracting each data row one by one 
+    for row in csvreader: 
+        rows.append(row) 
+  
+    return fields, rows
+
+def get_date_index(date: datetime.datetime, fields):
+    for i, day in enumerate(fields[4:], 4):
+        day_split = day.split("/")
+        month_num = int(day_split[0])
+        day_num = int(day_split[1])
+        if date.month == month_num:
+            if date.day == day_num:
+                return i
+    return -1
+
+def scrape_hopkins(scrape_country, scrape_country_iso_code, result, date):
+    cases_csv_path = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
+    deaths_csv_path = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv"
+    recovered_csv_path = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv"
+    
+    cases_fields, cases_rows = get_csv_from_link(cases_csv_path)
+    deaths_fields, deaths_rows = get_csv_from_link(deaths_csv_path)
+    recovered_fields, recovered_rows = get_csv_from_link(recovered_csv_path)
+
+    day_index = get_date_index(date, cases_fields)
+
+    for row in cases_rows:
+        country = row[1]
+        if country.lower() == scrape_country.lower():
+            result.cases += int(row[day_index])
+
+    for row in deaths_rows:
+        country = row[1]
+        if country.lower() == scrape_country.lower():
+            result.deaths += int(row[day_index])
+
+    for row in recovered_rows:
+        country = row[1]
+        if country.lower() == scrape_country.lower():
+            result.recovered += int(row[day_index])
 
     return result

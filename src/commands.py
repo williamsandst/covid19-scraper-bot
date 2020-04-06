@@ -22,23 +22,32 @@ def train_country(country, browser, country_classes):
     country_classes[country].train(browser)
     print("{}: Training complete!".format(country_name))
 
-def scrape(country_classes, scrape_type="default", date=datetime.datetime.now()):
+def scrape(country_classes, scrape_type="default", date=datetime.datetime.now(), browser=None):
 
     results = {}
 
+    create_browser = (browser == None)
+    
     if scrape_type == "default" or scrape_type == "d":
-        browser = webdriver.Firefox()
+        if create_browser:
+            browser = webdriver.Firefox()
 
         for country in country_classes:
             if country_classes[country].has_default:
                 results[country] = scrape_country_default(country, browser, country_classes)
-
-        browser.quit()
+        if create_browser:
+            browser.quit()
 
     elif scrape_type == "covidtracking" or scrape_type == "ct" or scrape_type == "covidtracker":
         for country in country_classes:
             if country_classes[country].has_covidtracking:
                 results[country] = scrape_country_coronatracking(country, country_classes, date)
+
+    elif scrape_type == "hopkins" or scrape_type == "johnhopkins" or scrape_type == "john" or scrape_type == "jh":
+        for country in country_classes:
+            if country_classes[country].has_hopkins:
+                results[country] = scrape_country_hopkins(country, country_classes, date)
+
 
     return results
 
@@ -57,6 +66,14 @@ def scrape_country_coronatracking(country: str, country_classes, date):
     print("{}: Scraping complete!".format(country_name))
     return result
 
+def scrape_country_hopkins(country: str, country_classes, date):
+    country_name = country_classes[country].country_name
+    print("{}: Scraping from Covidtracking.com...".format(country_name))
+    result = country_classes[country].scrape_hopkins(date)
+    print("{}: Scraping complete!".format(country_name))
+    return result
+
+
 def screenshot_country(country, browser, country_classes):
     return country_classes[country].screenshot(browser)
 
@@ -69,9 +86,9 @@ scrape <country/ALL> [-f]           Scrape a selected country, or 'ALL' for all 
 train <country> [train_dict]        Train a country with their internal training dictionary or supply one as argument
 """
 
-scraping_types = {"default", "d", "covidtracking", "covidtracker", "ct"}
+scraping_types = {"default", "d", "covidtracking", "covidtracker", "ct", "hopkins", "johnhopkins", "john", "jh"}
 
-def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBot):
+def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBot, browser):
     if "default" not in flags or (not isinstance(flags["default"], str) and len(flags["default"]) > 2):
         error_message("The required arguments are missing or are incorrectly formated")
         return
@@ -93,10 +110,10 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
     results = {}
     if country.lower() == "all":
         #Scraping all registered countries
-        results = scrape(country_classes, scraping_type, date)
+        results = scrape(country_classes, scraping_type, date, browser)
     elif country in country_classes:
         class_dict = {country: country_classes[country]}
-        results = scrape(class_dict, scraping_type, date)
+        results = scrape(class_dict, scraping_type, date, browser)
     else:
         error_message("The specified country {} is not registered".format(country))
         return
@@ -116,29 +133,36 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
             print("Sent submission to Discord")
             time.sleep(1)
 
-def cmd_train(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBot):
+def cmd_train(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBot, browser):
     if "default" not in flags or not isinstance(flags["default"], str):
         error_message("The required arguments are missing or are incorrectly formated")
         return
     country = flags["default"]
-    browser = webdriver.Firefox()
+    create_browser = (browser == None)
+    if create_browser:
+        browser = webdriver.Firefox()
     train_country(country.lower(), browser, country_classes)
-    browser.quit()
+    if create_browser:
+        browser.quit()
 
-def cmd_screenshot(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBot):
+def cmd_screenshot(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBot, browser):
     if "default" not in flags or not isinstance(flags["default"], str):
         error_message("The required arguments are missing or are incorrectly formated")
         return
     country = flags["default"]
+
+    create_browser = (browser == None)
 
     saved_wait_time = country_classes[country].wait_time
-    if 'f' in flags: #Flag for decreasing wait time for faster screenshots
+    if 'f' in flags and not country_classes[country].javascript_required: #Flag for decreasing wait time for faster screenshots
         country_classes[country].wait_time = 0
 
     if country_classes[country].source_website != None:
-        browser = webdriver.Firefox()
+        if create_browser:
+            browser = webdriver.Firefox()
         path = screenshot_country(country.lower(), browser, country_classes)
-        browser.quit()    
+        if create_browser:
+            browser.quit()    
         if 'nodisp' not in flags:
             print("Took screenshot of {}, saved at {}".format(country, path))
             
@@ -155,10 +179,14 @@ def cmd_help(country_classes: dict, flags: dict):
     """cmd: help. Print the help string, containing command descriptions"""
     print(command_list)
 
-def cmd_exit(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBot):
+def cmd_exit(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBot, browser):
     """cmd: exit. Exit the program"""
     print("Exiting Novel-Scraper... This can take a few seconds.")
+    if browser != None:
+        browser.quit()
+        print("Stopped Webdriver")
     discord_bot.stop()
+    print("Stopped Discord bot")
     exit()
 
 def cmd_discord_chat(country_classes, flags, discord_bot: bot.InvestigatorBot):
