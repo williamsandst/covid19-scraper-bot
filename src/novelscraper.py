@@ -14,7 +14,7 @@ import random
 
 import dataobject
 from stringhelpers import *
-import covidtracking_downloader
+import downloader
 
 # Constants
 PRINT_PROGRESS = True
@@ -135,7 +135,7 @@ class NovelScraper:
         self.website_height = 900
         self.website_width = 1200
         self.has_covidtracking = False
-        self.has_hopkins = False
+        self.has_hopkins = True
         self.has_default = True
         self.wait_time = 4
         self.scroll_height = None
@@ -243,8 +243,7 @@ class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins):
         self.wait_time = 4
         self.optimize_min_max_index_ratio = 0.3
         self.has_covidtracking = False
-        self.has_coronacloud = False
-        self.has_worldometer = False
+        self.has_hopkins = True
         self.has_default = True
         self.scroll_height = None
 

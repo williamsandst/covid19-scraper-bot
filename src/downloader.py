@@ -62,7 +62,7 @@ def add_state_data_to_dict(data, date_str):
         final_dict[state2] += [state2, date_str, total, death, recovered]
     return final_dict
 
-def scrape(state: str, result, date = datetime.datetime.now(), check_yesterday_if_error=False):
+def scrape_covidtracking(state: str, result, date = datetime.datetime.now(), check_yesterday_if_error=False):
     now_date = date
     now_date_str = convert_datetime_to_datestring(date)
     yesterday_date = date - datetime.timedelta(days=1)
@@ -149,6 +149,10 @@ def get_date_index(date: datetime.datetime, fields):
     return -1
 
 def scrape_hopkins(scrape_country, scrape_country_iso_code, result, date):
+    result.source_update_date = date
+    
+    scrape_country = scrape_country.translate({ord('-'): " "})
+
     cases_csv_path = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
     deaths_csv_path = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv"
     recovered_csv_path = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv"
@@ -159,9 +163,15 @@ def scrape_hopkins(scrape_country, scrape_country_iso_code, result, date):
 
     day_index = get_date_index(date, cases_fields)
 
+    if day_index == -1:
+        result.cases = -1
+        return result
+
+    country_found = False
     for row in cases_rows:
         country = row[1]
         if country.lower() == scrape_country.lower():
+            country_found = True
             result.cases += int(row[day_index])
 
     for row in deaths_rows:
@@ -173,5 +183,8 @@ def scrape_hopkins(scrape_country, scrape_country_iso_code, result, date):
         country = row[1]
         if country.lower() == scrape_country.lower():
             result.recovered += int(row[day_index])
+
+    if country_found == False:
+        result.cases = -1
 
     return result

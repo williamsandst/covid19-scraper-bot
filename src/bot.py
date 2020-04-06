@@ -83,7 +83,7 @@ class InvestigatorBot():
             split_string = string.split()
             if len(split_string) <= 1 or split_string[1] == "-1":
                 channel = convert_country_to_channel(country)
-                self.asyncio_event_loop.create_task(self.client.send_error_message("Error retrieving data from covidtracking.com for date {}".format(split_string[4]), channel))
+                self.asyncio_event_loop.create_task(self.client.send_error_message("Error retrieving data from date {}, has the source updated for this day yet?".format(split_string[4]), channel))
             else:
                 channel = convert_country_to_channel(country)
                 self.asyncio_event_loop.create_task(self.client.send_submission(string, channel, screenshot_path))
@@ -226,12 +226,13 @@ class InvestigatorDiscordClient(discord.Client):
         user_is_staff = self.is_staff(message.author)
         user_is_normal =  self.is_normal_user(message.author)
 
+        words = message.content.split()  
+        channel = message.channel
+        country = convert_channel_to_country(str(message.channel))
+        country = country[0].upper() + country[1:]
+
         if user_is_normal or user_is_staff: #Normal user commands
             if message.content.startswith('!screenshot'):    
-                words = message.content.split()  
-                channel = message.channel
-                country = convert_channel_to_country(str(message.channel))
-                country = country[0].upper() + country[1:]
                 await channel.send("Beep boop! Taking a screenshot, please stand by...".format(country))
                 if len(words) > 1 and (words[1] == "s" or words[1] == "slow"):
                     self.command_queue.put("screenshot {} -d".format(country))
@@ -240,15 +241,22 @@ class InvestigatorDiscordClient(discord.Client):
 
         if user_is_staff: #Staff only commands
             if message.content.startswith('!scrape'):
-                channel = message.channel
-                country = convert_channel_to_country(str(message.channel))
-                country = country[0].upper() + country[1:]
-
-                words = message.content.split()
-                if len(words) >= 2 and (words[1] == "covidtracker" or words[1] == "covidtracking" or words[1] == "ct"): 
-                    if str(channel) not in us_channels:
+                if len(words) >= 2:
+                    if words[1] == "covidtracker" or words[1] == "covidtracking" or words[1] == "ct": 
+                        scrape_type = "covidtracking"
+                    elif words[1] == "hopkins" or words[1] == "johnhopkins" or words[1] == "john"  or words[1] == "jh":
+                        scrape_type = "hopkins"
+                    else:
+                        await self.send_error_message("Incorrect scrape type", channel.name)
+                        return
+                        
+                    if scrape_type == "covidtracking" and str(channel) not in us_channels:
                         await self.send_error_message("Covidtracking.com only has data on US states", channel.name)
                         return
+                    if scrape_type == "hopkins" and (str(channel) not in europe_channels or str(channel) == "europe"):
+                        await self.send_error_message("John Hopkins only has data on countries", channel.name)
+                        return
+
                     time = datetime.datetime.now()
                     date = interface.convert_datetime_to_string(time)
                     if len(words) >= 3: #Date argument
@@ -260,10 +268,10 @@ class InvestigatorDiscordClient(discord.Client):
                         
 
                     await channel.send("Beep boop! Investigating Covid-19 cases in {}, please stand by...".format(country))
-                    if str(channel) == "usa":
+                    if str(channel) == "usa" and scrape_type == "covidtracking":
                         self.command_queue.put("scrape all covidtracking -d -disp -t {}".format(date))
                     else:
-                        self.command_queue.put("scrape {} ct -d -disp -t {}".format(country, date))
+                        self.command_queue.put("scrape {} {} -d -disp -t {}".format(country, scrape_type, date))
         
         #if message.content.startswith('check'):
             #channel = message.channel

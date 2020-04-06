@@ -68,7 +68,7 @@ def scrape_country_coronatracking(country: str, country_classes, date):
 
 def scrape_country_hopkins(country: str, country_classes, date):
     country_name = country_classes[country].country_name
-    print("{}: Scraping from Covidtracking.com...".format(country_name))
+    print("{}: Scraping from John Hopkins Github...".format(country_name))
     result = country_classes[country].scrape_hopkins(date)
     print("{}: Scraping complete!".format(country_name))
     return result
