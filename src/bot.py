@@ -35,7 +35,7 @@ staff_role_whitelist = {"staff", "the real slip shady"}
 
 normal_role_whitelist = {"interpol"}
 
-RELEASE_BOT = True
+RELEASE_BOT = False
 
 def convert_country_to_channel(country):
     if country in country_to_channel_dict:

@@ -183,7 +183,7 @@ class NovelScraperCovidTracking(NovelScraper):
     def scrape_covidtracking(self, time = datetime.datetime.now()):
         result = dataobject.DataObject(self)
 
-        result = covidtracking_downloader.scrape(self.iso_code, result, time)
+        result = downloader.scrape_covidtracking(self.iso_code, result, time)
 
         result.source_website = "https://covidtracking.com/"
         result.report_website = "https://covidtracking.com/"
@@ -193,7 +193,7 @@ class NovelScraperHopkins(NovelScraper):
     def scrape_hopkins(self, time = datetime.datetime.now()):
         result = dataobject.DataObject(self)
 
-        result = covidtracking_downloader.scrape_hopkins(self.country_name, self.iso_code, result, time)
+        result = downloader.scrape_hopkins(self.country_name, self.iso_code, result, time)
 
         result.source_website = "https://github.com/CSSEGISandData/COVID-19"
         result.report_website = "https://github.com/CSSEGISandData/COVID-19"
