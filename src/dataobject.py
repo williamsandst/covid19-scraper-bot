@@ -3,7 +3,7 @@ import datetime
 
 class DataObject:
     """Contains the data scraped from a country"""
-    def __init__(self, scraper):
+    def __init__(self, scraper = None):
         self.deaths = 0
         self.cases = 0
         self.recovered = 0
@@ -12,14 +12,21 @@ class DataObject:
         self.intensive_care = 0
         self.suspected_cases = 0
         self.source_update_date = None
-        self.scrape_date = datetime.datetime.now()
-        self.country_name = scraper.country_name
-        self.iso_code = scraper.iso_code
         self.screenshot_path = None
-        if scraper.report_website == None:
-            self.source_website = scraper.source_website
+        self.data_validity = "OK"
+        self.scrape_date = datetime.datetime.now()
+
+        if scraper != None:
+            self.country_name = scraper.country_name
+            if scraper.report_website == None:
+                self.source_website = scraper.source_website
+            else:
+                self.source_website = scraper.report_website
+            self.iso_code = scraper.iso_code
         else:
-            self.source_website = scraper.report_website
+            self.country_name = None
+            self.iso_code = None
+            self.source_website = None
 
     def __str__(self):
         """ Function to give nice printing results for print() """

@@ -73,9 +73,9 @@ scheduled_commands = []
 results = {}
 discord_bot = bot.InvestigatorBot()
 
-DISCORD_BOT_ENABLED = True
-SELENIUM_BROWSER_ALWAYS_ON = True
-SELENIUM_FIREFOX_HEADLESS = True
+DISCORD_BOT_ENABLED = False
+SELENIUM_BROWSER_ALWAYS_ON = False
+SELENIUM_FIREFOX_HEADLESS = False
 
 if SELENIUM_BROWSER_ALWAYS_ON:
     options = Options()

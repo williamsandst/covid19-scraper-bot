@@ -81,11 +81,10 @@ class InvestigatorBot():
     def submit(self, country, string, screenshot_path):
         if self.active:
             split_string = string.split()
+            channel = convert_country_to_channel(country)
             if len(split_string) <= 1 or split_string[1] == "-1":
-                channel = convert_country_to_channel(country)
-                self.asyncio_event_loop.create_task(self.client.send_error_message("Error retrieving data from date {}, has the source updated for this day yet?".format(split_string[4]), channel))
+                self.asyncio_event_loop.create_task(self.client.send_error_message("Bad submission format", channel))
             else:
-                channel = convert_country_to_channel(country)
                 self.asyncio_event_loop.create_task(self.client.send_submission(string, channel, screenshot_path))
 
     def send_screenshot(self, country, screenshot_path, source):
@@ -233,7 +232,7 @@ class InvestigatorDiscordClient(discord.Client):
 
         if user_is_normal or user_is_staff: #Normal user commands
             if message.content.startswith('!screenshot'):    
-                await channel.send("Beep boop! Taking a screenshot, please stand by...".format(country))
+                await channel.send("Beep boop! Taking a screenshot, please stand by...")
                 if len(words) > 1 and (words[1] == "s" or words[1] == "slow"):
                     self.command_queue.put("screenshot {} -d".format(country))
                 else:
@@ -242,6 +241,7 @@ class InvestigatorDiscordClient(discord.Client):
         if user_is_staff: #Staff only commands
             if message.content.startswith('!scrape'):
                 if len(words) >= 2:
+                    no_check = False
                     if words[1] == "covidtracker" or words[1] == "covidtracking" or words[1] == "ct": 
                         scrape_type = "covidtracking"
                     elif words[1] == "hopkins" or words[1] == "johnhopkins" or words[1] == "john"  or words[1] == "jh":
@@ -260,18 +260,27 @@ class InvestigatorDiscordClient(discord.Client):
                     time = datetime.datetime.now()
                     date = interface.convert_datetime_to_string(time)
                     if len(words) >= 3: #Date argument
-                        date = words[2]
-                        if len(words) > 5:
-                            print("!scrape date incorrectly formatted")
-                            return
-                        date = words[2]
+                        if words[2] == "nocheck" or words[2] == "nc":
+                            no_check = True
+                        else:
+                            date = words[2]
+                            if len(words) > 5:
+                                print("!scrape date incorrectly formatted")
+                                return
+                            date = words[2]
+                            if len(words) >= 4:
+                                if words[3] == "nocheck" or words[3] == "nc":
+                                    no_check = True
                         
-
-                    await channel.send("Beep boop! Investigating Covid-19 cases in {}, please stand by...".format(country))
+                    if no_check:
+                        await channel.send("Beep boop! Investigating Covid-19 cases in {}, please stand by... (NOTE: ERROR CHECKING IS DISABLED!)".format(country))
+                    else:
+                        await channel.send("Beep boop! Investigating Covid-19 cases in {}, please stand by...".format(country))
                     if str(channel) == "usa" and scrape_type == "covidtracking":
                         self.command_queue.put("scrape all covidtracking -d -disp -t {}".format(date))
                     else:
-                        self.command_queue.put("scrape {} {} -d -disp -t {}".format(country, scrape_type, date))
+                        no_check_str = "-nocheck" if no_check else ""
+                        self.command_queue.put("scrape {} {} -d -disp -t {} {}".format(country, scrape_type, date, no_check_str))
         
         #if message.content.startswith('check'):
             #channel = message.channel

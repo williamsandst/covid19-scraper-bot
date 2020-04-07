@@ -78,6 +78,34 @@ def screenshot_country(country, browser, country_classes):
     return country_classes[country].screenshot(browser)
 
 
+lenient_on_recovery = True
+
+def are_results_valid(result, country, date):
+    # Compare with current data in the sheet
+    sheet_data = downloader.check_from_sheet(country, "SE", date)
+    if sheet_data.data_validity == "OK":
+        if sheet_data.cases > result.cases:
+            result.data_validity = "Scraped cases are lower than the sheet value for {}".format(date)
+            return False
+        if sheet_data.deaths > result.deaths:
+            result.data_validity = "Scraped deaths are lower than the sheet value for {}".format(date)
+            return False
+        if not lenient_on_recovery:
+                if sheet_data.recovered > result.recovered:
+                    result.data_validity = "Scraped recovered are lower than the sheet value for {}".format(date)
+                    return False
+        else:
+            if result.recovered < sheet_data.recovered:
+                print("Data validation: Doing recovery adjustment from sheet data")
+            result.recovered = max(result.recovered, sheet_data.recovered)
+    # Other checks
+    if result.cases < result.deaths:
+        result.data_validity = "Scraped cases are less than scraped deaths"
+        return False
+
+    
+    
+
 #List of commands
 command_list = """List of commands for Novel-Scraper:
 help                                Lists commands for Novel-Scraper
@@ -118,8 +146,17 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
         error_message("The specified country {} is not registered".format(country))
         return
 
+    if not 'nocheck' in flags: #Check validity of scraped data
+        print("Checking scrape result validity...")
+        for result_country, result in results.items():
+            if not are_results_valid(result, result_country, date):
+                print("Detected bad data in ", result_country)
+        
+
     if 'nodisp' not in flags:
         for country, result in results.items():
+            if result.data_validity != "OK":
+                print("Error: ", result.data_validity)
             print(result)
 
     if 'f' in flags:
@@ -128,9 +165,13 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
     
     if 'd' in flags:
         for country, result in results.items():
-            submission_string = interface.convert_dataobject_to_submission(result)
-            discord_bot.submit(country, submission_string, result.screenshot_path)
-            print("Sent submission to Discord")
+            if result.data_validity == "OK":
+                submission_string = interface.convert_dataobject_to_submission(result)
+                discord_bot.submit(country, submission_string, result.screenshot_path)
+                print("Sent submission to Discord")
+            else:
+                submission_string = interface.convert_dataobject_to_submission(result)
+                discord_bot.send_error("{} (resulting in submission: {})".format(result.data_validity, submission_string),country)
             time.sleep(1)
 
 def cmd_train(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBot, browser):

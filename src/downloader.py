@@ -3,15 +3,21 @@ import json
 import time
 import datetime
 import csv
-import dateutil.parser
-
 import codecs
 from contextlib import closing
 
+import dateutil.parser
+from pydrive.drive import GoogleDrive
+from pydrive.auth import GoogleAuth
+import pandas as pd
+
 import dataobject
 import novelscraper
+import bot_data
 
 CACHE_TIME_LIMIT_SECONDS = 20
+
+DRIVE_CACHE_TIME_LIMIT_SECONDS = 180
 
 def check_for_file_cache(date):
     try:
@@ -20,9 +26,10 @@ def check_for_file_cache(date):
         now = datetime.datetime.now()
         now_seconds = int(now.hour * 3600 + now.minute * 60 + now.second)
         if now_seconds < (seconds + CACHE_TIME_LIMIT_SECONDS):
+            print("Covidtracking.com Cache is valid at age {} sec".format(now_seconds-seconds))
             return data
         else: #Cache is too old, redownload
-            print("Cache is old, revalidating")
+            print("Covidtracking Cache is old, revalidating")
             return None
     except: #Something went wrong loading the cache, redownload
         print("Covidtracking Cache Error")
@@ -88,9 +95,11 @@ def scrape_covidtracking(state: str, result, date = datetime.datetime.now(), che
         print("Retrieving {} data for {} from the Covidtracking.com API".format(state, now_date_str))
         data = getJSONFromLink("https://covidtracking.com/api/states/daily?date=" + now_date_str)
         if not isinstance(data, list) and data["error"] == True:
-            print("No data at this date")
+            print("Covidtracking.com has no data for date {}".format(now_date_str))
+            result.data_validity = "Error retrieving covidtracking.com data from date {}, has the source updated for this day yet?".format(now_date_str)
             now_cache = {}
         else:
+            result.data_validity = "OK"
             date_str = now_date_str
             now_cache = add_state_data_to_dict(data, date_str)
         save_now_cache = True
@@ -100,9 +109,11 @@ def scrape_covidtracking(state: str, result, date = datetime.datetime.now(), che
         print("Retrieving {} data for {} from the Covidtracking.com API".format(state, yesterday_date_str))
         data = getJSONFromLink("https://covidtracking.com/api/states/daily?date=" + yesterday_date_str)
         if not isinstance(data, list) and data["error"] == True:
-            print("No data at this date")
+            print("Covidtracking.com has no data for date {}".format(yesterday_date_str))
+            result.data_validity = "Error retrieving covidtracking.com data for this date {}, has the source updated for this day yet?".format(yesterday_date_str)
             yesterday_cache = {}
         else:
+            result.data_validity = "OK"
             date_str = yesterday_date_str
             yesterday_cache = add_state_data_to_dict(data, date_str)
         save_yesterday_cache = True
@@ -164,7 +175,7 @@ def scrape_hopkins(scrape_country, scrape_country_iso_code, result, date):
     day_index = get_date_index(date, cases_fields)
 
     if day_index == -1:
-        result.cases = -1
+        result.data_validity = "Error retrieving John Hopkins data for this date {}, has the source updated for this day yet?".format(date.__str__())
         return result
 
     country_found = False
@@ -185,6 +196,110 @@ def scrape_hopkins(scrape_country, scrape_country_iso_code, result, date):
             result.recovered += int(row[day_index])
 
     if country_found == False:
-        result.cases = -1
+        result.data_validity = "John Hopkins has data for this date, but the country {} cannot be located. There might be a naming conflict.".format(scrape_country)
 
     return result
+
+
+def download_sheet_from_drive():
+    # Create GoogleDrive instance with authenticated GoogleAuth instance.
+    gauth = GoogleAuth()
+    gauth.LocalWebserverAuth()
+
+    europe_id = "1RIXWF7wCX-CihFQzNPfb4t26_t9NlReHj2GH2q3Euac"
+    usa_id = "1YNVvKZp3Vywcb6Klggpu3WdBfT3nSzSYF8zCK-iUvVE"
+
+    drive = GoogleDrive(gauth)
+
+    mime_type_sheets = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    # Europe
+    print("Downloading Europe sheet from Google Drive...")
+    file1 = drive.CreateFile({"id": europe_id})
+    file1.GetContentFile("data/drive/europe.xlsx", mimetype=mime_type_sheets)
+    print("Download complete")
+
+    # US
+    print("Downloading United States sheet from Google Drive...")
+    file1 = drive.CreateFile({"id": usa_id})
+    file1.GetContentFile("data/drive/us.xlsx", mimetype=mime_type_sheets)
+    print("Download complete")
+
+def check_drive_cache():
+    cache = False
+    date = datetime.datetime.now()
+    try:
+        cache_data = novelscraper.load_dict_from_file("data/drive/sheet_cache_{}_{}_{}.cache".format(date.day, date.month, date.hour))
+        seconds = cache_data["time"]
+        now = datetime.datetime.now()
+        now_seconds = int(now.hour * 3600 + now.minute * 60 + now.second)
+        if now_seconds < (seconds + DRIVE_CACHE_TIME_LIMIT_SECONDS):
+            print("Drive Cache is valid at age {} sec".format(now_seconds-seconds))
+            cache = True
+        else: #Cache is too old, redownload
+            print("Drive Cache is old, revalidating")
+            cache = False
+    except:
+        cache = False
+        print("Drive Cache error")
+
+    if not cache: #Download sheet
+        download_sheet_from_drive()
+        cache_data = {}
+        date = datetime.datetime.now()
+        cache_data["time"] = int(date.hour * 3600 + date.minute * 60 + date.second)
+        novelscraper.save_dict_to_file(cache_data, "data/drive/sheet_cache_{}_{}_{}.cache".format(date.day, date.month, date.hour))
+
+def channel_to_sheet_country(channel):
+    # Remove '-' and make every word first character capitalised
+    words = channel.split("-")
+    country = ""
+    for word in words:
+        if word != "and":
+            country += word[0].upper() + word[1:] + " "
+        else:
+            country += word + " "
+
+    return country.strip()
+
+def get_sheet_date_index(date: datetime.datetime, days):
+    for i, day in enumerate(days):
+        if date.month == day.month and date.day == day.day:
+            return i
+    return -1
+
+def check_from_sheet(country, country_iso_code, date):
+    print("Retrieving data from the Google Sheet database...")
+    result = dataobject.DataObject()
+    result.date = date
+    result.country_name = country
+
+    check_drive_cache()
+
+    sheet_country = channel_to_sheet_country(country)
+
+    sheet_path = ""
+    if country in bot_data.europe_channels:
+        sheet_path = 'data/drive/europe.xlsx'
+    elif country in bot_data.us_channels:
+        sheet_path = 'data/drive/us.xlsx'
+
+    if sheet_path != "":
+        sheet = pd.read_excel(sheet_path, sheet_name=sheet_country)
+
+        dates = sheet[sheet.columns[0]].tolist()
+        cases = sheet[sheet.columns[1]].tolist()
+        deaths = sheet[sheet.columns[2]].tolist()
+        recovered = sheet[sheet.columns[3]].tolist()
+
+        index = get_sheet_date_index(date, dates)
+        if index == -1:
+            result.data_validity = "Could not find specified date in the Google Sheet data. Has a new date been added to the sheet yet?"
+            return result
+
+        result.cases = int(cases[index])
+        result.deaths = int(deaths[index])
+        result.recovered = int(recovered[index])
+
+    return result
+
+#check_from_sheet("Sweden", "SE", datetime.datetime.now())
