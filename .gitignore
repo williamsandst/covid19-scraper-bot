@@ -8,3 +8,5 @@ __pycache__/
 
 *.png
 .env
+
+client_secrets.json
