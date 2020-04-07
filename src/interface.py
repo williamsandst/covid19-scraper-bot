@@ -16,7 +16,7 @@ def convert_string_to_datetime(date_str: str):
     return time
 
 def convert_dataobject_to_submission(dataobject: dataobject.DataObject):
-    if dataobject.source_update_date == datetime.datetime.today().day: #Today
+    if dataobject.source_update_date.month == datetime.datetime.today().month and dataobject.source_update_date.day == datetime.datetime.today().day: #Today
         return "= {} {} {} {}".format(dataobject.cases, dataobject.deaths, dataobject.recovered, dataobject.source_website)
     else: #Not today
         date = convert_datetime_to_string(dataobject.source_update_date)

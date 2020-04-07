@@ -272,6 +272,7 @@ def check_from_sheet(country, country_iso_code, date):
     result = dataobject.DataObject()
     result.date = date
     result.country_name = country
+    result.source_update_date = date
 
     check_drive_cache()
 

@@ -246,6 +246,8 @@ class InvestigatorDiscordClient(discord.Client):
                         scrape_type = "covidtracking"
                     elif words[1] == "hopkins" or words[1] == "johnhopkins" or words[1] == "john"  or words[1] == "jh":
                         scrape_type = "hopkins"
+                    elif words[1] == "auto" or words == [1] == "a":
+                        scrape_type = ""
                     else:
                         await self.send_error_message("Incorrect scrape type", channel.name)
                         return
@@ -281,7 +283,7 @@ class InvestigatorDiscordClient(discord.Client):
                     else:
                         no_check_str = "-nocheck" if no_check else ""
                         self.command_queue.put("scrape {} {} -d -disp -t {} {}".format(country, scrape_type, date, no_check_str))
-        
+
         #if message.content.startswith('check'):
             #channel = message.channel
             #await self.fake_check(channel)

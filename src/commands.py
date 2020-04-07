@@ -102,6 +102,7 @@ def are_results_valid(result, country, date):
     if result.cases < result.deaths:
         result.data_validity = "Scraped cases are less than scraped deaths"
         return False
+    return True
 
     
     
@@ -150,7 +151,7 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
         print("Checking scrape result validity...")
         for result_country, result in results.items():
             if not are_results_valid(result, result_country, date):
-                print("Detected bad data in ", result_country)
+                print("Detected bad data for", result_country)
         
 
     if 'nodisp' not in flags:

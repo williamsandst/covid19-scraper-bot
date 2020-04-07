@@ -50,10 +50,11 @@ def get_screenshot(website, browser, screenshot_path, viewport_width=1200, viewp
     if ALLOW_SCREENSHOTS and screenshot_path != None:
         browser.save_screenshot(screenshot_path)
 
-def get_visible_text(website, browser, viewport_width=1200, viewport_height=900, wait_time = 4, screenshot = False, parse_javscript = False, scroll_height = None):
+def get_visible_text(website, browser, screenshot_path = False, viewport_width=1200, viewport_height=900, wait_time = 4, scroll_height = None, parse_javscript = False):
     # extract text
     browser.set_window_size(viewport_width, viewport_height) 
     browser.get(website)
+
     if (parse_javscript):
         time.sleep(wait_time)
     else:
@@ -62,9 +63,8 @@ def get_visible_text(website, browser, viewport_width=1200, viewport_height=900,
     if scroll_height != None: #Scroll on page
         browser.execute_script("window.scrollTo(0, {})".format(scroll_height)) 
         time.sleep(0.3)
-
-    if ALLOW_SCREENSHOTS and screenshot != None:
-        browser.save_screenshot('screenshots/{}.png'.format(screenshot))
+    if ALLOW_SCREENSHOTS and screenshot_path != None:
+        browser.save_screenshot(screenshot_path)
 
     root = html.document_fromstring(browser.page_source)
     Cleaner(kill_tags=['noscript'], style=True)(root) # lxml >= 2.3.1
@@ -278,8 +278,8 @@ class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins):
             self.learn(text, number, label)
         self.learned_data.save(self.country_name)
 
-    def retrieve_text(self, website, browser, screenshot = None):
-        return get_visible_text(self.source_website, browser, self.website_width, self.website_height, self.wait_time, screenshot, self.javascript_required, self.scroll_height)
+    def retrieve_text(self, website, browser, screenshot_path = None):
+        return get_visible_text(self.source_website, browser, screenshot_path, self.website_width, self.website_height, self.wait_time, self.scroll_height, self.javascript_required)
 
     def evaluate(self, words, register, ratio): #Ratio is % of way through word
         """ Give a score to a list of words based on how good a fit it is to the learned model """
@@ -326,8 +326,10 @@ class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins):
     def scrape(self, browser):
         """Automated scraping using the saved learned model from train()"""
         result = dataobject.DataObject(self)
-        screenshot_path = self.country_name.lower() + "-" + result.scrape_date.__str__()
-        result.screenshot_path = "output/" + screenshot_path + ".png"
+
+        result.scrape_date = result.scrape_date.replace(microsecond=0)
+        screenshot_path = "screenshots/{}|{}.png".format(self.country_name.lower(), result.scrape_date.__str__())
+        result.screenshot_path = screenshot_path
         text = self.retrieve_text(self.source_website, browser, screenshot_path)
         #Scramble testing
         #text = clean_text(text)

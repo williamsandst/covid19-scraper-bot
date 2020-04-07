@@ -11,10 +11,12 @@ class DataObject:
         self.hospitalised = 0
         self.intensive_care = 0
         self.suspected_cases = 0
-        self.source_update_date = None
-        self.screenshot_path = None
         self.data_validity = "OK"
+        
+        self.screenshot_path = None
+        self.source_website = None
         self.scrape_date = datetime.datetime.now()
+        self.source_update_date = self.scrape_date
 
         if scraper != None:
             self.country_name = scraper.country_name
