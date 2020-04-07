@@ -16,4 +16,7 @@ Selenium uses Firefox (Gecko) webdriver, which can be downloaded here: https://g
 **Discord py** - Discord python API           `pip3 install discord`  
 **Dateutil** - helper for parsing dates       `pip3 install python-dateutil`  
 **Stringdist** - lib for Dam-Lev string dist  `pip3 install StringDist`  
-**Dotenv** - lib for Dam-Lev string dist      `pip3 install python-dotenv`
+**Dotenv** - for loading .env preferences     `pip3 install python-dotenv`  
+**PyDrive** - for downloading from Drive      `pip3 install PyDrive`  
+**xlrd** - for parsing excel files            `pip3 install xlrd`  
+**Pndas** - for parsing excel files           `pip3 install pandas`  
