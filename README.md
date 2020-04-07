@@ -19,4 +19,4 @@ Selenium uses Firefox (Gecko) webdriver, which can be downloaded here: https://g
 **Dotenv** - for loading .env preferences     `pip3 install python-dotenv`  
 **PyDrive** - for downloading from Drive      `pip3 install PyDrive`  
 **xlrd** - for parsing excel files            `pip3 install xlrd`  
-**Pndas** - for parsing excel files           `pip3 install pandas`  
+**Pandas** - for parsing excel files          `pip3 install pandas`  
