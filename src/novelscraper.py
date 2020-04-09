@@ -139,6 +139,7 @@ class NovelScraper:
         self.has_default = True
         self.wait_time = 4
         self.scroll_height = None
+        self.region_of_country = None
 
     def try_scrape(self, browser, count = 3):
         for i in range(3):
@@ -193,7 +194,7 @@ class NovelScraperHopkins(NovelScraper):
     def scrape_hopkins(self, time = datetime.datetime.now()):
         result = dataobject.DataObject(self)
 
-        result = downloader.scrape_hopkins(self.country_name, self.iso_code, result, time)
+        result = downloader.scrape_hopkins(self.country_name, self.iso_code, result, time, self.region_of_country)
 
         result.source_website = "https://github.com/CSSEGISandData/COVID-19"
         result.report_website = "https://github.com/CSSEGISandData/COVID-19"
@@ -246,6 +247,7 @@ class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins):
         self.has_hopkins = True
         self.has_default = True
         self.scroll_height = None
+        self.region_of_country = None
 
     def learn(self, text, number, label):
         """ Learn the data surrounding a number to be able to find it in the future """

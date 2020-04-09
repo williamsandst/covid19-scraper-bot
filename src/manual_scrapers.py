@@ -39,17 +39,17 @@ class NovelScraperDK(NovelScraper):
         objects = soup.find("td", text=re.compile("Geografsk område")).parent.parent.find_all("td")
         table = [i.text for i in objects]
 
-        denmark_cases = clean_number(table[6])
-        denmark_deaths = clean_number(table[7])
-        denmark_tested = clean_number(table[5])
+        denmark_cases = clean_number(table[7])
+        denmark_deaths = clean_number(table[9])
+        denmark_tested = clean_number(table[6])
 
-        faraoe_cases = clean_number(table[10])
-        faraoe_deaths = clean_number(table[11])
-        faraoe_tested = clean_number(table[9])
+        faraoe_cases = clean_number(table[12])
+        faraoe_deaths = clean_number(table[14])
+        faraoe_tested = clean_number(table[11])
 
-        greenland_cases = clean_number(table[14])
-        greenland_deaths = clean_number(table[15])
-        greenland_tested = clean_number(table[13])
+        greenland_cases = clean_number(table[17])
+        greenland_deaths = clean_number(table[19])
+        greenland_tested = clean_number(table[16])
 
         result.cases = denmark_cases + faraoe_cases + greenland_cases
         result.deaths = denmark_deaths + faraoe_deaths + greenland_deaths

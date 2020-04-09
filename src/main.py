@@ -75,7 +75,7 @@ discord_bot = bot.InvestigatorBot()
 
 DISCORD_BOT_ENABLED = True
 SELENIUM_BROWSER_ALWAYS_ON = True
-SELENIUM_FIREFOX_HEADLESS = False
+SELENIUM_FIREFOX_HEADLESS = True
 
 if SELENIUM_BROWSER_ALWAYS_ON:
     options = Options()
@@ -179,7 +179,7 @@ class SchedulingThread(Thread):
                     self.flags = parse(command_list)
                     print("{}: Executing scheduled command: {}".format(command[1], command[0]))
                     self.commands[command_list[0]]()
-                    print("\nnvlscrpr: ")
+                    print("\nnvlscrpr: ", end =" ")
             time.sleep(2)
             # Go through external commands
             while not self.queue.empty():
@@ -188,7 +188,7 @@ class SchedulingThread(Thread):
                 self.flags = parse(command_list)
                 print("Executing external command: {}".format(command))
                 self.commands[command_list[0]]()
-                print("\nnvlscrpr: ")
+                print("\nnvlscrpr: ",end =" ")
 
 def main():
 
@@ -205,6 +205,7 @@ def main():
 
     init_europe_scrapers()
     init_us_scrapers()
+    init_canada_scrapers()
     command_queue = queue.Queue()
 
     scheduling_thread = SchedulingThread(command_queue, flags)

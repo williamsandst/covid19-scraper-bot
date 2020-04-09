@@ -11,4 +11,7 @@ europe_channels = {"europe", "andorra", "albania", "austria", "belarus", "belgiu
     "moldova", "monaco", "montenegro", "netherlands", "north-macedonia", "norway", "poland", "portugal", "romania", "russia",
     "san-marino", "slovenia", "spain", "serbia", "slovakia", "sweden", "switzerland", "uk", "ukraine"}
 
+canada_channels = {"canada", "alberta", "british-columbia", "manitoba", "new-brunswick", "newfoundland-and-labrador", "nova-scotia", "ontario", "quebec",
+        "saskatchewan", "yukon", "northwest-territories", "prince-edward-island"}
+
 other_channels = {"welcome", "info", "rules", "general", "lounge", "music", "dev-bot", "bot-suggestions", "sheet-suggestions"}

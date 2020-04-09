@@ -1,8 +1,9 @@
 """ Interface between the Discord Bot and the script functions """
 import datetime
-
 import dataobject
 import novelscraper
+
+import pandas as pd
 
 def convert_datetime_to_string(date: datetime.datetime):
     month = date.month if date.month >= 10 else ("0" + str(date.month))
@@ -14,6 +15,9 @@ def convert_string_to_datetime(date_str: str):
     time = datetime.datetime.now()
     time = time.replace(month=int(numbers[1]), day=int(numbers[0]))
     return time
+
+def get_date_range(datebegin, dateend) -> list:
+    return pd.date_range(start=datebegin, end=dateend).to_pydatetime().tolist()
 
 def convert_dataobject_to_submission(dataobject: dataobject.DataObject):
     if dataobject.source_update_date.month == datetime.datetime.today().month and dataobject.source_update_date.day == datetime.datetime.today().day: #Today

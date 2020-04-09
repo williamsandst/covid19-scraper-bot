@@ -72,8 +72,9 @@ def init_europe_scrapers():
     scraper.country_name = "Lithuania" 
     scraper.iso_code = "LI"
     scraper.source_website = "https://sam.lrv.lt/lt/naujienos/koronavirusas"
-    scraper.scroll_height=400
+    scraper.scroll_height= 400
     scraper.website_height = 1200
+    scraper.website_width = 1920
     #scraper.training_data = {"cases": "382",  "deaths": "5", "recovered":"1", "tested":"6900"}
     country_classes[scraper.country_name.lower()] = scraper
 
@@ -389,7 +390,6 @@ def init_europe_scrapers():
     #scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
     country_classes[scraper.country_name.lower()] = scraper    
     
-
 def init_us_scrapers():
     # Alabama
     scraper = NovelScraperAuto()
@@ -926,3 +926,98 @@ def init_us_scrapers():
     scraper.source_website = "https://doh.vi.gov/covid19usvi"
     scraper.scroll_height = 500
     country_classes[scraper.country_name.lower()] = scraper
+
+def init_canada_scrapers():
+    # Alberta
+    scraper = NovelScraperAuto()
+    scraper.region_of_country = "Canada"
+    scraper.country_name = "Alberta" 
+    scraper.iso_code = "N/A"
+    country_classes[scraper.country_name.lower()] = scraper
+
+
+    # British Columbia
+    scraper = NovelScraperAuto()
+    scraper.region_of_country = "Canada"
+    scraper.country_name = "British-Columbia" 
+    scraper.iso_code = "N/A"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Manitoba
+    scraper = NovelScraperAuto()
+    scraper.region_of_country = "Canada"
+    scraper.country_name = "Manitoba" 
+    scraper.iso_code = "N/A"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # New Brunswick
+    scraper = NovelScraperAuto()
+    scraper.region_of_country = "Canada"
+    scraper.country_name = "New-Brunswick" 
+    scraper.iso_code = "N/A"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Newfoundland and Labrador
+    scraper = NovelScraperAuto()
+    scraper.region_of_country = "Canada"
+    scraper.country_name = "Newfoundland-and-Labrador" 
+    scraper.iso_code = "N/A"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Nova Scotia
+    scraper = NovelScraperAuto()
+    scraper.region_of_country = "Canada"
+    scraper.country_name = "Nova-Scotia" 
+    scraper.iso_code = "N/A"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Ontario
+    scraper = NovelScraperAuto()
+    scraper.region_of_country = "Canada"
+    scraper.country_name = "Ontario" 
+    scraper.iso_code = "N/A"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Quebec
+    scraper = NovelScraperAuto()
+    scraper.region_of_country = "Canada"
+    scraper.country_name = "Quebec" 
+    scraper.iso_code = "N/A"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Saskatchewan
+    scraper = NovelScraperAuto()
+    scraper.region_of_country = "Canada"
+    scraper.country_name = "Saskatchewan" 
+    scraper.iso_code = "N/A"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Yukon
+    scraper = NovelScraperAuto()
+    scraper.region_of_country = "Canada"
+    scraper.country_name = "Yukon" 
+    scraper.iso_code = "N/A"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Northwest Territories
+    scraper = NovelScraperAuto()
+    scraper.region_of_country = "Canada"
+    scraper.country_name = "Northwest-Territories" 
+    scraper.iso_code = "N/A"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Prince Edward Island
+    scraper = NovelScraperAuto()
+    scraper.region_of_country = "Canada"
+    scraper.country_name = "Prince-Edward-Island" 
+    scraper.iso_code = "N/A"
+    country_classes[scraper.country_name.lower()] = scraper
+
+    # Nunavut (No JH data?)
+    scraper = NovelScraperAuto()
+    scraper.region_of_country = "Canada"
+    scraper.country_name = "Nunavut" 
+    scraper.iso_code = "N/A"
+    country_classes[scraper.country_name.lower()] = scraper
+
+

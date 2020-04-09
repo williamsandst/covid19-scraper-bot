@@ -35,7 +35,7 @@ staff_role_whitelist = {"staff", "the real slip shady"}
 
 normal_role_whitelist = {"interpol"}
 
-RELEASE_BOT = False
+RELEASE_BOT = True
 
 def convert_country_to_channel(country):
     if country in country_to_channel_dict:
@@ -255,8 +255,8 @@ class InvestigatorDiscordClient(discord.Client):
                     if scrape_type == "covidtracking" and str(channel) not in us_channels:
                         await self.send_error_message("Covidtracking.com only has data on US states", channel.name)
                         return
-                    if scrape_type == "hopkins" and (str(channel) not in europe_channels or str(channel) == "europe"):
-                        await self.send_error_message("John Hopkins only has data on countries", channel.name)
+                    if scrape_type == "hopkins" and (str(channel) not in europe_channels or str(channel) == "europe") and str(channel) not in canada_channels:
+                        await self.send_error_message("John Hopkins has no data on this country/state", channel.name)
                         return
 
                     time = datetime.datetime.now()
@@ -274,15 +274,21 @@ class InvestigatorDiscordClient(discord.Client):
                                 if words[3] == "nocheck" or words[3] == "nc":
                                     no_check = True
                         
+                    if "-" in date: #Range
+                        date = "-r " + date
+                    else:
+                        date = "-t " + date
+
                     if no_check:
                         await channel.send("Beep boop! Investigating Covid-19 cases in {}, please stand by... (NOTE: ERROR CHECKING IS DISABLED!)".format(country))
                     else:
                         await channel.send("Beep boop! Investigating Covid-19 cases in {}, please stand by...".format(country))
+                    no_check_str = "-nocheck" if no_check else ""
                     if str(channel) == "usa" and scrape_type == "covidtracking":
-                        self.command_queue.put("scrape all covidtracking -d -disp -t {}".format(date))
+                        self.command_queue.put("scrape all covidtracking -d -disp {} {}".format(date, no_check_str))
                     else:
                         no_check_str = "-nocheck" if no_check else ""
-                        self.command_queue.put("scrape {} {} -d -disp -t {} {}".format(country, scrape_type, date, no_check_str))
+                        self.command_queue.put("scrape {} {} -d -disp {} {}".format(country, scrape_type, date, no_check_str))
 
         #if message.content.startswith('check'):
             #channel = message.channel

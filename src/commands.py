@@ -3,6 +3,7 @@ import interface
 from novelscraper import *
 import bot
 import time
+import copy
 
 def train(country_classes):
     browser = webdriver.Firefox()
@@ -121,6 +122,20 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
     if "default" not in flags or (not isinstance(flags["default"], str) and len(flags["default"]) > 2):
         error_message("The required arguments are missing or are incorrectly formated")
         return
+    if 'r' in flags: #Multiple days, do a secondary call
+        dayrange = flags['r']
+        new_flags = copy.deepcopy(flags)
+        new_flags.pop('r', None)
+        dayrange = dayrange.split("-")
+        start_day = interface.convert_string_to_datetime(dayrange[0])
+        end_day = interface.convert_string_to_datetime(dayrange[1])
+        date_range = interface.get_date_range(start_day, end_day)
+        print("Performing scrape on date range {} - {}".format(start_day, end_day))
+        for date in date_range:
+            date_str = interface.convert_datetime_to_string(date)
+            new_flags['t'] = date_str
+            cmd_scrape(country_classes, new_flags, discord_bot, browser)
+        return
     scraping_type = "default"
     if len(flags["default"]) == 2: #Second argument, specifies scraping type
         if flags["default"][1] not in scraping_types:
@@ -173,7 +188,7 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
             else:
                 submission_string = interface.convert_dataobject_to_submission(result)
                 discord_bot.send_error("{} (resulting in submission: {})".format(result.data_validity, submission_string),country)
-            time.sleep(1)
+            time.sleep(2)
 
 def cmd_train(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBot, browser):
     if "default" not in flags or not isinstance(flags["default"], str):
