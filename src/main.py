@@ -10,12 +10,15 @@ from threading import Thread
 import time
 import datetime
 import queue
+import os
+import logging
 
 from novelscraper import *
 from manual_scrapers import *
 from commands import *
 from country_templates import *
 import bot
+import utils
 
 """ 
 Countries with working automated scraping:
@@ -68,10 +71,14 @@ Serbia
 Slovakia
 """
 
+log = logging.getLogger("MAIN")
+
 commands = {}
 scheduled_commands = []
 results = {}
 discord_bot = bot.InvestigatorBot()
+
+
 
 DISCORD_BOT_ENABLED = True
 SELENIUM_BROWSER_ALWAYS_ON = True
@@ -180,7 +187,7 @@ class SchedulingThread(Thread):
                     #Execute command
                     command_list = command[0].split()
                     self.flags = parse(command_list)
-                    print("{}: Executing scheduled command: {}".format(command[1], command[0]))
+                    log.info("{}: Executing scheduled command: {}".format(command[1], command[0]))
                     self.commands[command_list[0]]()
                     print("\nnvlscrpr: ", end =" ")
             time.sleep(2)
@@ -189,11 +196,12 @@ class SchedulingThread(Thread):
                 command = self.queue.get()
                 command_list = command.split()
                 self.flags = parse(command_list)
-                print("Executing external command: {}".format(command))
+                log.info("Executing external command: {}".format(command))
                 self.commands[command_list[0]]()
                 print("\nnvlscrpr: ",end =" ")
 
 def main():
+    utils.init_logging("log_file.log")
 
     flags = {}
     t = datetime.datetime(year=2020, month=1, day=1, hour=13, minute=14, second=0)
@@ -217,11 +225,9 @@ def main():
 
     # Start discord bot
     if (DISCORD_BOT_ENABLED):
-        print("Starting the Investigator Discord Bot")
         discord_bot.set_command_queue(command_queue)
         discord_bot.start()
         time.sleep(5)
-        print("Bot started")
 
     # Main input loop. Grab input, parse and execute command
     while True:

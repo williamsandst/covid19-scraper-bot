@@ -11,13 +11,15 @@ import requests
 import time
 import re
 import random
+import logging
 
 import dataobject
 from stringhelpers import *
 import downloader
 
+log = logging.getLogger("SCRAPER")
+
 # Constants
-PRINT_PROGRESS = True
 ALLOW_SCREENSHOTS = True
 
 # How many words should we use surrounding the number for the learning model?
@@ -25,14 +27,12 @@ SURROUNDING_WORD_COUNT = 5
 
 def get_parsed_javascript_html(website, browser, wait_time = 4, scroll = False):
     """Returns the parsed javascript HTML source code for a website"""
-    if PRINT_PROGRESS:
-        print("Scraping website with Selenium: {}".format(website))
+    log.info("Scraping website with Selenium: {}".format(website))
     
     browser.get(website)
     time.sleep(wait_time)
 
-    if PRINT_PROGRESS:
-        print("Scraping website complete")
+    log.info("Scraping website complete")
 
     if scroll: #Scroll down page to load in potential deferred javascript elements
         browser.execute_script("window.scrollTo(0, document.body.scrollHeight/{});".format(scroll)) 
@@ -70,19 +70,16 @@ def get_visible_text(website, browser, screenshot_path = False, viewport_width=1
     Cleaner(kill_tags=['noscript'], style=True)(root) # lxml >= 2.3.1
     text = " ".join(etree.XPath("//text()")(root))
 
-    if PRINT_PROGRESS:
-        print("Retrieved website with Selenium: {}".format(website))
+    log.info("Retrieved website with Selenium: {}".format(website))
         
     return text # extract text
 
 def get_html(website):
-    if PRINT_PROGRESS:
-        print("Scraping website for plain HTML: {}".format(website))
+    log.info("Scraping website for plain HTML: {}".format(website))
     
     page = requests.get(website)
 
-    if PRINT_PROGRESS:
-        print("Scraping website complete")
+    log.info("Scraping website complete")
 
     return BeautifulSoup(page.content, "html5lib")
 
@@ -104,11 +101,11 @@ def scramble_text(string):
     return "".join(wordlist)
 
 def save_to_file(string, filename):
-    print("Saving to file {}...".format(filename))
+    log.info("Saving to file {}...".format(filename))
     text_file = open(filename, "w")
     text_file.write(string)
     text_file.close()
-    print("Saved to file {}".format(filename))
+    log.info("Saved to file {}".format(filename))
 
 def save_dict_to_file(d: dict, filename: str):
     jsondata = json.dumps(d)
@@ -151,7 +148,7 @@ class NovelScraper:
             try:
                 return self.scrape(browser)
             except:
-                print("Error on scraping attempt {}. Most likely the javascript did not load in time. Retrying.".format(i))
+                log.warning("Error on scraping attempt {}. Most likely the javascript did not load in time. Retrying.".format(i))
 
     def scrape(self, browser):
         """ Template for scrape function. Returns a data object containing the cases"""
@@ -265,7 +262,7 @@ class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins):
         words = clean_if_number(words)
         number_index = find_word_index(words, number)
         if number_index == -1:
-            print("Training: Cannot find the specified number", number)
+            log.error("Training: Cannot find the specified number", number)
             raise TypeError
 
         self.learned_data.indices[label] = number_index

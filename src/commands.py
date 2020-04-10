@@ -1,28 +1,33 @@
+import time
+import copy
+import logging
+
 from selenium import webdriver
+
 import interface
 from novelscraper import *
 import bot
-import time
-import copy
+
+log = logging.getLogger("MAIN")
 
 def train(country_classes):
     browser = webdriver.Firefox()
 
-    print("Starting training...")
+    log.info("Starting training...")
     for country in country_classes:
         if country_classes[country].training_data != None:
             train_country(country, browser, country_classes)
         else:
-            print("{}: Missing training data".format(country))
-    print("Training complete!")
+            log.warning("{}: Missing training data".format(country))
+    log.info("Training complete!")
     browser.quit()
 
 def train_country(country, browser, country_classes):
     province_name = (", " + country_classes[country].province_name) if country_classes[country].province_name != country_classes[country].country_name else ""
     country_name = country_classes[country].country_name + province_name
-    print("{}: Training recognition model...".format(country_name))
+    log.info("{}: Training recognition model...".format(country_name))
     country_classes[country].train(browser)
-    print("{}: Training complete!".format(country_name))
+    log.info("{}: Training complete!".format(country_name))
 
 def scrape(country_classes, scrape_type="default", date=datetime.datetime.now(), browser=None, country_group=None):
 
@@ -57,25 +62,25 @@ def scrape(country_classes, scrape_type="default", date=datetime.datetime.now(),
 def scrape_country_default(country: str, browser, country_classes):
     province_name = (", " + country_classes[country].province_name) if country_classes[country].province_name != country_classes[country].country_name else ""
     country_name = country_classes[country].country_name + province_name
-    print("{}: Scraping...".format(country_name))
+    log.info("{}: Scraping...".format(country_name))
     result = country_classes[country].scrape(browser)
-    print("{}: Scraping complete!".format(country_name))
+    log.info("{}: Scraping complete!".format(country_name))
     return result
 
 def scrape_country_coronatracking(country: str, country_classes, date):
     province_name = (", " + country_classes[country].province_name) if country_classes[country].province_name != country_classes[country].country_name else ""
     country_name = country_classes[country].country_name + province_name
-    print("{}: Scraping from Covidtracking.com...".format(country_name))
+    log.info("{}: Scraping from Covidtracking.com...".format(country_name))
     result = country_classes[country].scrape_covidtracking(date)
-    print("{}: Scraping complete!".format(country_name))
+    log.info("{}: Scraping complete!".format(country_name))
     return result
 
 def scrape_country_hopkins(country: str, country_classes, date):
     province_name = (", " + country_classes[country].province_name) if country_classes[country].province_name != country_classes[country].country_name else ""
     country_name = country_classes[country].country_name + province_name
-    print("{}: Scraping from John Hopkins Github...".format(country_name))
+    log.info("{}: Scraping from John Hopkins Github...".format(country_name))
     result = country_classes[country].scrape_hopkins(date)
-    print("{}: Scraping complete!".format(country_name))
+    log.info("{}: Scraping complete!".format(country_name))
     return result
 
 
@@ -89,7 +94,7 @@ def are_results_valid(result, country, date):
     # Compare with current data in the sheet
     sheet_data = downloader.check_from_sheet(country, "SE", date)
     if sheet_data.data_validity == "OK":
-        if sheet_data.cases > result.cases:
+        """if sheet_data.cases > result.cases:
             result.data_validity = "Scraped cases are lower than the sheet value for {}".format(date)
             return False
         if sheet_data.deaths > result.deaths:
@@ -98,11 +103,11 @@ def are_results_valid(result, country, date):
         if not lenient_on_recovery:
                 if sheet_data.recovered > result.recovered:
                     result.data_validity = "Scraped recovered are lower than the sheet value for {}".format(date)
-                    return False
-        else:
-            if result.recovered < sheet_data.recovered:
-                print("Data validation: Doing recovery adjustment from sheet data")
-            result.recovered = max(result.recovered, sheet_data.recovered)
+                    return False"""
+        #else:
+        if result.recovered < sheet_data.recovered:
+            log.info("Data validation: Doing recovery adjustment from sheet data")
+        result.recovered = max(result.recovered, sheet_data.recovered)
     # Other checks
     if result.cases < result.deaths:
         result.data_validity = "Scraped cases are less than scraped deaths"
@@ -134,7 +139,7 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
         start_day = interface.convert_string_to_datetime(dayrange[0])
         end_day = interface.convert_string_to_datetime(dayrange[1])
         date_range = interface.get_date_range(start_day, end_day)
-        print("Performing scrape on date range {} - {}".format(start_day, end_day))
+        log.info("Performing scrape on date range {} - {}".format(start_day, end_day))
         for date in date_range:
             date_str = interface.convert_datetime_to_string(date)
             new_flags['t'] = date_str
@@ -171,18 +176,18 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
         return
 
     if not 'nocheck' in flags: #Check validity of scraped data
-        print("Checking scrape result validity...")
+        log.info("Checking scrape result validity...")
         for result_country, result in results.items():
             country_sheet_name = bot.convert_country_index_to_channel(result_country)
             if not are_results_valid(result, country_sheet_name, date):
-                print("Detected bad data for", result_country)
+                log.warning("Detected bad data for " + result_country)
         
 
     if 'nodisp' not in flags:
         for country, result in results.items():
             if result.data_validity != "OK":
-                print("Error: ", result.data_validity)
-            print(result)
+                log.warning("Error: " + result.data_validity)
+            log.info(result)
 
     if 'f' in flags:
         submission_string = interface.create_submissions(results)
@@ -194,12 +199,12 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
                 if result.cases > 0:
                     submission_string = interface.convert_dataobject_to_submission(result)
                     discord_bot.submit(country, submission_string, result.screenshot_path)
-                    print("Sent submission to Discord")
                 else:
                     discord_bot.send_message("Zero cases reported on the date {} for {}, omitting submission".format(interface.convert_datetime_to_string(date), country), country)
-                    print("Omitted submission to Discord")
+                    log.info("Omitted submission to Discord due to zero cases")
             else:
                 submission_string = interface.convert_dataobject_to_submission(result)
+                log.warning("Submission data is bad due to: {}".format(result.data_validity))
                 discord_bot.send_error("{} (resulting in submission: {})".format(result.data_validity, submission_string),country)
             time.sleep(2)
 
@@ -234,7 +239,7 @@ def cmd_screenshot(country_classes: dict, flags: dict, discord_bot: bot.Investig
         if create_browser:
             browser.quit()    
         if 'nodisp' not in flags:
-            print("Took screenshot of {}, saved at {}".format(country, path))
+            log.info("Took screenshot of {}, saved at {}".format(country, path))
             
     if 'd' in flags:
         source = country_classes[country].report_website if country_classes[country].report_website != None else country_classes[country].source_website
@@ -251,12 +256,12 @@ def cmd_help(country_classes: dict, flags: dict):
 
 def cmd_exit(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBot, browser):
     """cmd: exit. Exit the program"""
-    print("Exiting Novel-Scraper... This can take a few seconds.")
+    log.info("Exiting Novel-Scraper... This can take a few seconds.")
     if browser != None:
         browser.quit()
-        print("Stopped Webdriver")
+        log.info("Stopped Webdriver")
     discord_bot.stop()
-    print("Stopped Discord bot")
+    log.info("Stopped Discord bot")
     exit()
 
 def cmd_discord_chat(country_classes, flags, discord_bot: bot.InvestigatorBot):

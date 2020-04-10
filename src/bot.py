@@ -6,6 +6,7 @@ from threading import Thread
 import asyncio
 from queue import Queue
 import datetime
+import logging
 
 import interface
 import country_templates
@@ -25,6 +26,8 @@ from bot_data import *
 # scheduling -> scrape() -> bot
 
 # Read the check. 
+
+log = logging.getLogger("DBOT")
 
 country_to_channel_dict = {}
 
@@ -79,7 +82,7 @@ class InvestigatorBot():
         self.active = True
         self.asyncio_event_loop.create_task(self.start_client())
         self.thread.start()
-        print("Started separate thread for Discord Bot")
+        log.info("Started Discord Bot Thread")
 
     def run(self):
         self.asyncio_event_loop.run_forever()
@@ -91,6 +94,7 @@ class InvestigatorBot():
             if len(split_string) <= 1 or split_string[1] == "-1":
                 self.asyncio_event_loop.create_task(self.client.send_error_message("Bad submission format", channel))
             else:
+                log.info("Sent Discord submission to {}".format(channel))
                 self.asyncio_event_loop.create_task(self.client.send_submission(string, channel, screenshot_path))
 
     def send_screenshot(self, country, screenshot_path, source):
@@ -116,7 +120,7 @@ class InvestigatorBot():
         self.asyncio_event_loop.create_task(self.client.close())
         self.asyncio_event_loop.stop()
         self.thread.join()
-        print("Discord Bot stopped")
+        log.info("Discord Bot and thread stopped")
 
 class InvestigatorDiscordClient(discord.Client):
     def init(self, guild):
@@ -128,8 +132,8 @@ class InvestigatorDiscordClient(discord.Client):
     async def on_ready(self):
         self.server = discord.utils.get(self.guilds, name=self.GUILD)
         self.novel_bot_id = discord.utils.get(self.server.members, name="Wydal").id
-        print(f'{self.user} is connected to the following server:')
-        print(f'{self.server.name}(id: {self.server.id})')
+        log.info(f'{self.user} is connected to the following server:')
+        log.info(f'{self.server.name}(id: {self.server.id})')
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=self.bot_status_text))
 
     async def send_submission(self, string, channel_input, screenshot_path):
@@ -141,21 +145,21 @@ class InvestigatorDiscordClient(discord.Client):
                 await channel.send(self.bot_submission_text)
             await channel.send(string)
         else:
-            print("Bot: Cannot find channel {}".format(channel_input))
+            log.warning("Bot: Cannot find channel {}".format(channel_input))
 
     async def send_error_message(self, reason, channel_input):
         channel = discord.utils.get(self.server.channels, name=channel_input)
         if channel != None: 
             await channel.send("{}: `{}`".format(self.bot_error_text, reason))
         else:
-            print("Bot: Cannot find channel {}".format(channel_input))
+            log.warning("Bot: Cannot find channel {}".format(channel_input))
 
     async def send_message(self, message, channel_input):
         channel = discord.utils.get(self.server.channels, name=channel_input, type=discord.ChannelType.text)
         if channel != None: 
             await channel.send(message)
         else:
-            print("Bot: Cannot find channel {}".format(channel_input))
+            log.warning("Bot: Cannot find channel {}".format(channel_input))
 
     async def send_image(self, message, path, channel_input):
         channel = discord.utils.get(self.server.channels, name=channel_input, type=discord.ChannelType.text)
@@ -163,7 +167,7 @@ class InvestigatorDiscordClient(discord.Client):
             if path != None:
                 await channel.send(message, file=discord.File(path))
         else:
-            print("Bot: Cannot find channel {}".format(channel_input))
+            log.warning("Bot: Cannot find channel {}".format(channel_input))
 
     async def send_check(self, channel): #Send check
         channel = discord.utils.get(self.server.channels, name=channel) 
@@ -276,7 +280,7 @@ class InvestigatorDiscordClient(discord.Client):
                         else:
                             date = words[2]
                             if len(words) > 5:
-                                print("!scrape date incorrectly formatted")
+                                log.warning("!scrape date incorrectly formatted")
                                 return
                             date = words[2]
                             if len(words) >= 4:
@@ -295,7 +299,7 @@ class InvestigatorDiscordClient(discord.Client):
                     no_check_str = "-nocheck" if no_check else ""
                     self.command_queue.put("scrape {} {} -d -disp {} {}".format(country, scrape_type, date, no_check_str))
             elif message.content.startswith('!abort'): #Reset the command queue
-                print("Recieved abort command, killing program...")
+                log.info("Recieved Discord abort command, killing program...")
                 self.command_queue = Queue()
                 await channel.send("Initiating abort, shutting everything down...")
                 exit()

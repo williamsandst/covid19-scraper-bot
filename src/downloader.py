@@ -4,6 +4,7 @@ import time
 import datetime
 import csv
 import codecs
+import logging
 from contextlib import closing
 
 import dateutil.parser
@@ -15,8 +16,9 @@ import dataobject
 import novelscraper
 import bot_data
 
-CACHE_TIME_LIMIT_SECONDS = 20
+log = logging.getLogger("DWNL")
 
+CACHE_TIME_LIMIT_SECONDS = 20
 DRIVE_CACHE_TIME_LIMIT_SECONDS = 180
 
 def check_for_file_cache(date):
@@ -26,13 +28,13 @@ def check_for_file_cache(date):
         now = datetime.datetime.now()
         now_seconds = int(now.hour * 3600 + now.minute * 60 + now.second)
         if now_seconds < (seconds + CACHE_TIME_LIMIT_SECONDS):
-            print("Covidtracking.com Cache is valid at age {} sec".format(now_seconds-seconds))
+            log.info("Covidtracking.com Cache is valid at age {} sec".format(now_seconds-seconds))
             return data
         else: #Cache is too old, redownload
-            print("Covidtracking Cache is old, revalidating")
+            log.info("Covidtracking Cache is old, revalidating")
             return None
     except: #Something went wrong loading the cache, redownload
-        print("Covidtracking Cache Error")
+        log.warning("Covidtracking Cache Error")
         return None
 
 def save_cache(data, savedate):
@@ -92,10 +94,10 @@ def scrape_covidtracking(state: str, result, date = datetime.datetime.now(), che
 
     if now_cache == None:
         final_dict = {}
-        print("Retrieving {} data for {} from the Covidtracking.com API".format(state, now_date_str))
+        log.info("Retrieving {} data for {} from the Covidtracking.com API".format(state, now_date_str))
         data = getJSONFromLink("https://covidtracking.com/api/states/daily?date=" + now_date_str)
         if not isinstance(data, list) and data["error"] == True:
-            print("Covidtracking.com has no data for date {}".format(now_date_str))
+            log.warning("Covidtracking.com has no data for date {}".format(now_date_str))
             result.data_validity = "Error retrieving covidtracking.com data from date {}, has the source updated for this day yet?".format(now_date_str)
             now_cache = {}
         else:
@@ -106,10 +108,10 @@ def scrape_covidtracking(state: str, result, date = datetime.datetime.now(), che
  
     if yesterday_cache == None:
         final_dict = {}
-        print("Retrieving {} data for {} from the Covidtracking.com API".format(state, yesterday_date_str))
+        log.info("Retrieving {} data for {} from the Covidtracking.com API".format(state, yesterday_date_str))
         data = getJSONFromLink("https://covidtracking.com/api/states/daily?date=" + yesterday_date_str)
         if not isinstance(data, list) and data["error"] == True:
-            print("Covidtracking.com has no data for date {}".format(yesterday_date_str))
+            log.warning("Covidtracking.com has no data for date {}".format(yesterday_date_str))
             result.data_validity = "Error retrieving covidtracking.com data for this date {}, has the source updated for this day yet?".format(yesterday_date_str)
             yesterday_cache = {}
         else:
@@ -212,23 +214,34 @@ def download_sheet_from_drive():
     gauth = GoogleAuth()
     gauth.LocalWebserverAuth()
 
+    drive = GoogleDrive(gauth)
+
+    #list_of_all_files = drive.ListFile({'q': 'sharedWithMe'})
+    #for country in list_of_all_files:
+        #print("test")
+
     europe_id = "1RIXWF7wCX-CihFQzNPfb4t26_t9NlReHj2GH2q3Euac"
     usa_id = "1YNVvKZp3Vywcb6Klggpu3WdBfT3nSzSYF8zCK-iUvVE"
-
-    drive = GoogleDrive(gauth)
+    canada_id = "1TQdiv_WKkIhu4UQk1ORG5hYVfqwV9Rl2vWaUnlosrJs"
 
     mime_type_sheets = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     # Europe
-    print("Downloading Europe sheet from Google Drive...")
+    log.info("Downloading Europe sheet from Google Drive...")
     file1 = drive.CreateFile({"id": europe_id})
     file1.GetContentFile("data/drive/europe.xlsx", mimetype=mime_type_sheets)
-    print("Download complete")
+    log.info("Download complete")
 
     # US
-    print("Downloading United States sheet from Google Drive...")
+    log.info("Downloading United States sheet from Google Drive...")
     file1 = drive.CreateFile({"id": usa_id})
     file1.GetContentFile("data/drive/us.xlsx", mimetype=mime_type_sheets)
-    print("Download complete")
+    log.info("Download complete")
+
+    # Canada
+    log.info("Downloading Canada sheet from Google Drive...")
+    file1 = drive.CreateFile({"id": canada_id})
+    file1.GetContentFile("data/drive/canada.xlsx", mimetype=mime_type_sheets)
+    log.info("Download complete")
 
 def check_drive_cache():
     cache = False
@@ -239,14 +252,14 @@ def check_drive_cache():
         now = datetime.datetime.now()
         now_seconds = int(now.hour * 3600 + now.minute * 60 + now.second)
         if now_seconds < (seconds + DRIVE_CACHE_TIME_LIMIT_SECONDS):
-            print("Drive Cache is valid at age {} sec".format(now_seconds-seconds))
+            log.info("Drive Cache is valid at age {} sec".format(now_seconds-seconds))
             cache = True
         else: #Cache is too old, redownload
-            print("Drive Cache is old, revalidating")
+            log.info("Drive Cache is old, revalidating")
             cache = False
     except:
         cache = False
-        print("Drive Cache error")
+        log.warning("Drive Cache error")
 
     if not cache: #Download sheet
         download_sheet_from_drive()
@@ -274,7 +287,7 @@ def get_sheet_date_index(date: datetime.datetime, days):
     return -1
 
 def check_from_sheet(country, country_iso_code, date):
-    print("Retrieving data from the Google Sheet database...")
+    log.info("Retrieving data from the Google Sheet database...")
     result = dataobject.DataObject()
     result.date = date
     result.country_name = country
@@ -289,6 +302,8 @@ def check_from_sheet(country, country_iso_code, date):
         sheet_path = 'data/drive/europe.xlsx'
     elif country in bot_data.us_channels:
         sheet_path = 'data/drive/us.xlsx'
+    elif country in bot_data.canada_channels:
+        sheet_path = 'data/drive/canada.xlsx'
 
     if sheet_path != "":
         sheet = pd.read_excel(sheet_path, sheet_name=sheet_country)
