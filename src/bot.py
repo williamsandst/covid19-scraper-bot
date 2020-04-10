@@ -293,11 +293,7 @@ class InvestigatorDiscordClient(discord.Client):
                     else:
                         await channel.send("Beep boop! Investigating Covid-19 cases in {}, please stand by...".format(country))
                     no_check_str = "-nocheck" if no_check else ""
-                    if str(channel) == "usa" and scrape_type == "covidtracking":
-                        self.command_queue.put("scrape all covidtracking -d -disp {} {}".format(date, no_check_str))
-                    else:
-                        no_check_str = "-nocheck" if no_check else ""
-                        self.command_queue.put("scrape {} {} -d -disp {} {}".format(country, scrape_type, date, no_check_str))
+                    self.command_queue.put("scrape {} {} -d -disp {} {}".format(country, scrape_type, date, no_check_str))
 
         #if message.content.startswith('check'):
             #channel = message.channel

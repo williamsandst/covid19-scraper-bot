@@ -24,7 +24,7 @@ def train_country(country, browser, country_classes):
     country_classes[country].train(browser)
     print("{}: Training complete!".format(country_name))
 
-def scrape(country_classes, scrape_type="default", date=datetime.datetime.now(), browser=None):
+def scrape(country_classes, scrape_type="default", date=datetime.datetime.now(), browser=None, country_group=None):
 
     results = {}
 
@@ -35,19 +35,19 @@ def scrape(country_classes, scrape_type="default", date=datetime.datetime.now(),
             browser = webdriver.Firefox()
 
         for country in country_classes:
-            if country_classes[country].has_default:
+            if country_classes[country].has_default and (country_group == None or country_classes[country].group_name == country_group):
                 results[country] = scrape_country_default(country, browser, country_classes)
         if create_browser:
             browser.quit()
 
     elif scrape_type == "covidtracking" or scrape_type == "ct" or scrape_type == "covidtracker":
         for country in country_classes:
-            if country_classes[country].has_covidtracking:
+            if country_classes[country].has_covidtracking and (country_group == None or country_classes[country].group_name == country_group):
                 results[country] = scrape_country_coronatracking(country, country_classes, date)
 
     elif scrape_type == "hopkins" or scrape_type == "johnhopkins" or scrape_type == "john" or scrape_type == "jh":
         for country in country_classes:
-            if country_classes[country].has_hopkins:
+            if country_classes[country].has_hopkins and (country_group == None or country_classes[country].group_name == country_group):
                 results[country] = scrape_country_hopkins(country, country_classes, date)
 
 
@@ -156,9 +156,13 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
         date = datetime.datetime.now()
 
     results = {}
-    if country.lower() == "all":
+    if country.lower() == "europe":
         #Scraping all registered countries
-        results = scrape(country_classes, scraping_type, date, browser)
+        results = scrape(country_classes, scraping_type, date, browser, "Europe")
+    elif country.lower() == "usa":
+        results = scrape(country_classes, scraping_type, date, browser, "USA")
+    elif country.lower() == "canada":
+        results = scrape(country_classes, scraping_type, date, browser, "Canada")
     elif country in country_classes:
         class_dict = {country: country_classes[country]}
         results = scrape(class_dict, scraping_type, date, browser)
@@ -187,9 +191,13 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
     if 'd' in flags:
         for country, result in results.items():
             if result.data_validity == "OK":
-                submission_string = interface.convert_dataobject_to_submission(result)
-                discord_bot.submit(country, submission_string, result.screenshot_path)
-                print("Sent submission to Discord")
+                if result.cases > 0:
+                    submission_string = interface.convert_dataobject_to_submission(result)
+                    discord_bot.submit(country, submission_string, result.screenshot_path)
+                    print("Sent submission to Discord")
+                else:
+                    discord_bot.send_message("Zero cases reported on the date {} for {}, omitting submission".format(interface.convert_datetime_to_string(date), country), country)
+                    print("Omitted submission to Discord")
             else:
                 submission_string = interface.convert_dataobject_to_submission(result)
                 discord_bot.send_error("{} (resulting in submission: {})".format(result.data_validity, submission_string),country)
