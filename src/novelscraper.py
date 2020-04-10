@@ -16,14 +16,9 @@ import logging
 import dataobject
 from stringhelpers import *
 import downloader
+import config
 
 log = logging.getLogger("SCRAPER")
-
-# Constants
-ALLOW_SCREENSHOTS = True
-
-# How many words should we use surrounding the number for the learning model?
-SURROUNDING_WORD_COUNT = 5
 
 def get_parsed_javascript_html(website, browser, wait_time = 4, scroll = False):
     """Returns the parsed javascript HTML source code for a website"""
@@ -47,7 +42,7 @@ def get_screenshot(website, browser, screenshot_path, viewport_width=1200, viewp
     if scroll_height != None: #Scroll on page
         browser.execute_script("window.scrollTo(0, {})".format(scroll_height)) 
         time.sleep(0.3)
-    if ALLOW_SCREENSHOTS and screenshot_path != None:
+    if config.ALLOW_SCREENSHOTS and screenshot_path != None:
         browser.save_screenshot(screenshot_path)
 
 def get_visible_text(website, browser, screenshot_path = False, viewport_width=1200, viewport_height=900, wait_time = 4, scroll_height = None, parse_javscript = False):
@@ -63,7 +58,7 @@ def get_visible_text(website, browser, screenshot_path = False, viewport_width=1
     if scroll_height != None: #Scroll on page
         browser.execute_script("window.scrollTo(0, {})".format(scroll_height)) 
         time.sleep(0.3)
-    if ALLOW_SCREENSHOTS and screenshot_path != None:
+    if config.ALLOW_SCREENSHOTS and screenshot_path != None:
         browser.save_screenshot(screenshot_path)
 
     root = html.document_fromstring(browser.page_source)
@@ -262,20 +257,20 @@ class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins):
         words = clean_if_number(words)
         number_index = find_word_index(words, number)
         if number_index == -1:
-            log.error("Training: Cannot find the specified number", number)
+            log.error("Training: Cannot find the specified number" + number)
             raise TypeError
 
         self.learned_data.indices[label] = number_index
         #Get surrounding words and skip the center one
-        context_words = get_surrounding_words(words, number_index, SURROUNDING_WORD_COUNT)
+        context_words = get_surrounding_words(words, number_index, config.SURROUNDING_WORD_COUNT)
         for i, word in enumerate(context_words): #Compute distance value from center, ascending
-            context_words[i] = (word, abs(SURROUNDING_WORD_COUNT-i) + (i >= SURROUNDING_WORD_COUNT))
+            context_words[i] = (word, abs(config.SURROUNDING_WORD_COUNT-i) + (i >= config.SURROUNDING_WORD_COUNT))
         #Eval function: distance * similarity * constant
         #Filter out dates and various unneccessary components
 
         self.learned_data.data[label] = {}
         for word in context_words:
-            self.learned_data.data[label][word[0]] = SURROUNDING_WORD_COUNT - word[1] 
+            self.learned_data.data[label][word[0]] = config.SURROUNDING_WORD_COUNT - word[1] 
 
     def train(self, browser):
         """ Train the model to find the numbers specified in data """
@@ -296,7 +291,7 @@ class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins):
             for rword in register:
                 ldistance = 1 - stringdist.levenshtein_norm(rword, word)
                 if ldistance >= ldistancecutoff: #Similar enough
-                  score += register[rword]/SURROUNDING_WORD_COUNT + ratio*3
+                  score += register[rword]/config.SURROUNDING_WORD_COUNT + ratio*3
         return score
 
     def apply(self, text, register, index):
@@ -318,7 +313,7 @@ class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins):
         previousMaxNumber = -1
         for i, word in enumerate(words):
             if word.isdigit() and not is_time(word):
-                sur_words = get_surrounding_words(words, i, SURROUNDING_WORD_COUNT)
+                sur_words = get_surrounding_words(words, i, config.SURROUNDING_WORD_COUNT)
                 distance_from_index = (index - abs(index - float(i))) / index
                 score = self.evaluate(sur_words, register, distance_from_index)
                 if score > previousMaxScore:

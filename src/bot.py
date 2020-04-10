@@ -7,6 +7,8 @@ import asyncio
 from queue import Queue
 import datetime
 import logging
+import config
+import utils
 
 import interface
 import country_templates
@@ -39,8 +41,6 @@ staff_role_whitelist = {"staff", "the real slip shady"}
 
 normal_role_whitelist = {"interpol"}
 
-RELEASE_BOT = True
-
 def convert_country_to_channel(country):
     if country in country_to_channel_dict:
         return country_to_channel_dict[country]
@@ -62,7 +62,7 @@ def convert_country_index_to_channel(country_index):
 class InvestigatorBot():
     def __init__(self):
         load_dotenv()
-        if RELEASE_BOT:
+        if config.RELEASE_BOT:
             self.TOKEN = os.getenv('DISCORD_TOKEN')
             self.GUILD = os.getenv('DISCORD_GUILD')
         else:
@@ -303,7 +303,13 @@ class InvestigatorDiscordClient(discord.Client):
                 self.command_queue = Queue()
                 await channel.send("Initiating abort, shutting everything down...")
                 exit()
-
+            elif message.content.startswith('!log'):
+                if len(words) > 1:
+                    amount_of_lines = int(words[1])
+                await channel.send("Beep boop! Sending the last {} lines of logging".format(amount_of_lines))
+                logs = utils.tail("log_file.log", amount_of_lines)
+                await channel.send(logs)
+ 
         #if message.content.startswith('check'):
             #channel = message.channel
             #await self.fake_check(channel)

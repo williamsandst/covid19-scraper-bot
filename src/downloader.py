@@ -15,11 +15,9 @@ import pandas as pd
 import dataobject
 import novelscraper
 import bot_data
+import config
 
 log = logging.getLogger("DWNL")
-
-CACHE_TIME_LIMIT_SECONDS = 20
-DRIVE_CACHE_TIME_LIMIT_SECONDS = 180
 
 def check_for_file_cache(date):
     try:
@@ -27,7 +25,7 @@ def check_for_file_cache(date):
         seconds = data["time"]
         now = datetime.datetime.now()
         now_seconds = int(now.hour * 3600 + now.minute * 60 + now.second)
-        if now_seconds < (seconds + CACHE_TIME_LIMIT_SECONDS):
+        if now_seconds < (seconds + config.CACHE_TIME_LIMIT_SECONDS):
             log.info("Covidtracking.com Cache is valid at age {} sec".format(now_seconds-seconds))
             return data
         else: #Cache is too old, redownload
@@ -251,7 +249,7 @@ def check_drive_cache():
         seconds = cache_data["time"]
         now = datetime.datetime.now()
         now_seconds = int(now.hour * 3600 + now.minute * 60 + now.second)
-        if now_seconds < (seconds + DRIVE_CACHE_TIME_LIMIT_SECONDS):
+        if now_seconds < (seconds + config.DRIVE_CACHE_TIME_LIMIT_SECONDS):
             log.info("Drive Cache is valid at age {} sec".format(now_seconds-seconds))
             cache = True
         else: #Cache is too old, redownload

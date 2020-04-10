@@ -19,6 +19,7 @@ from commands import *
 from country_templates import *
 import bot
 import utils
+import config
 
 """ 
 Countries with working automated scraping:
@@ -78,15 +79,9 @@ scheduled_commands = []
 results = {}
 discord_bot = bot.InvestigatorBot()
 
-
-
-DISCORD_BOT_ENABLED = True
-SELENIUM_BROWSER_ALWAYS_ON = True
-SELENIUM_FIREFOX_HEADLESS = True
-
-if SELENIUM_BROWSER_ALWAYS_ON:
+if config.SELENIUM_BROWSER_ALWAYS_ON:
     options = Options()
-    if SELENIUM_FIREFOX_HEADLESS:
+    if config.SELENIUM_FIREFOX_HEADLESS:
         options.headless = True
     browser = webdriver.Firefox(options=options)
 else:
@@ -224,7 +219,7 @@ def main():
     scheduling_thread.start()
 
     # Start discord bot
-    if (DISCORD_BOT_ENABLED):
+    if config.DISCORD_BOT_ENABLED:
         discord_bot.set_command_queue(command_queue)
         discord_bot.start()
         time.sleep(5)
