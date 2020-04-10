@@ -159,16 +159,14 @@ def get_date_index(date: datetime.datetime, fields):
                 return i
     return -1
 
-def scrape_hopkins(scrape_country, scrape_country_iso_code, result, date, scrape_region=None):
+def scrape_hopkins(scrape_country, scrape_province, scrape_country_iso_code, result, date, ):
     result.source_update_date = date
     
-    if scrape_region != None:
-        scrape_country, scrape_region = scrape_region, scrape_country
-
     scrape_country = scrape_country.translate({ord('-'): " "})
-    if scrape_region != None:
-        scrape_region = scrape_region.translate({ord('-'): " "})
+    scrape_province = scrape_province.translate({ord('-'): " "})
 
+    ignore_provinces = (scrape_province == scrape_country)
+ 
     cases_csv_path = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv"
     deaths_csv_path = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv"
     recovered_csv_path = "https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv"
@@ -186,21 +184,21 @@ def scrape_hopkins(scrape_country, scrape_country_iso_code, result, date, scrape
     country_found = False
     for row in cases_rows:
         country = row[1]
-        region = row[0]
-        if country.lower() == scrape_country.lower() and (scrape_region == None or scrape_region.lower() == region.lower()):
+        province = row[0]
+        if country.lower() == scrape_country.lower() and (ignore_provinces or scrape_province.lower() == province.lower()):
             country_found = True
             result.cases += int(row[day_index])
 
     for row in deaths_rows:
         country = row[1]
-        region = row[0]
-        if country.lower() == scrape_country.lower() and (scrape_region == None or scrape_region.lower() == region.lower()):
+        province = row[0]
+        if country.lower() == scrape_country.lower() and (ignore_provinces or scrape_province.lower() == province.lower()):
             result.deaths += int(row[day_index])
 
     for row in recovered_rows:
         country = row[1]
-        region = row[0]
-        if country.lower() == scrape_country.lower() and (scrape_region == None or scrape_region.lower() == region.lower()):
+        province = row[0]
+        if country.lower() == scrape_country.lower() and (ignore_provinces or scrape_province.lower() == province.lower()):
             result.recovered += int(row[day_index])
 
     if country_found == False:

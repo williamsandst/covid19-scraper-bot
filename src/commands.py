@@ -18,7 +18,8 @@ def train(country_classes):
     browser.quit()
 
 def train_country(country, browser, country_classes):
-    country_name = country_classes[country].country_name
+    province_name = (", " + country_classes[country].province_name) if country_classes[country].province_name != country_classes[country].country_name else ""
+    country_name = country_classes[country].country_name + province_name
     print("{}: Training recognition model...".format(country_name))
     country_classes[country].train(browser)
     print("{}: Training complete!".format(country_name))
@@ -54,21 +55,24 @@ def scrape(country_classes, scrape_type="default", date=datetime.datetime.now(),
 
 
 def scrape_country_default(country: str, browser, country_classes):
-    country_name = country_classes[country].country_name
+    province_name = (", " + country_classes[country].province_name) if country_classes[country].province_name != country_classes[country].country_name else ""
+    country_name = country_classes[country].country_name + province_name
     print("{}: Scraping...".format(country_name))
     result = country_classes[country].scrape(browser)
     print("{}: Scraping complete!".format(country_name))
     return result
 
 def scrape_country_coronatracking(country: str, country_classes, date):
-    country_name = country_classes[country].country_name
+    province_name = (", " + country_classes[country].province_name) if country_classes[country].province_name != country_classes[country].country_name else ""
+    country_name = country_classes[country].country_name + province_name
     print("{}: Scraping from Covidtracking.com...".format(country_name))
     result = country_classes[country].scrape_covidtracking(date)
     print("{}: Scraping complete!".format(country_name))
     return result
 
 def scrape_country_hopkins(country: str, country_classes, date):
-    country_name = country_classes[country].country_name
+    province_name = (", " + country_classes[country].province_name) if country_classes[country].province_name != country_classes[country].country_name else ""
+    country_name = country_classes[country].country_name + province_name
     print("{}: Scraping from John Hopkins Github...".format(country_name))
     result = country_classes[country].scrape_hopkins(date)
     print("{}: Scraping complete!".format(country_name))
@@ -165,7 +169,8 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
     if not 'nocheck' in flags: #Check validity of scraped data
         print("Checking scrape result validity...")
         for result_country, result in results.items():
-            if not are_results_valid(result, result_country, date):
+            country_sheet_name = bot.convert_country_index_to_channel(result_country)
+            if not are_results_valid(result, country_sheet_name, date):
                 print("Detected bad data for", result_country)
         
 

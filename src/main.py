@@ -131,7 +131,10 @@ def parse(input_list : list) -> dict:
                 if input_list[i].startswith("\""):
                     input_list[i] = input_list[i][1:-2]
                 else:
-                    input_list[i] = input_list[i].lower()
+                    if input_list[i].lower() in country_aliases:
+                        input_list[i] = country_aliases[input_list[i].lower()]
+                    else:
+                        input_list[i] = input_list[i].lower()
             flags["default"].append(input_list[i])
             i += 1
         flag = ''
@@ -206,6 +209,7 @@ def main():
     init_europe_scrapers()
     init_us_scrapers()
     init_canada_scrapers()
+    create_country_aliases()
     command_queue = queue.Queue()
 
     scheduling_thread = SchedulingThread(command_queue, flags)

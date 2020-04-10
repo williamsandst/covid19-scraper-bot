@@ -8,6 +8,7 @@ from queue import Queue
 import datetime
 
 import interface
+import country_templates
 from bot_data import *
 
 # What should it do?
@@ -49,6 +50,11 @@ def convert_channel_to_country(channel):
     else:
         return channel
 
+def convert_country_index_to_channel(country_index):
+    if country_index in country_templates.country_aliases_reverse:
+        return country_templates.country_aliases_reverse[country_index]
+    else:
+        return country_index
 
 class InvestigatorBot():
     def __init__(self):
@@ -81,22 +87,25 @@ class InvestigatorBot():
     def submit(self, country, string, screenshot_path):
         if self.active:
             split_string = string.split()
-            channel = convert_country_to_channel(country)
+            channel = convert_country_index_to_channel(country)
             if len(split_string) <= 1 or split_string[1] == "-1":
                 self.asyncio_event_loop.create_task(self.client.send_error_message("Bad submission format", channel))
             else:
                 self.asyncio_event_loop.create_task(self.client.send_submission(string, channel, screenshot_path))
 
     def send_screenshot(self, country, screenshot_path, source):
+        channel = convert_country_index_to_channel(country)
         date = screenshot_path.split("|")[1][:-4]
         country_formatted = country[0].upper() + country[1:] 
         message = "Screenshot of {}, taken at {} from <{}>".format(country_formatted, date, source)
-        self.asyncio_event_loop.create_task(self.client.send_image(message, screenshot_path, country))
+        self.asyncio_event_loop.create_task(self.client.send_image(message, screenshot_path, channel))
 
     def send_message(self, message, channel):
+        channel = convert_country_index_to_channel(channel)
         self.asyncio_event_loop.create_task(self.client.send_message(message, channel))
 
     def send_error(self, reason, channel):
+        channel = convert_country_index_to_channel(channel)
         self.asyncio_event_loop.create_task(self.client.send_error_message(reason, channel))
 
     async def start_client(self):

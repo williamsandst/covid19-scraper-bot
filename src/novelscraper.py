@@ -126,6 +126,8 @@ class NovelScraper:
     """Parent class to be inherited for all countries. Defines two needed functions: scrape and __init__"""
     def __init__(self):
         """Initializes class members to match the country the class is designed for"""
+        self.group_name = "N/A (BASE CLASS)"
+        self.province_name = "N/A (BASE CLASS)"
         self.country_name = "N/A (BASE CLASS)"
         self.iso_code = "N/A (BASE CLASS)"
         self.source_website = None
@@ -140,6 +142,9 @@ class NovelScraper:
         self.wait_time = 4
         self.scroll_height = None
         self.region_of_country = None
+
+    def get_index_name(self):
+        return self.province_name.lower()+","+self.country_name.lower()
 
     def try_scrape(self, browser, count = 3):
         for i in range(3):
@@ -194,7 +199,7 @@ class NovelScraperHopkins(NovelScraper):
     def scrape_hopkins(self, time = datetime.datetime.now()):
         result = dataobject.DataObject(self)
 
-        result = downloader.scrape_hopkins(self.country_name, self.iso_code, result, time, self.region_of_country)
+        result = downloader.scrape_hopkins(self.country_name, self.province_name, self.iso_code, result, time)
 
         result.source_website = "https://github.com/CSSEGISandData/COVID-19"
         result.report_website = "https://github.com/CSSEGISandData/COVID-19"
@@ -232,6 +237,8 @@ class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins):
         #2: Find cases, deaths etc based on learning attributes"""
     def __init__(self):
         """Initializes class members to match the country the class is designed for"""
+        self.group_name = "N/A (BASE CLASS)"
+        self.province_name = "N/A (BASE CLASS)"
         self.country_name = "N/A (BASE CLASS)"
         self.iso_code = "N/A (BASE CLASS)"
         self.source_website = None
@@ -278,7 +285,8 @@ class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins):
         text = self.retrieve_text(self.source_website, browser)
         for label, number in self.training_data.items():
             self.learn(text, number, label)
-        self.learned_data.save(self.country_name)
+        save_file_name = self.country_name if self.country_name == self.province_name else self.get_index_name()
+        self.learned_data.save(save_file_name)
 
     def retrieve_text(self, website, browser, screenshot_path = None):
         return get_visible_text(self.source_website, browser, screenshot_path, self.website_width, self.website_height, self.wait_time, self.scroll_height, self.javascript_required)
@@ -336,7 +344,8 @@ class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins):
         #Scramble testing
         #text = clean_text(text)
         #text = scramble_text(text)
-        self.learned_data.load(self.country_name)
+        load_file_name = self.country_name if self.country_name == self.province_name else self.get_index_name()
+        self.learned_data.load(load_file_name)
 
         result_dict = {}
 

@@ -14,6 +14,8 @@ class NovelScraperDK(NovelScraper):
     """Denmark Coronavirus Scraper. Plain HTML"""
     def __init__(self):
         """Initializes class members to match the country the class is designed for"""
+        self.group_name = "Europe"
+        self.province_name = "Denmark"
         self.country_name = "Denmark"
         self.iso_code = "DK"
         #Source has plain html for cases

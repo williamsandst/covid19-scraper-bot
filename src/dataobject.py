@@ -19,7 +19,7 @@ class DataObject:
         self.source_update_date = self.scrape_date
 
         if scraper != None:
-            self.country_name = scraper.country_name
+            self.country_name = scraper.get_index_name()
             if scraper.report_website == None:
                 self.source_website = scraper.source_website
             else:
