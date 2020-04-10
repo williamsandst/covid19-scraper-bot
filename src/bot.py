@@ -294,6 +294,11 @@ class InvestigatorDiscordClient(discord.Client):
                         await channel.send("Beep boop! Investigating Covid-19 cases in {}, please stand by...".format(country))
                     no_check_str = "-nocheck" if no_check else ""
                     self.command_queue.put("scrape {} {} -d -disp {} {}".format(country, scrape_type, date, no_check_str))
+            elif message.content.startswith('!abort'): #Reset the command queue
+                print("Recieved abort command, killing program...")
+                self.command_queue = Queue()
+                await channel.send("Initiating abort, shutting everything down...")
+                exit()
 
         #if message.content.startswith('check'):
             #channel = message.channel
