@@ -197,6 +197,7 @@ class SchedulingThread(Thread):
 
 def main():
     utils.init_logging("log_file.log")
+    utils.prepare_directories()
 
     flags = {}
     t = datetime.datetime(year=2020, month=1, day=1, hour=13, minute=14, second=0)

@@ -6,6 +6,7 @@ import csv
 import codecs
 import logging
 from contextlib import closing
+from pathlib import Path
 
 import dateutil.parser
 from pydrive.drive import GoogleDrive
@@ -19,26 +20,39 @@ import config
 
 log = logging.getLogger("DWNL")
 
-def check_for_file_cache(date):
-    try:
-        data = novelscraper.load_dict_from_file("data/covidtracking_cache_{}_{}_{}.cache".format(date.day, date.month, date.hour))
-        seconds = data["time"]
-        now = datetime.datetime.now()
-        now_seconds = int(now.hour * 3600 + now.minute * 60 + now.second)
-        if now_seconds < (seconds + config.CACHE_TIME_LIMIT_SECONDS):
-            log.info("Covidtracking.com Cache is valid at age {} sec".format(now_seconds-seconds))
-            return data
-        else: #Cache is too old, redownload
-            log.info("Covidtracking Cache is old, revalidating")
-            return None
-    except: #Something went wrong loading the cache, redownload
-        log.warning("Covidtracking Cache Error")
-        return None
 
-def save_cache(data, savedate):
+def save_cache(name, data={}, save_date = datetime.datetime.now()):
     date = datetime.datetime.now()
-    data["time"] = int(date.hour * 3600 + date.minute * 60 + date.second)
-    novelscraper.save_dict_to_file(data, "data/covidtracking_cache_{}_{}_{}.cache".format(savedate.day, savedate.month, savedate.hour))
+    data["time"] = int(date.day * 86400 + date.hour * 3600 + date.minute * 60 + date.second)
+    novelscraper.save_dict_to_file(data, "data/{}_{}_{}_{}.cache".format(name, save_date.month, save_date.day, save_date.hour))
+
+def load_cache(name, load_date = datetime.datetime.now()):
+    try:
+        data = novelscraper.load_dict_from_file("data/{}_{}_{}_{}.cache".format(name, load_date.month, load_date.day, load_date.hour))
+    except:
+        log.warning("Cannot load {} cache file".format(name))
+        data = None
+    return data
+
+def remove_cache(name, load_date):
+    Path("data/{}_{}_{}_{}.cache.json".format(name, load_date.month, load_date.day, load_date.hour)).unlink()
+
+def retrieve_cache(name, timeout = config.COVIDTRACKING_CACHE_TIMEOUT, load_date = datetime.datetime.now()):
+    date = datetime.datetime.now()
+    now_seconds = int(date.day * 86400 + date.hour * 3600 + date.minute * 60 + date.second)
+    cache = load_cache(name, load_date)
+    if cache != None:
+        seconds = cache["time"]
+        if now_seconds < (seconds + timeout):
+            log.info("{} Cache is valid at age {} sec".format(name, now_seconds-seconds))
+            return cache
+        else:
+            log.info("{} Cache is old, revalidating".format(name))
+            # Remove old cache file
+            remove_cache(name, load_date)
+            return None
+    else:
+        return None
 
 def getJSONFromLink(link):
     s = requests.Session()
@@ -80,11 +94,11 @@ def scrape_covidtracking(state: str, result, date = datetime.datetime.now(), che
     result.recovered = -1
     result.source_update_date = date
 
-    now_cache = check_for_file_cache(now_date)
+    now_cache = retrieve_cache("covidtracking", config.COVIDTRACKING_CACHE_TIMEOUT, now_date)
     save_now_cache = False
     
     if check_yesterday_if_error:
-        yesterday_cache = check_for_file_cache(yesterday_date)
+        yesterday_cache = now_cache = retrieve_cache("covidtracking", config.COVIDTRACKING_CACHE_TIMEOUT, yesterday_date)
     else:
         yesterday_cache = {}
 
@@ -127,9 +141,9 @@ def scrape_covidtracking(state: str, result, date = datetime.datetime.now(), che
             result.source_update_date = date2
 
     if save_now_cache:
-        save_cache(now_cache, now_date)
+        save_cache("covidtracking", now_cache, now_date)
     if save_yesterday_cache:
-        save_cache(yesterday_cache, yesterday_date)
+        save_cache("covidtracking", yesterday_cache, yesterday_date)
         
 
     return result
@@ -242,29 +256,11 @@ def download_sheet_from_drive():
     log.info("Download complete")
 
 def check_drive_cache():
-    cache = False
-    date = datetime.datetime.now()
-    try:
-        cache_data = novelscraper.load_dict_from_file("data/drive/sheet_cache_{}_{}_{}.cache".format(date.day, date.month, date.hour))
-        seconds = cache_data["time"]
-        now = datetime.datetime.now()
-        now_seconds = int(now.hour * 3600 + now.minute * 60 + now.second)
-        if now_seconds < (seconds + config.DRIVE_CACHE_TIME_LIMIT_SECONDS):
-            log.info("Drive Cache is valid at age {} sec".format(now_seconds-seconds))
-            cache = True
-        else: #Cache is too old, redownload
-            log.info("Drive Cache is old, revalidating")
-            cache = False
-    except:
-        cache = False
-        log.warning("Drive Cache error")
+    cache = retrieve_cache("drive", config.DRIVE_CACHE_TIMEOUT)
 
-    if not cache: #Download sheet
+    if cache is None: #Download sheet
         download_sheet_from_drive()
-        cache_data = {}
-        date = datetime.datetime.now()
-        cache_data["time"] = int(date.hour * 3600 + date.minute * 60 + date.second)
-        novelscraper.save_dict_to_file(cache_data, "data/drive/sheet_cache_{}_{}_{}.cache".format(date.day, date.month, date.hour))
+        save_cache("drive")
 
 def channel_to_sheet_country(channel):
     # Remove '-' and make every word first character capitalised

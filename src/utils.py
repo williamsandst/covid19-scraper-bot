@@ -1,6 +1,7 @@
 import logging
 import config
 from collections import deque
+from pathlib import Path
 
 log_time = False
 
@@ -35,3 +36,7 @@ def tail(file_path, line_count):
         result += line
     f.close()
     return result
+
+def prepare_directories():
+    Path("screenshots").mkdir(parents=True, exist_ok=True)
+    Path("data").mkdir(parents=True, exist_ok=True)
