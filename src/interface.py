@@ -26,6 +26,14 @@ def convert_dataobject_to_submission(dataobject: dataobject.DataObject):
         date = convert_datetime_to_string(dataobject.source_update_date)
         return "= {} {} {} {} {}".format(dataobject.cases, dataobject.deaths, dataobject.recovered, date, dataobject.source_website)
 
+def convert_dataobject_to_additional_data_string(dataobject: dataobject.DataObject):
+    result = "Additional scrape data - "
+    result += "Tested: " + str(dataobject.tested) + " " if dataobject.tested != 0 else ""
+    result += "Hospitalised: " + str(dataobject.hospitalised) + " " if dataobject.hospitalised != 0 else ""
+    result += "Intensive Care: " + str(dataobject.intensive_care) + " " if dataobject.intensive_care != 0 else ""
+    result = result if result != "Additional scrape data - " else None
+    return result
+
 
 def create_submissions(datadict: dict):
     submissions = ""

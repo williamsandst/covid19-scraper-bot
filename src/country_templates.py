@@ -4,6 +4,8 @@ from manual_scrapers import *
 country_classes = {}
 country_aliases = {}
 country_aliases_reverse = {}
+country_aliases_extended = {}
+country_aliases_extended_reverse = {}
 
 def init_europe_scrapers():
     """ Initiate the various country classes """
@@ -1099,3 +1101,8 @@ def create_country_aliases():
 
     for country_name, scraper in country_classes.items():
         country_aliases_reverse[country_name] = scraper.province_name.lower()
+        country_aliases_extended_reverse[scraper.get_pretty_name()] = scraper.province_name.lower()
+        country_aliases_extended_reverse[country_name] = scraper.province_name.lower()
+
+
+    

@@ -18,13 +18,12 @@ def train(country_classes):
         if country_classes[country].training_data != None:
             train_country(country, browser, country_classes)
         else:
-            log.warning("{}: Missing training data".format(country))
+            log.warning("{}: Missing training data".format(country_classes[country].get_pretty_name()))
     log.info("Training complete!")
     browser.quit()
 
 def train_country(country, browser, country_classes):
-    province_name = (", " + country_classes[country].province_name) if country_classes[country].province_name != country_classes[country].country_name else ""
-    country_name = country_classes[country].country_name + province_name
+    country_name = country_classes[country].get_pretty_name()
     log.info("{}: Training recognition model...".format(country_name))
     country_classes[country].train(browser)
     log.info("{}: Training complete!".format(country_name))
@@ -60,24 +59,21 @@ def scrape(country_classes, scrape_type="default", date=datetime.datetime.now(),
 
 
 def scrape_country_default(country: str, browser, country_classes):
-    province_name = (", " + country_classes[country].province_name) if country_classes[country].province_name != country_classes[country].country_name else ""
-    country_name = country_classes[country].country_name + province_name
+    country_name = country_classes[country].get_pretty_name()
     log.info("{}: Scraping...".format(country_name))
     result = country_classes[country].scrape(browser)
     log.info("{}: Scraping complete!".format(country_name))
     return result
 
 def scrape_country_coronatracking(country: str, country_classes, date):
-    province_name = (", " + country_classes[country].province_name) if country_classes[country].province_name != country_classes[country].country_name else ""
-    country_name = country_classes[country].country_name + province_name
+    country_name = country_classes[country].get_pretty_name()
     log.info("{}: Scraping from Covidtracking.com...".format(country_name))
     result = country_classes[country].scrape_covidtracking(date)
     log.info("{}: Scraping complete!".format(country_name))
     return result
 
 def scrape_country_hopkins(country: str, country_classes, date):
-    province_name = (", " + country_classes[country].province_name) if country_classes[country].province_name != country_classes[country].country_name else ""
-    country_name = country_classes[country].country_name + province_name
+    country_name = country_classes[country].get_pretty_name()
     log.info("{}: Scraping from John Hopkins Github...".format(country_name))
     result = country_classes[country].scrape_hopkins(date)
     log.info("{}: Scraping complete!".format(country_name))
@@ -155,6 +151,8 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
     else:
         country = flags["default"]
 
+    
+
     if 't' in flags and isinstance(flags["t"], str):
         date = interface.convert_string_to_datetime(flags['t'])
     else:
@@ -175,12 +173,12 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
         error_message("The specified country {} is not registered".format(country))
         return
 
-    if not 'nocheck' in flags: #Check validity of scraped data
+    if not 'nocheck' in flags and not config.DISABLE_SHEET_ERROR_CHECKING: #Check validity of scraped data
         log.info("Checking scrape result validity...")
         for result_country, result in results.items():
             country_sheet_name = bot.convert_country_index_to_channel(result_country)
             if not are_results_valid(result, country_sheet_name, date):
-                log.warning("Detected bad data for " + result_country)
+                log.warning("Detected bad data for " + result.pretty_country_name)
         
 
     if 'nodisp' not in flags:
@@ -198,9 +196,12 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
             if result.data_validity == "OK":
                 if result.cases > 0:
                     submission_string = interface.convert_dataobject_to_submission(result)
-                    discord_bot.submit(country, submission_string, result.screenshot_path)
+                    submission_additional_data_str = None
+                    if config.SUBMIT_ADDITIONAL_DATA:
+                        submission_additional_data_str = interface.convert_dataobject_to_additional_data_string(result)
+                    discord_bot.submit(country, submission_string, result.screenshot_path, submission_additional_data_str)
                 else:
-                    discord_bot.send_message("Zero cases reported on the date {} for {}, omitting submission".format(interface.convert_datetime_to_string(date), country), country)
+                    discord_bot.send_message("Zero cases reported on the date {} for {}, omitting submission".format(interface.convert_datetime_to_string(date), result.pretty_country_name), country)
                     log.info("Omitted submission to Discord due to zero cases")
             else:
                 submission_string = interface.convert_dataobject_to_submission(result)
@@ -217,12 +218,17 @@ def cmd_train(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorB
 
     if "data" in flags: #Assigned data from command
         training_data = {}
-        if len(flags["data"]) > 0:
+        if isinstance(flags["data"], dict):
+            for label in flags["data"]:
+                flags["data"][label] = str(flags["data"][label])
+            training_data = flags["data"]
+        elif isinstance(flags["data"], list):
             training_data["cases"] = flags["data"][0]
-        if len(flags["data"]) > 1:
             training_data["deaths"] = flags["data"][1]
-        if len(flags["data"]) > 2:
-            training_data["recovered"] = flags["data"][2]
+            if len(flags["data"]) > 2:
+                training_data["recovered"] = flags["data"][2]
+        elif isinstance(flags["data"], str):
+            training_data["cases"] = flags["data"]
         country_classes[country].training_data = training_data
 
     create_browser = (browser == None)
@@ -240,6 +246,7 @@ def cmd_screenshot(country_classes: dict, flags: dict, discord_bot: bot.Investig
         error_message("The required arguments are missing or are incorrectly formated")
         return
     country = flags["default"]
+    pretty_country_name = country_classes[country].get_pretty_name()
 
     create_browser = (browser == None)
 
@@ -254,14 +261,14 @@ def cmd_screenshot(country_classes: dict, flags: dict, discord_bot: bot.Investig
         if create_browser:
             browser.quit()    
         if 'nodisp' not in flags:
-            log.info("Took screenshot of {}, saved at {}".format(country, path))
+            log.info("Took screenshot of {}, saved at {}".format(pretty_country_name, path))
             
     if 'd' in flags:
         source = country_classes[country].report_website if country_classes[country].report_website != None else country_classes[country].source_website
         if source != None:
-            discord_bot.send_screenshot(country, path, source)
+            discord_bot.send_screenshot(pretty_country_name, path, source)
         else:
-            discord_bot.send_error("This country does not yet have a source specified", country)
+            discord_bot.send_error("This country does not yet have a source specified", pretty_country_name)
 
     country_classes[country].wait_time = saved_wait_time
 

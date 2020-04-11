@@ -54,10 +54,17 @@ def convert_channel_to_country(channel):
         return channel
 
 def convert_country_index_to_channel(country_index):
-    if country_index in country_templates.country_aliases_reverse:
-        return country_templates.country_aliases_reverse[country_index]
+    if country_index in country_templates.country_aliases_extended_reverse:
+        return country_templates.country_aliases_extended_reverse[country_index]
     else:
         return country_index
+
+def create_dict_from_message(message):
+    d = {}
+    for pair in message:
+        key, value = pair.split("=")
+        d[key] = value
+    return d
 
 class InvestigatorBot():
     def __init__(self):
@@ -87,7 +94,7 @@ class InvestigatorBot():
     def run(self):
         self.asyncio_event_loop.run_forever()
 
-    def submit(self, country, string, screenshot_path):
+    def submit(self, country, string, screenshot_path, additional_data = None):
         if self.active:
             split_string = string.split()
             channel = convert_country_index_to_channel(country)
@@ -95,7 +102,7 @@ class InvestigatorBot():
                 self.asyncio_event_loop.create_task(self.client.send_error_message("Bad submission format", channel))
             else:
                 log.info("Sent Discord submission to {}".format(channel))
-                self.asyncio_event_loop.create_task(self.client.send_submission(string, channel, screenshot_path))
+                self.asyncio_event_loop.create_task(self.client.send_submission(string, channel, screenshot_path, additional_data))
 
     def send_screenshot(self, country, screenshot_path, source):
         channel = convert_country_index_to_channel(country)
@@ -136,9 +143,11 @@ class InvestigatorDiscordClient(discord.Client):
         log.info(f'{self.server.name}(id: {self.server.id})')
         await self.change_presence(activity=discord.Activity(type=discord.ActivityType.watching, name=self.bot_status_text))
 
-    async def send_submission(self, string, channel_input, screenshot_path):
+    async def send_submission(self, string, channel_input, screenshot_path, additional_data = None):
         channel = discord.utils.get(self.server.channels, name=channel_input)
         if channel != None: 
+            if additional_data != None:
+                await channel.send(additional_data)
             if screenshot_path != None:
                 await channel.send(self.bot_submission_text, file=discord.File(screenshot_path))
             else:
@@ -311,10 +320,13 @@ class InvestigatorDiscordClient(discord.Client):
                 await channel.send(logs)
             elif message.content.startswith('!train'):
                 command = words[1:]
-                if len(command) > 0 and len(command) <= 3:
+                if len(command) > 0 and "=" not in command[0] and len(command) <= 3:
                     command = ' '.join(command)
-                    self.command_queue.put("train {} -d -data {}".format(country, command))
-                    await channel.send("Beep boop! Training recognition model...")
+                elif len(command) > 0 and "=" in command[0]:
+                    command = "\"{}\"".format(str(create_dict_from_message(command)))
+                self.command_queue.put("train {} -d -data {}".format(country, command))
+                await channel.send("Beep boop! Training recognition model...")
+                
 
 
  

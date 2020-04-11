@@ -47,6 +47,7 @@ def get_screenshot(website, browser, screenshot_path, viewport_width=1200, viewp
 
 def get_visible_text(website, browser, screenshot_path = False, viewport_width=1200, viewport_height=900, wait_time = 4, scroll_height = None, parse_javscript = False):
     # extract text
+    log.info("Retrieving website with Selenium: {}".format(website))
     browser.set_window_size(viewport_width, viewport_height) 
     browser.get(website)
 
@@ -138,6 +139,12 @@ class NovelScraper:
     def get_index_name(self):
         return self.province_name.lower()+","+self.country_name.lower()
 
+    def get_pretty_name(self):
+        if self.province_name == self.country_name:
+            return self.country_name.translate({ord("-"): " "})
+        else:
+            return (self.province_name+", "+self.country_name).translate({ord("-"): " "})
+
     def try_scrape(self, browser, count = 3):
         for i in range(3):
             try:
@@ -155,7 +162,7 @@ class NovelScraper:
             return None
         time = datetime.datetime.now()
         time = time.replace(microsecond=0)
-        screenshot_path = "screenshots/{}|{}.png".format(self.country_name.lower(), time.__str__())
+        screenshot_path = "screenshots/{}|{}.png".format(self.get_index_name(), time.__str__())
         get_screenshot(self.source_website, browser, screenshot_path, self.website_width, self.website_height, self.wait_time, self.scroll_height)
         return screenshot_path
 
@@ -330,7 +337,7 @@ class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins):
         result = dataobject.DataObject(self)
 
         result.scrape_date = result.scrape_date.replace(microsecond=0)
-        screenshot_path = "screenshots/{}|{}.png".format(self.country_name.lower(), result.scrape_date.__str__())
+        screenshot_path = "screenshots/{}|{}.png".format(self.get_index_name(), result.scrape_date.__str__())
         result.screenshot_path = screenshot_path
         text = self.retrieve_text(self.source_website, browser, screenshot_path)
         #Scramble testing

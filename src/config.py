@@ -6,6 +6,7 @@ DISABLE_UNIMPORTANT_MODULE_LOGGING = True
 # Discord
 DISCORD_BOT_ENABLED = True
 RELEASE_BOT = True
+SUBMIT_ADDITIONAL_DATA = True
 
 # Browser
 SELENIUM_BROWSER_ALWAYS_ON = True
@@ -19,3 +20,4 @@ DRIVE_CACHE_TIMEOUT = 180
 ALLOW_SCREENSHOTS = True
 # Surrounding words used in the learning model. WARNING - Changing this will break previous learned models!
 SURROUNDING_WORD_COUNT = 5
+DISABLE_SHEET_ERROR_CHECKING = False

@@ -12,6 +12,7 @@ import datetime
 import queue
 import os
 import logging
+import ast
 
 from novelscraper import *
 from manual_scrapers import *
@@ -144,6 +145,8 @@ def parse(input_list : list) -> dict:
             if value[0] == '-':
                 flag = value[1:]
                 flags[flag] = []
+            elif value[0] == "\"":
+                flags[flag].append(value[1:-2])
             else:
                 flags[flag].append(value)
 
@@ -153,6 +156,11 @@ def parse(input_list : list) -> dict:
         elif len(args) == 1: 
             flags[flag] = args[0]
 
+    #Convert dictionary strings to actual dictionaries
+    for flag, args in flags.items():
+        if isinstance(args, str) and "{" in args and "}" in args and ":" in args:
+            str_dict = ast.literal_eval(args.strip()) #Safer than normal eval
+            flags[flag] = str_dict
     return flags
 
 ENABLE_EXTERNAL_COMMANDS = True
