@@ -20,7 +20,7 @@ import config
 
 log = logging.getLogger("DWNL")
 
-
+# Cache functions
 def save_cache(name, data={}, save_date = datetime.datetime.now()):
     date = datetime.datetime.now()
     data["time"] = int(date.day * 86400 + date.hour * 3600 + date.minute * 60 + date.second)
@@ -54,12 +54,27 @@ def retrieve_cache(name, timeout = config.COVIDTRACKING_CACHE_TIMEOUT, load_date
     else:
         return None
 
-def getJSONFromLink(link):
+def get_JSON_from_link(link):
     s = requests.Session()
     page = s.get(link)
     cookies = dict(page.cookies)
     data = json.loads(page.content)
     return data
+
+def get_csv_from_link(link):
+    page = requests.get(link)
+    csvreader = csv.reader(codecs.iterdecode(page.iter_lines(), 'utf-8'))
+
+    fields = [] 
+    rows = [] 
+  
+    fields = next(csvreader) 
+
+    # extracting each data row one by one 
+    for row in csvreader: 
+        rows.append(row) 
+  
+    return fields, rows
 
 def convert_datetime_to_datestring(date: datetime.datetime):
     month = date.month if date.month >= 10 else ("0" + str(date.month))
@@ -107,7 +122,7 @@ def scrape_covidtracking(state: str, result, date = datetime.datetime.now(), che
     if now_cache == None:
         final_dict = {}
         log.info("Retrieving {} data for {} from the Covidtracking.com API".format(state, now_date_str))
-        data = getJSONFromLink("https://covidtracking.com/api/states/daily?date=" + now_date_str)
+        data = get_JSON_from_link("https://covidtracking.com/api/states/daily?date=" + now_date_str)
         if not isinstance(data, list) and data["error"] == True:
             log.warning("Covidtracking.com has no data for date {}".format(now_date_str))
             result.data_validity = "Error retrieving covidtracking.com data from date {}, has the source updated for this day yet?".format(now_date_str)
@@ -121,7 +136,7 @@ def scrape_covidtracking(state: str, result, date = datetime.datetime.now(), che
     if yesterday_cache == None:
         final_dict = {}
         log.info("Retrieving {} data for {} from the Covidtracking.com API".format(state, yesterday_date_str))
-        data = getJSONFromLink("https://covidtracking.com/api/states/daily?date=" + yesterday_date_str)
+        data = get_JSON_from_link("https://covidtracking.com/api/states/daily?date=" + yesterday_date_str)
         if not isinstance(data, list) and data["error"] == True:
             log.warning("Covidtracking.com has no data for date {}".format(yesterday_date_str))
             result.data_validity = "Error retrieving covidtracking.com data for this date {}, has the source updated for this day yet?".format(yesterday_date_str)
@@ -147,21 +162,6 @@ def scrape_covidtracking(state: str, result, date = datetime.datetime.now(), che
         
 
     return result
-
-def get_csv_from_link(link):
-    page = requests.get(link)
-    csvreader = csv.reader(codecs.iterdecode(page.iter_lines(), 'utf-8'))
-
-    fields = [] 
-    rows = [] 
-  
-    fields = next(csvreader) 
-
-    # extracting each data row one by one 
-    for row in csvreader: 
-        rows.append(row) 
-  
-    return fields, rows
 
 def get_date_index(date: datetime.datetime, fields):
     for i, day in enumerate(fields[4:], 4):
@@ -219,7 +219,6 @@ def scrape_hopkins(scrape_country, scrape_province, scrape_country_iso_code, res
         result.data_validity = "John Hopkins has data for this date, but the country {} cannot be located. There might be a naming conflict.".format(scrape_country)
 
     return result
-
 
 def download_sheet_from_drive():
     # Create GoogleDrive instance with authenticated GoogleAuth instance.

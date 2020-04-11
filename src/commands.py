@@ -212,13 +212,28 @@ def cmd_train(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorB
     if "default" not in flags or not isinstance(flags["default"], str):
         error_message("The required arguments are missing or are incorrectly formated")
         return
+
     country = flags["default"]
+
+    if "data" in flags: #Assigned data from command
+        training_data = {}
+        if len(flags["data"]) > 0:
+            training_data["cases"] = flags["data"][0]
+        if len(flags["data"]) > 1:
+            training_data["deaths"] = flags["data"][1]
+        if len(flags["data"]) > 2:
+            training_data["recovered"] = flags["data"][2]
+        country_classes[country].training_data = training_data
+
     create_browser = (browser == None)
     if create_browser:
         browser = webdriver.Firefox()
     train_country(country.lower(), browser, country_classes)
     if create_browser:
         browser.quit()
+
+    if "d" in flags:
+        discord_bot.send_message("Trained a recognition model for {} based on provided data".format(country), country)
 
 def cmd_screenshot(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBot, browser):
     if "default" not in flags or not isinstance(flags["default"], str):

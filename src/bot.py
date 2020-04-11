@@ -309,6 +309,14 @@ class InvestigatorDiscordClient(discord.Client):
                 await channel.send("Beep boop! Sending the last {} lines of logging".format(amount_of_lines))
                 logs = utils.tail("log_file.log", amount_of_lines)
                 await channel.send(logs)
+            elif message.content.startswith('!train'):
+                command = words[1:]
+                if len(command) > 0 and len(command) <= 3:
+                    command = ' '.join(command)
+                    self.command_queue.put("train {} -d -data {}".format(country, command))
+                    await channel.send("Beep boop! Training recognition model...")
+
+
  
         #if message.content.startswith('check'):
             #channel = message.channel
