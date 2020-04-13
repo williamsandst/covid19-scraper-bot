@@ -277,8 +277,6 @@ def cmd_screenshot(country_classes: dict, flags: dict, discord_bot: bot.Investig
 
 def cmd_help(country_classes: dict, flags: dict):
     """cmd: help. Print the help string, containing command descriptions"""
-    a = 1
-    print(a[1])
     print(command_list)
 
 def cmd_exit(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBot, browser):
