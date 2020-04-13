@@ -264,6 +264,7 @@ class InvestigatorDiscordClient(discord.Client):
             if message.content.startswith('!scrape'):
                 if len(words) >= 2:
                     no_check = False
+                    cache_only = False
                     if words[1] == "covidtracker" or words[1] == "covidtracking" or words[1] == "ct": 
                         scrape_type = "covidtracking"
                     elif words[1] == "hopkins" or words[1] == "johnhopkins" or words[1] == "john"  or words[1] == "jh":
@@ -286,6 +287,8 @@ class InvestigatorDiscordClient(discord.Client):
                     if len(words) >= 3: #Date argument
                         if words[2] == "nocheck" or words[2] == "nc":
                             no_check = True
+                        elif words[2] == "cacheonly" or words[2] == "co":
+                            cache_only = True
                         else:
                             date = words[2]
                             if len(words) > 5:
@@ -295,6 +298,8 @@ class InvestigatorDiscordClient(discord.Client):
                             if len(words) >= 4:
                                 if words[3] == "nocheck" or words[3] == "nc":
                                     no_check = True
+                                elif words[2] == "cacheonly" or words[2] == "co":
+                                    cache_only = True
                         
                     if "-" in date: #Range
                         date = "-r " + date
@@ -302,11 +307,12 @@ class InvestigatorDiscordClient(discord.Client):
                         date = "-t " + date
 
                     if no_check:
-                        await channel.send("Beep boop! Investigating Covid-19 cases in {}, please stand by... (NOTE: ERROR CHECKING IS DISABLED!)".format(country))
+                        await channel.send("Beep boop! Investigating Covid-19 cases in {}, please stand by... (NOTE: SHEET CROSS-CHECKING IS DISABLED!)".format(country))
                     else:
                         await channel.send("Beep boop! Investigating Covid-19 cases in {}, please stand by...".format(country))
                     no_check_str = "-nocheck" if no_check else ""
-                    self.command_queue.put("scrape {} {} -d -disp {} {}".format(country, scrape_type, date, no_check_str))
+                    cache_only_str = "-cacheonly" if cache_only else ""
+                    self.command_queue.put("scrape {} {} -d -disp {} {} {}".format(country, scrape_type, date, no_check_str, cache_only_str))
             elif message.content.startswith('!abort'): #Reset the command queue
                 log.info("Recieved Discord abort command, killing program...")
                 self.command_queue = Queue()

@@ -163,7 +163,9 @@ def remove_javascript(words: list) -> list:
     return new_words
 
 def get_surrounding_words(words: list, index: int, count: int) -> list:
-    return words[index-count:index] +  words[index+1:index+count+1]
+    start = words[index-count:index]
+    end = words[index+1:index+count+1]
+    return start + end
 
 def combine_separate_numbers(words: list) -> list:
     """ Combines separated numbers eg 2 016 into 2016. Doesn't work for negative numbers, floats or exponentials """

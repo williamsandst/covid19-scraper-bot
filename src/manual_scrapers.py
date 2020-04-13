@@ -30,6 +30,8 @@ class NovelScraperDK(NovelScraper):
         self.has_default = True
         self.wait_time = 4
         self.scroll_height = None
+        self.adjust_scraped_recovery_from_sheet = True
+        self.adjust_scraped_deaths_from_sheet = False
 
     def scrape(self, browser):
         """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
@@ -58,6 +60,49 @@ class NovelScraperDK(NovelScraper):
         result.tested = denmark_tested + faraoe_tested + greenland_tested
 
         return result
+
+class NovelScraperNY(NovelScraperCovidTracking):
+    """United States, New York Coronavirus Scraper. Plain HTML"""
+    def __init__(self):
+        """Initializes class members to match the country the class is designed for"""
+        self.group_name = "Europe"
+        self.province_name = "New-York"
+        self.country_name = "United States"
+        self.iso_code = "NY"
+        #Source has plain html for cases
+        self.source_website = "https://covid19tracker.health.ny.gov/views/NYS-COVID19-Tracker/NYSDOHCOVID-19Tracker-Map?%3Aembed=yes&%3Atoolbar=no&%3Atabs=n"
+        self.source2_website = "https://covid19tracker.health.ny.gov/views/NYS-COVID19-Tracker/NYSDOHCOVID-19Tracker-Fatalities?%3Aembed=yes&%3Atoolbar=no&%3Atabs=n"
+        self.report_website = None
+        self.javascript_required = True
+        self.training_data = None
+        self.has_covidtracking = True
+        self.has_hopkins = False
+        self.has_default = True
+        self.website_height = 900
+        self.website_width = 900
+        self.wait_time = 4
+        self.scroll_height = None
+        self.adjust_scraped_recovery_from_sheet = True
+        self.adjust_scraped_deaths_from_sheet = False
+        self.javascript_required = True
+
+    def scrape(self, browser):
+        """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
+        result = dataobject.DataObject(self)
+        soup = get_parsed_javascript_html(self.source_website, browser)
+        #save_to_file(soup.prettify(), "output.txt", )
+
+        #objects = soup.find("td", text=re.compile("Geografsk område")).parent.parent.find_all("td")
+        #table = [i.text for i in objects]
+
+        #result.cases = denmark_cases + faraoe_cases + greenland_cases
+        #result.deaths = denmark_deaths + faraoe_deaths + greenland_deaths
+        #result.tested = denmark_tested + faraoe_tested + greenland_tested
+
+        #soup = get_parsed_javascript_html(self.source2_website, browser)
+
+        return result
+
 
 class NovelScraperFR(NovelScraper):
     """France Coronavirus Scraper. Plain HTML"""

@@ -24,7 +24,7 @@ def init_logging(log_file_path=None, append=False, console_loglevel=logging.INFO
                             datefmt='%Y-%m-%d %H:%M:%S')
 
     if config.DISABLE_UNIMPORTANT_MODULE_LOGGING:
-        logging.getLogger("discord").setLevel(logging.WARNING)
+        logging.getLogger("discord").setLevel(logging.ERROR)
         logging.getLogger("requests").setLevel(logging.WARNING)
         logging.getLogger("googleapiclient").setLevel(logging.ERROR)
         logging.getLogger("oauth2client").setLevel(logging.ERROR)

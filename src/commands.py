@@ -39,8 +39,8 @@ def scrape(country_classes, scrape_type="default", date=datetime.datetime.now(),
             browser = webdriver.Firefox()
 
         for country in country_classes:
-            if country_classes[country].has_default and (country_group == None or country_classes[country].group_name == country_group):
-                results[country] = scrape_country_default(country, browser, country_classes)
+            if country_classes[country].has_auto and (country_group == None or country_classes[country].group_name == country_group):
+                results[country] = scrape_country_auto(country, browser, country_classes)
         if create_browser:
             browser.quit()
 
@@ -58,7 +58,7 @@ def scrape(country_classes, scrape_type="default", date=datetime.datetime.now(),
     return results
 
 
-def scrape_country_default(country: str, browser, country_classes):
+def scrape_country_auto(country: str, browser, country_classes):
     country_name = country_classes[country].get_pretty_name()
     log.info("{}: Scraping...".format(country_name))
     result = country_classes[country].scrape(browser)
@@ -86,9 +86,9 @@ def screenshot_country(country, browser, country_classes):
 
 lenient_on_recovery = True
 
-def are_results_valid(result, country, date):
+def are_results_valid(result, country, date, ignore_cache_timeout = False):
     # Compare with current data in the sheet
-    sheet_data = downloader.check_from_sheet(country, "SE", date)
+    sheet_data = downloader.check_from_sheet(country, "SE", date, ignore_cache_timeout)
     if sheet_data.data_validity == "OK":
         """if sheet_data.cases > result.cases:
             result.data_validity = "Scraped cases are lower than the sheet value for {}".format(date)
@@ -101,9 +101,12 @@ def are_results_valid(result, country, date):
                     result.data_validity = "Scraped recovered are lower than the sheet value for {}".format(date)
                     return False"""
         #else:
-        if result.recovered < sheet_data.recovered:
+        if config.ALLOW_RECOVERY_SHEET_ADJUSTMENT and result.use_sheet_recovered  and result.recovered < sheet_data.recovered:
             log.info("Data validation: Doing recovery adjustment from sheet data")
-        result.recovered = max(result.recovered, sheet_data.recovered)
+            result.recovered = max(result.recovered, sheet_data.recovered)
+        if config.ALLOW_DEATH_SHEET_ADJUSTMENT and result.use_sheet_deaths and result.deaths < sheet_data.deaths:
+            log.info("Data validation: Doing death adjustment from sheet data")
+            result.deaths = max(result.deaths, sheet_data.deaths)
     # Other checks
     if result.cases < result.deaths:
         result.data_validity = "Scraped cases are less than scraped deaths"
@@ -177,7 +180,7 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
         log.info("Checking scrape result validity...")
         for result_country, result in results.items():
             country_sheet_name = bot.convert_country_index_to_channel(result_country)
-            if not are_results_valid(result, country_sheet_name, date):
+            if not are_results_valid(result, country_sheet_name, date, 'cacheonly' in flags):
                 log.warning("Detected bad data for " + result.pretty_country_name)
         
 
@@ -239,7 +242,7 @@ def cmd_train(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorB
         browser.quit()
 
     if "d" in flags:
-        discord_bot.send_message("Trained a recognition model for {} based on provided data".format(country), country)
+        discord_bot.send_message("Trained a recognition model for {} based on provided data".format(country_classes[country].get_pretty_name()), country)
 
 def cmd_screenshot(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBot, browser):
     if "default" not in flags or not isinstance(flags["default"], str):

@@ -12,6 +12,7 @@ class DataObject:
         self.intensive_care = 0
         self.suspected_cases = 0
         self.data_validity = "OK"
+
         
         self.screenshot_path = None
         self.source_website = None
@@ -19,6 +20,8 @@ class DataObject:
         self.source_update_date = self.scrape_date
 
         if scraper != None:
+            self.use_sheet_recovered = scraper.adjust_scraped_recovery_from_sheet
+            self.use_sheet_deaths = scraper.adjust_scraped_deaths_from_sheet
             self.country_name = scraper.get_index_name()
             self.pretty_country_name = scraper.get_pretty_name()
             self.iso_code = scraper.iso_code
@@ -27,6 +30,8 @@ class DataObject:
             else:
                 self.source_website = scraper.report_website
         else:
+            self.use_sheet_recovered = False
+            self.use_sheet_deaths = False
             self.country_name = None
             self.pretty_country_name = None
             self.iso_code = None

@@ -254,8 +254,11 @@ def download_sheet_from_drive():
     file1.GetContentFile("data/drive/canada.xlsx", mimetype=mime_type_sheets)
     log.info("Download complete")
 
-def check_drive_cache():
-    cache = retrieve_cache("drive", config.DRIVE_CACHE_TIMEOUT)
+def check_drive_cache(ignore_cache_timeout = False):
+    if not ignore_cache_timeout:
+        cache = retrieve_cache("drive", config.DRIVE_CACHE_TIMEOUT)
+    else:
+        cache = retrieve_cache("drive", 1000000000)
 
     if cache is None: #Download sheet
         download_sheet_from_drive()
@@ -279,7 +282,7 @@ def get_sheet_date_index(date: datetime.datetime, days):
             return i
     return -1
 
-def check_from_sheet(country, country_iso_code, date):
+def check_from_sheet(country, country_iso_code, date, ignore_cache_timeout = False):
     log.info("Retrieving data from the Google Sheet database...")
     result = dataobject.DataObject()
     result.date = date

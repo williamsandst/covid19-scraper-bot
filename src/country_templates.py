@@ -18,6 +18,7 @@ def init_europe_scrapers():
     scraper.province_name = "Norway" 
     scraper.iso_code = "NO"
     scraper.javascript_required = True
+    scraper.has_auto = True
     scraper.source_website = "https://www.vg.no/spesial/2020/corona/"
     scraper.optimize_min_max_index_ratio = 0.1
     scraper.website_height = 1200
@@ -33,6 +34,7 @@ def init_europe_scrapers():
     scraper.wait_time = 10
     scraper.optimize_min_max_index_ratio = 0.1
     scraper.website_height = 800
+    scraper.has_auto = True
     scraper.source_website = "https://fohm.maps.arcgis.com/apps/opsdashboard/index.html#/68d4537bf2714e63b646c37f152f1392"
     scraper.report_website = "https://www.folkhalsomyndigheten.se/smittskydd-beredskap/utbrott/aktuella-utbrott/covid-19/aktuellt-epidemiologiskt-lage/"
     #scraper.training_data = {"cases": "3046", "deaths": "92", "intensive_care": "209"}
@@ -43,6 +45,7 @@ def init_europe_scrapers():
     scraper = NovelScraperDK()
     scraper.scroll_height = 600
     scraper.website_height = 1200
+    scraper.has_auto = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Iceland
@@ -52,7 +55,9 @@ def init_europe_scrapers():
     scraper.iso_code = "IS"
     scraper.javascript_required = True
     scraper.has_hopkins = True
+    scraper.adjust_scraped_deaths_from_sheet = True
     scraper.website_height = 700
+    scraper.has_auto = True
     scraper.source_website = "https://e.infogram.com/7327507d-28f5-4e3c-b587-c1680bd790e6?src=embed"
     scraper.report_website = "https://www.covid.is/tolulegar-upplysingar"
     #scraper.training_data = {"cases": "890", "recovered": "97", "hospitalised":"18", "intensive_care":"6", "tested":"13613"}
@@ -64,6 +69,7 @@ def init_europe_scrapers():
     scraper.province_name = "Finland"
     scraper.iso_code = "FI"
     scraper.javascript_required = True
+    scraper.has_auto = True
     scraper.source_website = "https://korona.kans.io/"
     #scraper.training_data = {"cases": "1056", "deaths": "7", "recovered": "10"}
     group_country_classes[scraper.get_index_name()] = scraper
@@ -75,6 +81,7 @@ def init_europe_scrapers():
     scraper.iso_code = "EE"
     scraper.source_website = "https://www.koroonakaart.ee/en"
     scraper.website_height = 500
+    scraper.has_auto = True
     #scraper.training_data = {"cases": "640",  "deaths": "1", "recovered":"20", "tested":"9364", "hospitalised": "48"}
     group_country_classes[scraper.get_index_name()] = scraper
 
@@ -87,6 +94,7 @@ def init_europe_scrapers():
     scraper.scroll_height= 400
     scraper.website_height = 1200
     scraper.website_width = 1920
+    scraper.has_auto = True
     #scraper.training_data = {"cases": "382",  "deaths": "5", "recovered":"1", "tested":"6900"}
     group_country_classes[scraper.get_index_name()] = scraper
 
@@ -97,6 +105,7 @@ def init_europe_scrapers():
     scraper.iso_code = "LV"
     scraper.source_website = "https://arkartassituacija.gov.lv/"
     scraper.website_height = 1200
+    scraper.has_auto = True
     #scraper.training_data = {"cases": "280", "tested":"11702", "hospitalised": "21"}
     group_country_classes[scraper.get_index_name()] = scraper
 
@@ -514,6 +523,7 @@ def init_us_scrapers():
     scraper.country_name = country_name
     scraper.province_name = "Connecticut" 
     scraper.iso_code = "CT"
+    scraper.has_auto = True
     scraper.source_website = "https://www.nytimes.com/interactive/2020/us/connecticut-coronavirus-cases.html"
     #scraper.source_website = https://portal.ct.gov/coronavirus
     group_country_classes[scraper.get_index_name()] = scraper
@@ -533,8 +543,9 @@ def init_us_scrapers():
     scraper.province_name = "Florida" 
     scraper.iso_code = "FL"
     scraper.javascript_required = True
+    scraper.has_auto = True
     scraper.wait_time = 14
-    scraper.source_website = "https://experience.arcgis.com/experience/96dd742462124fa0b38ddedb9b25e429/"
+    scraper.source_website = "https://fdoh.maps.arcgis.com/apps/opsdashboard/index.html#/8d0de33f260d444c852a615dc7837c86"
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Georgia
@@ -544,6 +555,7 @@ def init_us_scrapers():
     scraper.iso_code = "GA"
     scraper.report_website = "https://dph.georgia.gov/covid-19-daily-status-report"
     scraper.javascript_required = True
+    scraper.has_auto = True
     scraper.scroll_height = 200
     scraper.source_website = "https://d20s4vd27d0hk0.cloudfront.net/?initialWidth=746&childId=covid19dashdph&parentTitle=COVID-19%20Daily%20Status%20Report%20%7C%20Georgia%20Department%20of%20Public%20Health&parentUrl=https%3A%2F%2Fdph.georgia.gov%2Fcovid-19-daily-status-report"
     group_country_classes[scraper.get_index_name()] = scraper
@@ -574,6 +586,7 @@ def init_us_scrapers():
     scraper.source_website = "http://www.dph.illinois.gov/topics-services/diseases-and-conditions/diseases-a-z-list/coronavirus"
     scraper.scroll_height = 200
     scraper.javascript_required = True
+    scraper.has_auto = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Indiana
@@ -622,9 +635,10 @@ def init_us_scrapers():
     scraper.country_name = country_name
     scraper.province_name = "Louisiana" 
     scraper.iso_code = "LA"
-    scraper.report_website = "https://www.arcgis.com/apps/opsdashboard/index.html#/69b726e2b82e408f89c3a54f96e8f776"
-    scraper.source_website = "http://ldh.la.gov/Coronavirus/"
+    scraper.source_website = "https://www.arcgis.com/apps/opsdashboard/index.html#/69b726e2b82e408f89c3a54f96e8f776"
+    scraper.report_website = "http://ldh.la.gov/Coronavirus/"
     scraper.javascript_required = True
+    scraper.has_auto = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Maine
@@ -653,8 +667,11 @@ def init_us_scrapers():
     scraper.province_name = "Massachusetts" 
     scraper.iso_code = "MA"
     scraper.source_website = "https://www.mass.gov/info-details/covid-19-cases-quarantine-and-monitoring#covid-19-cases-in-massachusetts-"
-    scraper.scroll_height = 800
+    scraper.scroll_height = 900
     scraper.website_height = 1200
+    scraper.website_width=1600
+    scraper.has_auto = True
+    scraper.adjust_scraped_deaths_from_sheet = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Michigan
@@ -665,6 +682,7 @@ def init_us_scrapers():
     scraper.source_website = "https://www.michigan.gov/coronavirus/0,9753,7-406-98163_98173---,00.html"
     scraper.website_height = 1200
     scraper.scroll_height = 2200
+    scraper.has_auto = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Minnesota
@@ -738,8 +756,10 @@ def init_us_scrapers():
     scraper.country_name = country_name
     scraper.province_name = "New-Jersey" 
     scraper.iso_code = "NJ"
-    scraper.source_website = "https://covid19.nj.gov/#live-updates"
+    scraper.report_website = "https://covid19.nj.gov/#live-updates"
+    scraper.source_website = "https://maps.arcgis.com/apps/opsdashboard/index.html#/ec4bffd48f7e495182226eee7962b422"
     scraper.javascript_required = True
+    scraper.has_auto = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # New Mexico
@@ -753,12 +773,8 @@ def init_us_scrapers():
     group_country_classes[scraper.get_index_name()] = scraper
 
     # New York
-    scraper = NovelScraperAuto()
-    scraper.country_name = country_name
-    scraper.province_name = "New-York" 
-    scraper.iso_code = "NY"
-    scraper.source_website = "https://covid19tracker.health.ny.gov/views/NYS-COVID19-Tracker/NYSDOHCOVID-19Tracker-Map?%3Aembed=yes&%3Atoolbar=no&%3Atabs=n"
-    scraper.javascript_required = True
+    scraper = NovelScraperNY()
+    scraper.has_auto = False
     group_country_classes[scraper.get_index_name()] = scraper
 
     # North Carolina
@@ -817,6 +833,7 @@ def init_us_scrapers():
     scraper.iso_code = "PA"
     scraper.source_website = "https://www.health.pa.gov/topics/disease/coronavirus/Pages/Cases.aspx"
     scraper.scroll_height = 200
+    scraper.has_auto = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Rhode Island
@@ -866,6 +883,7 @@ def init_us_scrapers():
     scraper.iso_code = "TX"
     scraper.source_website = "https://txdshs.maps.arcgis.com/apps/opsdashboard/index.html#/ed483ecd702b4298ab01e8b9cafc8b83"
     scraper.javascript_required = True
+    scraper.has_auto = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Utah
@@ -901,8 +919,9 @@ def init_us_scrapers():
     scraper.province_name = "Washington" 
     scraper.iso_code = "WA"
     scraper.report_website = "https://www.doh.wa.gov/Emergencies/Coronavirus"
-    scraper.source_website = "https://msit.powerbi.com/view?r=eyJrIjoiMDIzODNkZDQtOTM0MC00ZmMzLWI2N2YtYTgzOWU3MTkxNTU1IiwidCI6IjcyZjk4OGJmLTg2ZjEtNDFhZi05MWFiLTJkN2NkMDExZGI0NyIsImMiOjV9"
+    scraper.source_website = "https://msit.powerbi.com/view?r=eyJrIjoiYzQ2YmYxZmEtYjlkNy00YjNkLWEyYTEtNzJmYzU3ZGI1MmZjIiwidCI6IjcyZjk4OGJmLTg2ZjEtNDFhZi05MWFiLTJkN2NkMDExZGI0NyIsImMiOjV9"
     scraper.javascript_required = True
+    scraper.has_auto = True
     scraper.wait_time = 10
     group_country_classes[scraper.get_index_name()] = scraper
 
@@ -1004,6 +1023,7 @@ def init_canada_scrapers():
     scraper.country_name = country_name 
     scraper.province_name = "Alberta" 
     scraper.iso_code = "N/A"
+    scraper.source_website = "https://covid19stats.alberta.ca/"
     group_country_classes[scraper.get_index_name()] = scraper
 
     # British Columbia
@@ -1011,6 +1031,8 @@ def init_canada_scrapers():
     scraper.country_name = country_name 
     scraper.province_name = "British-Columbia" 
     scraper.iso_code = "N/A"
+    scraper.source_website = "http://www.bccdc.ca/health-info/diseases-conditions/covid-19/case-counts-press-statements"
+    scraper.scroll_height = 300
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Manitoba
@@ -1018,6 +1040,8 @@ def init_canada_scrapers():
     scraper.country_name = country_name 
     scraper.province_name = "Manitoba" 
     scraper.iso_code = "N/A"
+    scraper.source_website = "https://www.gov.mb.ca/covid19/updates/index.html"
+    scraper.scroll_height = 400
     group_country_classes[scraper.get_index_name()] = scraper
 
     # New Brunswick
@@ -1025,6 +1049,8 @@ def init_canada_scrapers():
     scraper.country_name = country_name 
     scraper.province_name = "New-Brunswick" 
     scraper.iso_code = "N/A"
+    scraper.source_website = "https://www2.gnb.ca/content/gnb/en/departments/ocmoh/cdc/content/respiratory_diseases/coronavirus.html"
+    scraper.scroll_height = 600
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Newfoundland and Labrador
@@ -1032,6 +1058,8 @@ def init_canada_scrapers():
     scraper.country_name = country_name
     scraper.province_name = "Newfoundland-and-Labrador" 
     scraper.iso_code = "N/A"
+    scraper.source_website = "https://covid-19-newfoundland-and-labrador-gnl.hub.arcgis.com/"
+    scraper.javascript_required = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Nova Scotia
@@ -1039,6 +1067,9 @@ def init_canada_scrapers():
     scraper.country_name = country_name
     scraper.province_name = "Nova-Scotia" 
     scraper.iso_code = "N/A"
+    scraper.source_website = "https://novascotia.ca/coronavirus/data/"
+    scraper.javascript_required = True
+    scraper.scroll_height = 300
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Ontario
@@ -1046,6 +1077,10 @@ def init_canada_scrapers():
     scraper.country_name = country_name
     scraper.province_name = "Ontario" 
     scraper.iso_code = "N/A"
+    scraper.source_website = "https://www.ontario.ca/page/2019-novel-coronavirus#2"
+    scraper.website_height = 1200
+    scraper.scroll_height = 1600
+    scraper.javascript_required = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Quebec
@@ -1053,6 +1088,8 @@ def init_canada_scrapers():
     scraper.country_name = country_name
     scraper.province_name = "Quebec" 
     scraper.iso_code = "N/A"
+    scraper.source_website = "https://www.inspq.qc.ca/covid-19/donnees"
+    scraper.javascript_required = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Saskatchewan
@@ -1060,6 +1097,7 @@ def init_canada_scrapers():
     scraper.country_name = country_name
     scraper.province_name = "Saskatchewan" 
     scraper.iso_code = "N/A"
+    scraper.source_website = "https://www.saskatchewan.ca/government/health-care-administration-and-provider-resources/treatment-procedures-and-guidelines/emerging-public-health-issues/2019-novel-coronavirus/cases-and-risk-of-covid-19-in-saskatchewan"
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Yukon
@@ -1067,6 +1105,7 @@ def init_canada_scrapers():
     scraper.country_name = country_name
     scraper.province_name = "Yukon" 
     scraper.iso_code = "N/A"
+    scraper.source_website = "https://yukon.ca/covid-19"
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Northwest Territories
@@ -1074,6 +1113,8 @@ def init_canada_scrapers():
     scraper.country_name = country_name
     scraper.province_name = "Northwest-Territories" 
     scraper.iso_code = "N/A"
+    scraper.source_website = "https://www.hss.gov.nt.ca/en/services/coronavirus-disease-covid-19"
+    scraper.scroll_height = 300
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Prince Edward Island
@@ -1081,6 +1122,7 @@ def init_canada_scrapers():
     scraper.country_name = country_name
     scraper.province_name = "Prince-Edward-Island" 
     scraper.iso_code = "N/A"
+    scraper.source_website = "https://www.princeedwardisland.ca/en/information/health-and-wellness/pei-covid-19-testing-data"
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Nunavut (No JH data?)
@@ -1088,6 +1130,8 @@ def init_canada_scrapers():
     scraper.country_name = country_name
     scraper.province_name = "Nunavut" 
     scraper.iso_code = "N/A"
+    scraper.source_website = "https://gov.nu.ca/health/information/covid-19-novel-coronavirus"
+    scraper.scroll_height = 300
     group_country_classes[scraper.get_index_name()] = scraper
 
     for country_name, scraper in group_country_classes.items(): #Values applied to all countries within this function

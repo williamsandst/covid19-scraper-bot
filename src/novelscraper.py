@@ -52,6 +52,7 @@ def get_visible_text(website, browser, screenshot_path = False, viewport_width=1
     browser.get(website)
 
     if (parse_javscript):
+        log.info("Website: Waiting {} seconds for Javascript to load".format(wait_time))
         time.sleep(wait_time)
     else:
         time.sleep(0.5)
@@ -66,7 +67,7 @@ def get_visible_text(website, browser, screenshot_path = False, viewport_width=1
     Cleaner(kill_tags=['noscript'], style=True)(root) # lxml >= 2.3.1
     text = " ".join(etree.XPath("//text()")(root))
 
-    log.info("Retrieved website with Selenium: {}".format(website))
+    log.info("Retrieved website")
         
     return text # extract text
 
@@ -135,6 +136,8 @@ class NovelScraper:
         self.wait_time = 4
         self.scroll_height = None
         self.region_of_country = None
+        self.adjust_scraped_recovery_from_sheet = True
+        self.adjust_scraped_deaths_from_sheet = False
 
     def get_index_name(self):
         return self.province_name.lower()+","+self.country_name.lower()
@@ -251,9 +254,11 @@ class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins):
         self.optimize_min_max_index_ratio = 0.3
         self.has_covidtracking = False
         self.has_hopkins = True
-        self.has_default = True
+        self.has_auto = False
         self.scroll_height = None
         self.region_of_country = None
+        self.adjust_scraped_recovery_from_sheet = True
+        self.adjust_scraped_deaths_from_sheet = False
 
     def learn(self, text, number, label):
         """ Learn the data surrounding a number to be able to find it in the future """
@@ -264,7 +269,7 @@ class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins):
         words = clean_if_number(words)
         number_index = find_word_index(words, number)
         if number_index == -1:
-            log.error("Training: Cannot find the specified number" + number)
+            log.error("Training: Cannot find the specified number: " + number)
             raise TypeError
 
         self.learned_data.indices[label] = number_index
