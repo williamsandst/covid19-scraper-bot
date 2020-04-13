@@ -277,6 +277,8 @@ def cmd_screenshot(country_classes: dict, flags: dict, discord_bot: bot.Investig
 
 def cmd_help(country_classes: dict, flags: dict):
     """cmd: help. Print the help string, containing command descriptions"""
+    a = 1
+    print(a[1])
     print(command_list)
 
 def cmd_exit(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBot, browser):
@@ -287,6 +289,7 @@ def cmd_exit(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBo
         log.info("Stopped Webdriver")
     discord_bot.stop()
     log.info("Stopped Discord bot")
+    config.REBOOT_ON_CRASH = False
     exit()
 
 def cmd_discord_chat(country_classes, flags, discord_bot: bot.InvestigatorBot):

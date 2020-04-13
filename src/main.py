@@ -2,9 +2,6 @@
 Main file
 This is a program which scrapes the Coronavirus confirmed cases, deaths and recovered from various countries health ministry websites
 """
-import selenium
-from selenium.webdriver.firefox.options import Options
-
 import interface
 from threading import Thread
 import time
@@ -13,6 +10,9 @@ import queue
 import os
 import logging
 import ast
+
+from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
 
 from novelscraper import *
 from manual_scrapers import *
@@ -75,20 +75,9 @@ Slovakia
 
 log = logging.getLogger("MAIN")
 
-commands = {}
-scheduled_commands = []
-results = {}
 discord_bot = bot.InvestigatorBot()
 
-if config.SELENIUM_BROWSER_ALWAYS_ON:
-    options = Options()
-    if config.SELENIUM_FIREFOX_HEADLESS:
-        options.headless = True
-    browser = webdriver.Firefox(options=options)
-else:
-    browser = None
-
-def add_command(triggers : list, function, commands=commands):
+def add_command(triggers : list, function, commands):
     """Add a command to the global players dictionary"""
     if isinstance(triggers, str):
         commands[triggers] = function
@@ -96,7 +85,7 @@ def add_command(triggers : list, function, commands=commands):
         for trigger in triggers:
             commands[trigger] = function
 
-def add_scheduled_command(command: str, time: datetime):
+def add_scheduled_command(command: str, time: datetime, scheduled_commands):
     scheduled_commands.append([command, time])
 
 def parse(input_list : list) -> dict:
@@ -174,19 +163,28 @@ def time_is_approximate_equal(time1: datetime.datetime, time2: datetime.datetime
     return False
 
 class SchedulingThread(Thread):
-    def __init__(self, queue, flags, args=(), kwargs=None):
+    def __init__(self, queue, flags, bot, browser, args=(), kwargs=None):
         Thread.__init__(self, args=(), kwargs=None)
         self.commands = {}
         self.queue = queue
+        self.scheduled_commands = []
+        self.discord_bot = bot
+        self.browser = browser
+        self.setup_schedule()
+
+    def setup_schedule(self):
+        #t = datetime.datetime(year=2020, month=1, day=1, hour=13, minute=14, second=0)
+        #add_scheduled_command("scrape latvia", t, self.scheduled_commands)
+        pass
 
     def run(self):
-        add_command(["scrape", "sc"], lambda: cmd_scrape(country_classes, self.flags, discord_bot, browser), self.commands)
-        add_command(["screenshot", "ss"], lambda: cmd_screenshot(country_classes, self.flags, discord_bot, browser), self.commands)
-        add_command(["train", "tr"], lambda: cmd_train(country_classes, self.flags, discord_bot, browser), self.commands)
+        add_command(["scrape", "sc"], lambda: cmd_scrape(country_classes, self.flags, self.discord_bot, self.browser), self.commands)
+        add_command(["screenshot", "ss"], lambda: cmd_screenshot(country_classes, self.flags, self.discord_bot, self.browser), self.commands)
+        add_command(["train", "tr"], lambda: cmd_train(country_classes, self.flags, self.discord_bot, self.browser), self.commands)
         while True:
             # Scheduling
             timenow = datetime.datetime.now()
-            for command in scheduled_commands:
+            for command in self.scheduled_commands:
                 if time_is_approximate_equal(command[1], timenow):
                     #Execute command
                     command_list = command[0].split()
@@ -204,20 +202,28 @@ class SchedulingThread(Thread):
                 self.commands[command_list[0]]()
                 print("\nnvlscrpr: ",end =" ")
 
+def init_browser():
+    if config.SELENIUM_BROWSER_ALWAYS_ON:
+        options = Options()
+        if config.SELENIUM_FIREFOX_HEADLESS:
+            options.headless = True
+        browser = webdriver.Firefox(options=options)
+    else:
+        browser = None
+    return browser
+
 def main():
-    utils.init_logging("log_file.log")
-    utils.prepare_directories()
+    commands = {}
+    browser = init_browser()
 
     flags = {}
-    t = datetime.datetime(year=2020, month=1, day=1, hour=13, minute=14, second=0)
-    add_scheduled_command("scrape latvia", t)
 
-    add_command(["scrape", "sc"], lambda: cmd_scrape(country_classes, flags, discord_bot, browser))
-    add_command(["train", "tr"], lambda: cmd_train(country_classes, flags, discord_bot, browser))
-    add_command(["screenshot", "ss"], lambda: cmd_screenshot(country_classes, flags, discord_bot, browser))
-    add_command(["chat", "ch"], lambda: cmd_discord_chat(country_classes, flags, discord_bot))
-    add_command(["help", "h"], lambda: cmd_help(country_classes, flags))
-    add_command(["exit", "close", "quit"], lambda: cmd_exit(country_classes, flags, discord_bot, browser))
+    add_command(["scrape", "sc"], lambda: cmd_scrape(country_classes, flags, discord_bot, browser), commands)
+    add_command(["train", "tr"], lambda: cmd_train(country_classes, flags, discord_bot, browser), commands)
+    add_command(["screenshot", "ss"], lambda: cmd_screenshot(country_classes, flags, discord_bot, browser), commands)
+    add_command(["chat", "ch"], lambda: cmd_discord_chat(country_classes, flags, discord_bot), commands)
+    add_command(["help", "h"], lambda: cmd_help(country_classes, flags), commands)
+    add_command(["exit", "close", "quit"], lambda: cmd_exit(country_classes, flags, discord_bot, browser), commands)
 
     init_europe_scrapers()
     init_us_scrapers()
@@ -225,14 +231,17 @@ def main():
     create_country_aliases()
     command_queue = queue.Queue()
 
-    scheduling_thread = SchedulingThread(command_queue, flags)
+    scheduling_thread = SchedulingThread(command_queue, flags, discord_bot, browser)
     scheduling_thread.start()
 
     # Start discord bot
     if config.DISCORD_BOT_ENABLED:
         discord_bot.set_command_queue(command_queue)
-        discord_bot.start()
-        time.sleep(5)
+        if not discord_bot.active:
+            discord_bot.start()
+            time.sleep(5)
+        else:
+            log.info("Discord Bot already initiated, skipping startup")
 
     # Main input loop. Grab input, parse and execute command
     while True:

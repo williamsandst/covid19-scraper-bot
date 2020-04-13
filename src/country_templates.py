@@ -295,7 +295,9 @@ def init_europe_scrapers():
     scraper.country_name = "Andorra"
     scraper.province_name = "Andorra"
     scraper.iso_code = "AD"
-    #scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    scraper.report_website = "https://www.govern.ad/coronavirus"
+    scraper.source_website = "https://www.govern.ad/covid/taula.php"
+    scraper.javascript_required = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Albania

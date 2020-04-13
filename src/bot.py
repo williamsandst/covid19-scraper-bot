@@ -317,6 +317,7 @@ class InvestigatorDiscordClient(discord.Client):
                 log.info("Recieved Discord abort command, killing program...")
                 self.command_queue = Queue()
                 await channel.send("Initiating abort, shutting everything down...")
+                config.REBOOT_ON_CRASH = False
                 exit()
             elif message.content.startswith('!log'):
                 if len(words) > 1:
