@@ -27,7 +27,7 @@ Selenium uses Firefox (Gecko) webdriver, which can be downloaded here: https://g
 ## Usage  
 Scraping through the command line interface should work straight away as long as all the required dependencies are installed and Selenium can access the Firefox driver through PATH (easiest way is to drop it in `/bin`).
 #### Discord bot
-A `.env` file is required in the working directory, defining the Discord bot variables DISCORD_TOKEN and optionally DISCORD_DEV_TOKEN (a separate bot used for development testing) is required. 
+A `.env` file is required in the working directory, defining the Discord bot variables DISCORD_TOKEN and optionally DISCORD_DEV_TOKEN (a separate bot used for development testing).
 #### Google Sheet Access
 For proper access to the spreadsheet (used as a backend database) you will have to add [a valid PyDrive](https://pythonhosted.org/PyDrive/oauth.html) `settings.yaml` file to authenticate with a valid Google Drive API access. You will also have to run the file google_api_authenticate.py once to authenticate with your Google user. Note: This will only work if your Google account has shared access to the Google Sheet Database.
 #### Settings
