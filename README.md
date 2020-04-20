@@ -25,7 +25,7 @@ Selenium uses Firefox (Gecko) webdriver, which can be downloaded here: https://g
 **Pandas** - for parsing excel files          `pip3 install pandas`  
 
 ## Usage  
-Scraping through the command line interface should work straight away as long as all the required dependencies are installed. 
+Scraping through the command line interface should work straight away as long as all the required dependencies are installed and Selenium can access the Firefox driver through PATH (easiest way is to drop it in `/bin`).
 #### Discord bot
 A `.env` file is required in the working directory, defining the Discord bot variables DISCORD_TOKEN and optionally DISCORD_DEV_TOKEN (a separate bot used for development testing) is required. 
 #### Google Sheet Access
