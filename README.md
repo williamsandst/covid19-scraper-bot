@@ -19,7 +19,7 @@ Selenium uses Firefox (Gecko) webdriver, which can be downloaded here: https://g
 #### Discord bot  
 **Discord py** - Discord python API           `pip3 install discord`  
 **Dotenv** - for loading .env preferences     `pip3 install python-dotenv`  
-### Interfacing with Google Sheet Database  
+#### Interfacing with Google Sheet Database  
 **PyDrive** - for downloading from Drive      `pip3 install PyDrive`  
 **xlrd** - for parsing excel files            `pip3 install xlrd`  
 **Pandas** - for parsing excel files          `pip3 install pandas`  
