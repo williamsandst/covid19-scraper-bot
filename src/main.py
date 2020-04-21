@@ -21,6 +21,7 @@ from country_templates import *
 import bot
 import utils
 import config
+import scheduling_config
 
 """ 
 Countries with working automated scraping:
@@ -155,7 +156,7 @@ def parse(input_list : list) -> dict:
 ENABLE_EXTERNAL_COMMANDS = True
 
 def time_is_approximate_equal(time1: datetime.datetime, time2: datetime.datetime):
-    allowed_offset = 2
+    allowed_offset = 0.5
     seconds1 = time1.hour*3600 + time1.minute*60 + time1.second
     seconds2 = time2.hour*3600 + time2.minute*60 + time2.second
     if (seconds1 + allowed_offset) > seconds2 and (seconds1 - allowed_offset) < seconds2:
@@ -173,14 +174,18 @@ class SchedulingThread(Thread):
         self.setup_schedule()
 
     def setup_schedule(self):
-        #t = datetime.datetime(year=2020, month=1, day=1, hour=13, minute=14, second=0)
-        #add_scheduled_command("scrape latvia", t, self.scheduled_commands)
-        pass
+        for time, command in scheduling_config.schedule:
+            time = time.split(":")
+            hour = int(time[0])
+            minute = int(time[1])
+            t = datetime.datetime(year=2020, month=1, day=1, hour=hour, minute=minute, second=0)
+            add_scheduled_command(command, t, self.scheduled_commands)
 
     def run(self):
         add_command(["scrape", "sc"], lambda: cmd_scrape(country_classes, self.flags, self.discord_bot, self.browser), self.commands)
         add_command(["screenshot", "ss"], lambda: cmd_screenshot(country_classes, self.flags, self.discord_bot, self.browser), self.commands)
         add_command(["train", "tr"], lambda: cmd_train(country_classes, self.flags, self.discord_bot, self.browser), self.commands)
+        add_command(["chat", "ch"], lambda: cmd_discord_chat(country_classes, self.flags, self.discord_bot), self.commands)
         while True:
             # Scheduling
             timenow = datetime.datetime.now()
@@ -189,10 +194,12 @@ class SchedulingThread(Thread):
                     #Execute command
                     command_list = command[0].split()
                     self.flags = parse(command_list)
-                    log.info("{}: Executing scheduled command: {}".format(command[1], command[0]))
+                    log.info("Executing scheduled command: {}".format(command[0]))
                     self.commands[command_list[0]]()
+                    time.sleep(0.5)
+                    executed_scheduled_command = True
                     print("\nnvlscrpr: ", end =" ")
-            time.sleep(2)
+            time.sleep(0.5)
             # Go through external commands
             while not self.queue.empty():
                 command = self.queue.get()

@@ -155,12 +155,13 @@ class InvestigatorDiscordClient(discord.Client):
     async def send_submission(self, string, channel_input, screenshot_path, additional_data = None):
         channel = discord.utils.get(self.server.channels, name=channel_input)
         if channel != None: 
-            await channel.send(self.bot_submission_text, file=discord.File(screenshot_path))
             if additional_data != None:
                 await channel.send(additional_data)
             if screenshot_path != None:
+                await channel.send(self.bot_submission_text, file=discord.File(screenshot_path))
                 await channel.send(string, file=discord.File(screenshot_path))
             else:
+                await channel.send(self.bot_submission_text)
                 await channel.send(string)
         else:
             log.warning("Bot: Cannot find channel {}".format(channel_input))

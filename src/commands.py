@@ -309,7 +309,7 @@ def cmd_discord_submission_source_history(country_classes, flags, discord_bot: b
     if group_name == "europe" or group_name == "eu":
         channels = bot_data.europe_channels_sheet_order
     elif group_name == "us" or group_name == "usa":
-        channels = bot_data.us_channels
+        channels = bot_data.us_channels_sheet_order
     elif group_name == "canada":
         channels = bot_data.canada_channels
     elif group_name == "test":
@@ -340,6 +340,7 @@ def cmd_discord_submission_source_history(country_classes, flags, discord_bot: b
                             timestamp = message.edited_at if message.edited_at != None else message.created_at
                             date = message.embeds[0].fields[0].value.split()[4].strip("`")
                             sources.append((link, date, timestamp)) 
+
         sources = sorted(sources, key=lambda x: x[2])
         for link, date, timestamp in sources:
             result_dict.setdefault(date, {})
@@ -351,13 +352,14 @@ def cmd_discord_submission_source_history(country_classes, flags, discord_bot: b
     for date, countries in result_dict.items():
         for channel in channels:
             if channel not in countries:
-                countries[channel] = "No source found for this date"
+                result_dict[date][channel] = "No source found for this date"
 
     result_dict = {k: v for k, v in sorted(result_dict.items(), key=lambda item: int(item[0].split("/")[1] + item[0].split("/")[0]))}
 
     for date, countries in result_dict.items():
         result += date + "\n"
-        for country, link in countries.items(): 
+        for channel in channels:
+            link = countries[channel]
             result += link + "\n"
         result += "\n"
 
