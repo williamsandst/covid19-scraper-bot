@@ -1,6 +1,7 @@
 
 import dateutil.parser
 import datetime
+import config
 
 number_cleanup_dict = {ord('.'): None, ord(','): None, ord('*'): None, ord('^'): None, ord(' '): None, ord(u"\xa0"): None}
 
@@ -162,13 +163,17 @@ def remove_javascript(words: list) -> list:
             new_words.append(word)
     return new_words
 
-def get_surrounding_words(words: list, index: int, count: int) -> list:
-    start = words[index-count:index]
-    end = words[index+1:index+count+1]
-    return start + end
+def get_surrounding_words(words: list, index: int, count: int, overwrite_numbers=False) -> list:
+    words = words[index-count:index] + words[index+1:index+count+1]
+    if overwrite_numbers and config.OVERWRITE_SURROUNDING_NUMBERS:
+        for index, word in enumerate(words):
+            if word.isdigit():
+                words[index] = "#"*len(word)
+    return words
 
 def combine_separate_numbers(words: list) -> list:
     """ Combines separated numbers eg 2 016 into 2016. Doesn't work for negative numbers, floats or exponentials """
+    """ Do not combine a number that matches the requested number! """
     processed_words = list()
     number_word = "" #Temp variable for holding the combined number
     for word in words:

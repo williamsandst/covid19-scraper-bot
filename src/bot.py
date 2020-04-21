@@ -9,6 +9,7 @@ import datetime
 import logging
 import config
 import utils
+import time
 
 import interface
 import country_templates
@@ -34,12 +35,6 @@ log = logging.getLogger("DBOT")
 country_to_channel_dict = {}
 
 channel_to_country_dict = {v: k for k, v in country_to_channel_dict.items()}
-
-staff_user_whitelist = {"SlipShady", "Wydal"}
-
-staff_role_whitelist = {"staff", "the real slip shady"}
-
-normal_role_whitelist = {"interpol"}
 
 def convert_country_to_channel(country):
     if country in country_to_channel_dict:
@@ -71,10 +66,10 @@ class InvestigatorBot():
         load_dotenv()
         if config.RELEASE_BOT:
             self.TOKEN = os.getenv('DISCORD_TOKEN')
-            self.GUILD = os.getenv('DISCORD_GUILD')
+            self.GUILD = config.DISCORD_SERVER
         else:
             self.TOKEN = os.getenv('DISCORD_DEV_TOKEN')
-            self.GUILD = os.getenv('DISCORD_DEV_GUILD')
+            self.GUILD = config.DISCORD_DEV_SERVER
         self.client = InvestigatorDiscordClient()
         self.client.init(self.GUILD)
         self.asyncio_event_loop = asyncio.get_event_loop()
@@ -119,6 +114,17 @@ class InvestigatorBot():
         channel = convert_country_index_to_channel(channel)
         self.asyncio_event_loop.create_task(self.client.send_error_message(reason, channel))
 
+    def get_channel_history(self, channel):
+        channel = convert_country_index_to_channel(channel)
+        self.asyncio_event_loop.create_task(self.client.get_channel_history(channel))
+        self.wait_until_bot_task_complete()
+        return self.client.output
+
+    def wait_until_bot_task_complete(self):
+        while not self.client.output_done:
+            time.sleep(0.3)
+        self.client.output_done = False
+
     async def start_client(self):
         await self.client.start(self.TOKEN)
         #self.client.run(self.TOKEN)
@@ -136,6 +142,9 @@ class InvestigatorDiscordClient(discord.Client):
         self.bot_error_text = "Tzzzt! My investigations failed due to"
         self.GUILD = guild
 
+        self.output_done = False
+        self.output = None
+
     async def on_ready(self):
         self.server = discord.utils.get(self.guilds, name=self.GUILD)
         self.novel_bot_id = discord.utils.get(self.server.members, name="Wydal").id
@@ -146,13 +155,13 @@ class InvestigatorDiscordClient(discord.Client):
     async def send_submission(self, string, channel_input, screenshot_path, additional_data = None):
         channel = discord.utils.get(self.server.channels, name=channel_input)
         if channel != None: 
+            await channel.send(self.bot_submission_text, file=discord.File(screenshot_path))
             if additional_data != None:
                 await channel.send(additional_data)
             if screenshot_path != None:
-                await channel.send(self.bot_submission_text, file=discord.File(screenshot_path))
+                await channel.send(string, file=discord.File(screenshot_path))
             else:
-                await channel.send(self.bot_submission_text)
-            await channel.send(string)
+                await channel.send(string)
         else:
             log.warning("Bot: Cannot find channel {}".format(channel_input))
 
@@ -182,19 +191,23 @@ class InvestigatorDiscordClient(discord.Client):
         channel = discord.utils.get(self.server.channels, name=channel) 
         await channel.send("chk")
 
+    async def get_channel_history(self, channel_input):
+        channel = discord.utils.get(self.server.channels, name=channel_input, type=discord.ChannelType.text)
+        self.output = await channel.history(limit=None).flatten()
+        self.output_done = True
+
     def is_staff(self, user):
         staff = False
-        if user.name in staff_user_whitelist:
-            for role in user.roles:
-                if role.name.lower() in staff_role_whitelist:
-                    staff = True
-                    break
+        for role in user.roles:
+            if role.name.lower() in config.DISCORD_STAFF_ROLES:
+                staff = True
+                break
         return staff
 
     def is_normal_user(self, user):
         normal_user = False
         for role in user.roles:
-            if role.name.lower() in normal_role_whitelist:
+            if role.name.lower() in config.DISCORD_DEFAULT_ROLES:
                 normal_user = True
                 break
         return normal_user

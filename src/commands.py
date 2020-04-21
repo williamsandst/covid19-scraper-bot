@@ -1,6 +1,8 @@
 import time
 import copy
 import logging
+import re
+import bot_data
 
 from selenium import webdriver
 
@@ -40,7 +42,7 @@ def scrape(country_classes, scrape_type="default", date=datetime.datetime.now(),
 
         for country in country_classes:
             if country_classes[country].has_auto and (country_group == None or country_classes[country].group_name == country_group):
-                results[country] = scrape_country_auto(country, browser, country_classes)
+                results[country] = scrape_country_auto(country, browser, country_classes, date)
         if create_browser:
             browser.quit()
 
@@ -58,10 +60,10 @@ def scrape(country_classes, scrape_type="default", date=datetime.datetime.now(),
     return results
 
 
-def scrape_country_auto(country: str, browser, country_classes):
+def scrape_country_auto(country: str, browser, country_classes, date):
     country_name = country_classes[country].get_pretty_name()
     log.info("{}: Scraping...".format(country_name))
-    result = country_classes[country].scrape(browser)
+    result = country_classes[country].scrape(browser, date)
     log.info("{}: Scraping complete!".format(country_name))
     return result
 
@@ -296,7 +298,72 @@ def cmd_discord_chat(country_classes, flags, discord_bot: bot.InvestigatorBot):
         return
     message = flags["default"][0]
     channel = flags["default"][1]
-    discord_bot.chat(message, channel)
+    discord_bot.send_message(message, channel)
+
+def cmd_discord_submission_source_history(country_classes, flags, discord_bot: bot.InvestigatorBot):
+    """ Retrieve the source history for a channel """
+    if "default" not in flags or not isinstance(flags["default"], str):
+        error_message("The required arguments are missing or are incorrectly formated")
+        return
+    group_name = flags['default']
+    if group_name == "europe" or group_name == "eu":
+        channels = bot_data.europe_channels_sheet_order
+    elif group_name == "us" or group_name == "usa":
+        channels = bot_data.us_channels
+    elif group_name == "canada":
+        channels = bot_data.canada_channels
+    elif group_name == "test":
+        channels = bot_data.test_channels
+    else:
+        channels = {group_name}
+    result_dict = {}
+    for channel in channels:
+        print("Retrieving full channel history for {}".format(channel))
+        channel_history = discord_bot.get_channel_history(channel)
+        print("Channel history retrieved, parsing...")
+        sources = [] #List of tuple (source, submission_date, timestamp)
+        for message in channel_history:
+            if message.author.id == config.NOVEL_BOT_ID:
+                if len(message.embeds) > 0:
+                    if "SUBMISSION" in message.embeds[0].title and len(message.embeds[0].fields) > 1 and "ACCEPTED" in message.embeds[0].fields[1].value:
+                        link_string = message.embeds[0].fields[6].value
+                        link = None
+                        if link_string.startswith("http"): #Plain link
+                            link = link_string
+                        else:
+                            lst = re.findall('\(([^)]+)', link_string)
+                            for possible_link in lst:
+                                if possible_link.startswith("http"):
+                                    link = possible_link
+                                    break
+                        if link != None:
+                            timestamp = message.edited_at if message.edited_at != None else message.created_at
+                            date = message.embeds[0].fields[0].value.split()[4].strip("`")
+                            sources.append((link, date, timestamp)) 
+        sources = sorted(sources, key=lambda x: x[2])
+        for link, date, timestamp in sources:
+            result_dict.setdefault(date, {})
+            result_dict[date][channel] = link
+        print("Channel {} complete".format(channel))
+
+    result = ""
+
+    for date, countries in result_dict.items():
+        for channel in channels:
+            if channel not in countries:
+                countries[channel] = "No source found for this date"
+
+    result_dict = {k: v for k, v in sorted(result_dict.items(), key=lambda item: int(item[0].split("/")[1] + item[0].split("/")[0]))}
+
+    for date, countries in result_dict.items():
+        result += date + "\n"
+        for country, link in countries.items(): 
+            result += link + "\n"
+        result += "\n"
+
+    save_to_file(result, "submission_sources.txt")
+
+    print("Test test test!") 
 
 def error_message(reason):
     """Support function for logging error messages related to functions"""

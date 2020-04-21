@@ -155,9 +155,9 @@ class NovelScraper:
             except:
                 log.warning("Error on scraping attempt {}. Most likely the javascript did not load in time. Retrying.".format(i))
 
-    def scrape(self, browser):
+    def scrape(self, browser, date=datetime.datetime.now()):
         """ Template for scrape function. Returns a data object containing the cases"""
-        result = dataobject.DataObject(self)
+        result = dataobject.DataObject(self, date)
         return result
 
     def screenshot(self, browser):
@@ -220,10 +220,15 @@ class LearnedData():
 
     def load(self, country: str):
         """ Load data from file """
-        filename = "data/rm_{}".format(country.lower())
-        loaded_data = load_dict_from_file(filename)
-        self.data = loaded_data["register"]
-        self.indices = loaded_data["indices"]
+        try:
+            filename = "data/rm_{}".format(country.lower())
+            loaded_data = load_dict_from_file(filename)
+            self.data = loaded_data["register"]
+            self.indices = loaded_data["indices"]
+        except:
+            log.warning("Failed to load recognition model for {}".format(country))
+            self.data = {}
+            self.indices = {}
 
 
 class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins):
@@ -256,25 +261,30 @@ class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins):
         self.has_hopkins = True
         self.has_auto = False
         self.scroll_height = None
-        self.region_of_country = None
         self.adjust_scraped_recovery_from_sheet = True
         self.adjust_scraped_deaths_from_sheet = False
+        self.combine_text_numbers = True
+        self.overwrite_model_surrounding_numbers = False
+        self.remove_timestamps = False
 
     def learn(self, text, number, label):
         """ Learn the data surrounding a number to be able to find it in the future """
         text = clean_text(text)
         words = text.split()
-        words = combine_separate_numbers(words)
+        if self.remove_timestamps:
+            words = remove_time(words)
+        if self.combine_text_numbers:
+            words = combine_separate_numbers(words)
         words = divide_numbers(words)
         words = clean_if_number(words)
         number_index = find_word_index(words, number)
         if number_index == -1:
             log.error("Training: Cannot find the specified number: " + number)
-            raise TypeError
+            return
 
         self.learned_data.indices[label] = number_index
         #Get surrounding words and skip the center one
-        context_words = get_surrounding_words(words, number_index, config.SURROUNDING_WORD_COUNT)
+        context_words = get_surrounding_words(words, number_index, config.SURROUNDING_WORD_COUNT, self.overwrite_model_surrounding_numbers)
         for i, word in enumerate(context_words): #Compute distance value from center, ascending
             context_words[i] = (word, abs(config.SURROUNDING_WORD_COUNT-i) + (i >= config.SURROUNDING_WORD_COUNT))
         #Eval function: distance * similarity * constant
@@ -310,7 +320,10 @@ class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins):
         """ Apply the learned model to the text to find the asked for number """
         text = clean_text(text)
         words = text.split()
-        words = combine_separate_numbers(words)
+        if self.remove_timestamps:
+            words = remove_time(words)
+        if self.combine_text_numbers:
+            words = combine_separate_numbers(words)
         words = divide_numbers(words)
         words = clean_if_number(words)
 
@@ -325,7 +338,7 @@ class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins):
         previousMaxNumber = -1
         for i, word in enumerate(words):
             if word.isdigit() and not is_time(word):
-                sur_words = get_surrounding_words(words, i, config.SURROUNDING_WORD_COUNT)
+                sur_words = get_surrounding_words(words, i, config.SURROUNDING_WORD_COUNT, self.overwrite_model_surrounding_numbers)
                 distance_from_index = (index - abs(index - float(i))) / index
                 score = self.evaluate(sur_words, register, distance_from_index)
                 if score > previousMaxScore:
@@ -337,9 +350,9 @@ class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins):
         else:
             return -1
 
-    def scrape(self, browser):
+    def scrape(self, browser, date=datetime.datetime.now()):
         """Automated scraping using the saved learned model from train()"""
-        result = dataobject.DataObject(self)
+        result = dataobject.DataObject(self, date)
 
         result.scrape_date = result.scrape_date.replace(microsecond=0)
         screenshot_path = "screenshots/{}|{}.png".format(self.get_index_name(), result.scrape_date.__str__())
@@ -350,6 +363,9 @@ class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins):
         #text = scramble_text(text)
         load_file_name = self.country_name if self.country_name == self.province_name else self.get_index_name()
         self.learned_data.load(load_file_name)
+
+        if not self.learned_data.data: # No recognition model loaded
+            result.data_validity = "Could not load recognition model for this country. Has the model been trained?"
 
         result_dict = {}
 

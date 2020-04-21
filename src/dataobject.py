@@ -3,7 +3,7 @@ import datetime
 
 class DataObject:
     """Contains the data scraped from a country"""
-    def __init__(self, scraper = None):
+    def __init__(self, scraper = None, date=datetime.datetime.now()):
         self.deaths = 0
         self.cases = 0
         self.recovered = 0
@@ -16,7 +16,7 @@ class DataObject:
         
         self.screenshot_path = None
         self.source_website = None
-        self.scrape_date = datetime.datetime.now()
+        self.scrape_date = date
         self.source_update_date = self.scrape_date
 
         if scraper != None:

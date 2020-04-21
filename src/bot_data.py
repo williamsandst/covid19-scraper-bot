@@ -15,3 +15,53 @@ canada_channels = {"canada", "alberta", "british-columbia", "manitoba", "new-bru
         "saskatchewan", "yukon", "northwest-territories", "prince-edward-island"}
 
 other_channels = {"welcome", "info", "rules", "general", "lounge", "music", "dev-bot", "bot-suggestions", "sheet-suggestions"}
+
+test_channels = {"sweden", "latvia", "denmark"}
+
+europe_channels_sheet_order = ["germany",
+    "france",
+    "uk",
+    "italy",
+    "spain",
+    "belgium",
+    "finland",
+    "sweden",
+    "switzerland",
+    "croatia",
+    "greece",
+    "norway",
+    "romania",
+    "north-macedonia",
+    "austria",
+    "denmark",
+    "estonia",
+    "netherlands",
+    "san-marino",
+    "belarus",
+    "iceland",
+    "lithuania",
+    "ireland",
+    "luxembourg",
+    "monaco",
+    "czech-republic",
+    "poland",
+    "portugal",
+    "andorra",
+    "latvia",
+    "ukraine",
+    "liechtenstein",
+    "hungary",
+    "slovenia",
+    "bosnia-and-herzegovina",
+    "serbia",
+    "holy-see",
+    "slovakia",
+    "malta",
+    "bulgaria"]
+
+"moldova",
+"albania",
+"montenegro",
+"cyprus",
+"russia",
+"kosovo"

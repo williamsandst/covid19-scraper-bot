@@ -271,7 +271,10 @@ def init_europe_scrapers():
     scraper.country_name = "Belarus"
     scraper.province_name = "Belarus"
     scraper.iso_code = "BY"
-    #scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    scraper.source_website = "http://stopcovid.belta.by/"
+    scraper.has_auto = True
+    scraper.javascript_required = True
+    scraper.combine_text_numbers = False
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Ukarine (UA) (CoronaCloud)
@@ -297,15 +300,20 @@ def init_europe_scrapers():
     scraper.iso_code = "AD"
     scraper.report_website = "https://www.govern.ad/coronavirus"
     scraper.source_website = "https://www.govern.ad/covid/taula.php"
+    scraper.website_height = 200
     scraper.javascript_required = True
-    group_country_classes[scraper.get_index_name()] = scraper
+    scraper.has_auto = True
+    group_country_classes[scraper.get_index_name()] = scraper 
 
     # Albania
     scraper = NovelScraperAuto()
     scraper.country_name = "Albania"
     scraper.province_name = "Albania"
     scraper.iso_code = "AL"
-    #scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    scraper.source_website = "https://coronavirus.al/statistika/"
+    scraper.has_hopkins = True
+    scraper.javascript_required = True
+    scraper.has_auto = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Bosnia and Herzegovina
@@ -313,7 +321,10 @@ def init_europe_scrapers():
     scraper.country_name = "Bosnia-and-Herzegovina"
     scraper.province_name = "Bosnia-and-Herzegovina"
     scraper.iso_code = "BA"
-    #scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    scraper.report_website = "https://www.klix.ba/koronavirus-u-bih"
+    scraper.source_website = "https://www.klix.ba/corona/"
+    scraper.has_auto = True
+    scraper.javascript_required = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Bulgaria
@@ -321,7 +332,8 @@ def init_europe_scrapers():
     scraper.country_name = "Bulgaria"
     scraper.province_name = "Bulgaria"
     scraper.iso_code = "BG"
-    #scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    scraper.source_website = "https://www.mh.government.bg/bg/informaciya-za-grazhdani/potvrdeni-sluchai-na-koronavirus-na-teritoriyata-na-r-blgariya/"
+    scraper.has_auto = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Croatia
@@ -329,7 +341,8 @@ def init_europe_scrapers():
     scraper.country_name = "Croatia"
     scraper.province_name = "Croatia"
     scraper.iso_code = "HR"
-    #scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    scraper.source_website = "https://www.koronavirus.hr/"
+    scraper.has_auto = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Cyprus
@@ -341,11 +354,7 @@ def init_europe_scrapers():
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Hungary
-    scraper = NovelScraperAuto()
-    scraper.country_name = "Hungary"
-    scraper.province_name = "Hungary"
-    scraper.iso_code = "HU"
-    #scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    scraper = NovelScraperHU()
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Holy-see
@@ -361,7 +370,9 @@ def init_europe_scrapers():
     scraper.country_name = "Kosovo"
     scraper.province_name = "Kosovo"
     scraper.iso_code = "XK"
-    #scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    scraper.source_website = "https://kosova.health/en/"
+    scraper.scroll_height = 600
+    scraper.has_auto = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Liechtenstein
@@ -377,7 +388,9 @@ def init_europe_scrapers():
     scraper.country_name = "Luxembourg"
     scraper.province_name = "Luxembourg"
     scraper.iso_code = "LU"
-    #scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    scraper.source_website = "https://msan.gouvernement.lu/en/dossiers/2020/corona-virus.html"
+    scraper.has_auto = True
+    scraper.scroll_height = 300
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Malta
@@ -385,7 +398,13 @@ def init_europe_scrapers():
     scraper.country_name = "Malta"
     scraper.province_name = "Malta"
     scraper.iso_code = "MT"
-    #scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    scraper.report_website = "https://www.maltatoday.com.mt/"
+    scraper.source_website = "https://e.infogram.com/ca2bde8e-e60d-49a1-8faa-5beab8e542ab?parent_url=https%3A%2F%2Fwww.maltatoday.com.mt%2F&src=embed#async_embed"
+    scraper.javascript_required = True
+    scraper.has_auto = True
+    scraper.website_height = 300
+    scraper.combine_text_numbers = False
+    scraper.overwrite_model_surrounding_numbers = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Moldova
@@ -441,7 +460,9 @@ def init_europe_scrapers():
     scraper.country_name = "Serbia"
     scraper.province_name = "Serbia"
     scraper.iso_code = "RS"
-    #scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    scraper.has_auto = True
+    scraper.javascript_required = True
+    scraper.source_website = "https://covid19.rs/"
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Slovakia
@@ -775,8 +796,14 @@ def init_us_scrapers():
     group_country_classes[scraper.get_index_name()] = scraper
 
     # New York
-    scraper = NovelScraperNY()
-    scraper.has_auto = False
+    scraper = NovelScraperAuto()
+    scraper.country_name = country_name
+    scraper.province_name = "New-York"
+    scraper.iso_code = "NY"
+    scraper.source_website = "https://www.nbcnewyork.com/news/local/how-many-in-tri-state-have-tested-positive-for-coronavirus-here-are-latest-cases-by-the-numbers/2317721/"
+    scraper.javascript_required = True
+    scraper.has_auto = True
+    scraper.scroll_height = 3400
     group_country_classes[scraper.get_index_name()] = scraper
 
     # North Carolina
@@ -1033,8 +1060,10 @@ def init_canada_scrapers():
     scraper.country_name = country_name 
     scraper.province_name = "British-Columbia" 
     scraper.iso_code = "N/A"
-    scraper.source_website = "http://www.bccdc.ca/health-info/diseases-conditions/covid-19/case-counts-press-statements"
-    scraper.scroll_height = 300
+    scraper.source_website = "https://governmentofbc.maps.arcgis.com/apps/opsdashboard/index.html#/11bd9b0303c64373b5680df29e5b5914"
+    scraper.has_auto = True
+    scraper.javascript_required = True
+    scraper.wait_time = 15
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Manitoba
@@ -1044,6 +1073,7 @@ def init_canada_scrapers():
     scraper.iso_code = "N/A"
     scraper.source_website = "https://www.gov.mb.ca/covid19/updates/index.html"
     scraper.scroll_height = 400
+    scraper.has_auto = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # New Brunswick
@@ -1051,8 +1081,9 @@ def init_canada_scrapers():
     scraper.country_name = country_name 
     scraper.province_name = "New-Brunswick" 
     scraper.iso_code = "N/A"
-    scraper.source_website = "https://www2.gnb.ca/content/gnb/en/departments/ocmoh/cdc/content/respiratory_diseases/coronavirus.html"
+    scraper.source_website = "https://www2.gnb.ca/content/gnb/en/corporate/promo/covid-19/maps_graphs.html"
     scraper.scroll_height = 600
+    scraper.has_auto = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Newfoundland and Labrador
@@ -1062,6 +1093,7 @@ def init_canada_scrapers():
     scraper.iso_code = "N/A"
     scraper.source_website = "https://covid-19-newfoundland-and-labrador-gnl.hub.arcgis.com/"
     scraper.javascript_required = True
+    scraper.has_auto = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Nova Scotia
@@ -1072,6 +1104,7 @@ def init_canada_scrapers():
     scraper.source_website = "https://novascotia.ca/coronavirus/data/"
     scraper.javascript_required = True
     scraper.scroll_height = 300
+    scraper.has_auto = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Ontario
@@ -1081,8 +1114,9 @@ def init_canada_scrapers():
     scraper.iso_code = "N/A"
     scraper.source_website = "https://www.ontario.ca/page/2019-novel-coronavirus#2"
     scraper.website_height = 1200
-    scraper.scroll_height = 1600
+    scraper.scroll_height = 1800
     scraper.javascript_required = True
+    scraper.has_auto = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Quebec
@@ -1092,6 +1126,7 @@ def init_canada_scrapers():
     scraper.iso_code = "N/A"
     scraper.source_website = "https://www.inspq.qc.ca/covid-19/donnees"
     scraper.javascript_required = True
+    scraper.has_auto = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Saskatchewan
@@ -1100,6 +1135,7 @@ def init_canada_scrapers():
     scraper.province_name = "Saskatchewan" 
     scraper.iso_code = "N/A"
     scraper.source_website = "https://www.saskatchewan.ca/government/health-care-administration-and-provider-resources/treatment-procedures-and-guidelines/emerging-public-health-issues/2019-novel-coronavirus/cases-and-risk-of-covid-19-in-saskatchewan"
+    scraper.has_auto = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Yukon
@@ -1108,6 +1144,7 @@ def init_canada_scrapers():
     scraper.province_name = "Yukon" 
     scraper.iso_code = "N/A"
     scraper.source_website = "https://yukon.ca/covid-19"
+    scraper.has_auto = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Northwest Territories
@@ -1117,6 +1154,7 @@ def init_canada_scrapers():
     scraper.iso_code = "N/A"
     scraper.source_website = "https://www.hss.gov.nt.ca/en/services/coronavirus-disease-covid-19"
     scraper.scroll_height = 300
+    scraper.has_auto = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Prince Edward Island
@@ -1124,6 +1162,7 @@ def init_canada_scrapers():
     scraper.country_name = country_name
     scraper.province_name = "Prince-Edward-Island" 
     scraper.iso_code = "N/A"
+    scraper.has_auto = True
     scraper.source_website = "https://www.princeedwardisland.ca/en/information/health-and-wellness/pei-covid-19-testing-data"
     group_country_classes[scraper.get_index_name()] = scraper
 
@@ -1134,6 +1173,7 @@ def init_canada_scrapers():
     scraper.iso_code = "N/A"
     scraper.source_website = "https://gov.nu.ca/health/information/covid-19-novel-coronavirus"
     scraper.scroll_height = 300
+    scraper.has_auto = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     for country_name, scraper in group_country_classes.items(): #Values applied to all countries within this function

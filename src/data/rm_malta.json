@@ -1,0 +1,1 @@
+{"register": {"cases": {"Active": 0, "cases": 1, "Recovered": 2, "Deaths": 3, "Swabs": 4, "##": 1, "###": 2, "#": 0}, "recovered": {"Swabs": 0, "###": 4, "##": 2, "#": 4, "#####": 3}, "deaths": {"###": 3, "##": 4, "#####": 4}, "tested": {"##": 3, "###": 2, "#": 4}}, "indices": {"cases": 42, "recovered": 46, "deaths": 47, "tested": 48}}

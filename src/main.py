@@ -224,6 +224,7 @@ def main():
     add_command(["chat", "ch"], lambda: cmd_discord_chat(country_classes, flags, discord_bot), commands)
     add_command(["help", "h"], lambda: cmd_help(country_classes, flags), commands)
     add_command(["exit", "close", "quit"], lambda: cmd_exit(country_classes, flags, discord_bot, browser), commands)
+    add_command(["dssh", "sourcehistory", "dsh", "discordsourcehistory"], lambda: cmd_discord_submission_source_history(country_classes, flags, discord_bot), commands)
 
     init_europe_scrapers()
     init_us_scrapers()
