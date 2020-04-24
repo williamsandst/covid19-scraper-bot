@@ -138,7 +138,7 @@ def init_europe_scrapers():
     scraper.province_name = "Germany"
     scraper.iso_code = "DE"
     scraper.javascript_required = True
-    scraper.source_website = "https://interaktiv.morgenpost.de/corona-virus-karte-infektionen-deutschland-weltweit-teaser/"
+    scraper.source_website = "https://interaktiv.tagesspiegel.de/lab/karte-sars-cov-2-in-deutschland-landkreise/"
     #scraper.training_data = {"cases": "54268", "deaths": "398", "recovered":"3781"}
     group_country_classes[scraper.get_index_name()] = scraper
 
@@ -150,7 +150,7 @@ def init_europe_scrapers():
     scraper.iso_code = "FR"
     scraper.javascript_required = True
     scraper.source_website = "https://www.santepubliquefrance.fr/maladies-et-traumatismes/maladies-et-infections-respiratoires/infection-a-coronavirus/articles/infection-au-nouveau-coronavirus-sars-cov-2-covid-19-france-et-monde"
-    scraper.scroll_height = 1700
+    scraper.scroll_height = 2000
     #scraper.training_data = {"cases": "54268", "deaths": "398", "recovered":"3781"}
     group_country_classes[scraper.get_index_name()] = scraper
 
@@ -237,7 +237,9 @@ def init_europe_scrapers():
     scraper.country_name = "Russia"
     scraper.province_name = "Russia"
     scraper.iso_code = "RU"
-    scraper.source_website = "https://www.interfax.ru/chronicle/novyj-koronavirus-v-kitae.html&usg=ALkJrhhW6tC7Wqpa7vbQeaYKlTlQ8ZkIBA"
+    scraper.source_website = "https://www.interfax.ru/chronicle/novyj-koronavirus-v-kitae.html"
+    scraper.has_auto = True
+    scraper.javascript_required = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Poland (PL)
@@ -245,8 +247,13 @@ def init_europe_scrapers():
     scraper.country_name = "Poland"
     scraper.province_name = "Poland"
     scraper.iso_code = "PL"
+    scraper.javascript_required = True
+    scraper.wait_time = 5
     #scraper.source_website = "https://koronawirusunas.pl/"
     scraper.source_website = "https://pokazwirusa.pl/?fbclid=IwAR1bkCIad8H4F-2-2WgYv2pbrleRWgPeUCVDu97X-C2DV0GPfiqlxx7_z9s"
+    scraper.region_source_website = "https://www.gov.pl/web/koronawirus/wykaz-zarazen-koronawirusem-sars-cov-2"
+    scraper.javascript_objects = ["vueApp.$data.records"]
+    scraper.key_mapping = {"cases": "Liczba", "deaths": "Liczba zgonów", "province": "Województwo"}
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Czech Republic (CZ)
@@ -337,11 +344,7 @@ def init_europe_scrapers():
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Croatia
-    scraper = NovelScraperAuto()
-    scraper.country_name = "Croatia"
-    scraper.province_name = "Croatia"
-    scraper.iso_code = "HR"
-    scraper.source_website = "https://www.koronavirus.hr/"
+    scraper = NovelScraperHR()
     scraper.has_auto = True
     group_country_classes[scraper.get_index_name()] = scraper
 
@@ -412,7 +415,9 @@ def init_europe_scrapers():
     scraper.country_name = "Moldova"
     scraper.province_name = "Moldova"
     scraper.iso_code = "MD"
-    #scraper.source_website = "https://www.sozialministerium.at/Informationen-zum-Coronavirus/Neuartiges-Coronavirus-(2019-nCov).html"
+    scraper.source_website = "http://gismoldova.maps.arcgis.com/apps/opsdashboard/index.html#/d274da857ed345efa66e1fbc959b021b"
+    scraper.javascript_required = True
+    scraper.has_auto = True
     group_country_classes[scraper.get_index_name()] = scraper
 
     # Monaco

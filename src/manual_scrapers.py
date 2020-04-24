@@ -168,3 +168,38 @@ class NovelScraperHU(NovelScraperHopkins):
         result.deaths = clean_number(soup.find("tbody").find("tr").find("td").text)
 
         return result
+
+class NovelScraperHR(NovelScraperHopkins):
+    """Croatia Coronavirus Scraper. Plain HTML"""
+    def __init__(self):
+        """Initializes class members to match the country the class is designed for"""
+        self.country_name = "Croatia"
+        self.province_name = "Croatia"
+        self.iso_code = "HR"
+        self.source_website = "https://www.koronavirus.hr/"
+        self.has_auto = True
+        self.report_website = None
+        self.javascript_required = True
+        self.training_data = None
+        self.website_height = 900
+        self.website_width = 900
+        self.has_covidtracking = False
+        self.has_hopkins = True
+        self.wait_time = 4
+        self.adjust_scraped_recovery_from_sheet = True
+        self.adjust_scraped_deaths_from_sheet = False
+        self.scroll_height = None
+
+    def scrape(self, browser, date = datetime.datetime.now()):
+        """ Scrape function. Returns a data object with the reported cases. Uses Selenium and Beautifulsoup to extract the data """ 
+        result = dataobject.DataObject(self, date)
+
+        result.screenshot_path = self.screenshot(browser)
+
+        soup = get_parsed_javascript_html(self.source_website, browser)
+
+        result.cases = clean_number(soup.find("div", class_="counter-title", text=re.compile("Slučajevi")).parent.find("strong").text)
+        result.recovered = clean_number(soup.find("div", class_="counter-title", text=re.compile("Izliječeni")).parent.find("strong").text)
+        result.deaths = clean_number(soup.find("div", class_="counter-title", text=re.compile("Preminuli")).parent.find("strong").text)
+
+        return result

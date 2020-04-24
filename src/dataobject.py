@@ -13,6 +13,7 @@ class DataObject:
         self.suspected_cases = 0
         self.data_validity = "OK"
 
+        self.province = None # For region scrapes
         
         self.screenshot_path = None
         self.source_website = None

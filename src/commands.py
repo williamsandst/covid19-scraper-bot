@@ -55,6 +55,10 @@ def scrape(country_classes, scrape_type="default", date=datetime.datetime.now(),
         for country in country_classes:
             if country_classes[country].has_hopkins and (country_group == None or country_classes[country].group_name == country_group):
                 results[country] = scrape_country_hopkins(country, country_classes, date)
+    elif scrape_type == "jpregions" or scrape_type == "r":
+        for country in country_classes:
+            if country_classes[country].has_hopkins and (country_group == None or country_classes[country].group_name == country_group):
+                results[country] = scrape_country_regions(country, browser, country_classes, date)
 
 
     return results
@@ -78,6 +82,13 @@ def scrape_country_hopkins(country: str, country_classes, date):
     country_name = country_classes[country].get_pretty_name()
     log.info("{}: Scraping from John Hopkins Github...".format(country_name))
     result = country_classes[country].scrape_hopkins(date)
+    log.info("{}: Scraping complete!".format(country_name))
+    return result
+
+def scrape_country_regions(country: str, browser, country_classes, date):
+    country_name = country_classes[country].get_pretty_name()
+    log.info("{}: Scraping using Javascript peeker...".format(country_name))
+    result = country_classes[country].scrape_regions(browser)
     log.info("{}: Scraping complete!".format(country_name))
     return result
 
@@ -126,7 +137,7 @@ scrape <country/ALL> [-f]           Scrape a selected country, or 'ALL' for all 
 train <country> [train_dict]        Train a country with their internal training dictionary or supply one as argument
 """
 
-scraping_types = {"default", "d", "covidtracking", "covidtracker", "ct", "hopkins", "johnhopkins", "john", "jh"}
+scraping_types = {"default", "d", "covidtracking", "covidtracker", "ct", "hopkins", "johnhopkins", "john", "jh", "regions", "r"}
 
 def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBot, browser):
     if "default" not in flags or (not isinstance(flags["default"], str) and len(flags["default"]) > 2):
@@ -178,7 +189,7 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
         error_message("The specified country {} is not registered".format(country))
         return
 
-    if not 'nocheck' in flags and not config.DISABLE_SHEET_ERROR_CHECKING: #Check validity of scraped data
+    if not 'nocheck' in flags and not config.DISABLE_SHEET_ERROR_CHECKING and scraping_type != "regions" and scraping_type != "r": #Check validity of scraped data
         log.info("Checking scrape result validity...")
         for result_country, result in results.items():
             country_sheet_name = bot.convert_country_index_to_channel(result_country)
@@ -188,9 +199,13 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
 
     if 'nodisp' not in flags:
         for country, result in results.items():
-            if result.data_validity != "OK":
-                log.warning("Error: " + result.data_validity)
-            log.info(result)
+            if isinstance(result, list): #Multiple results
+                for subresult in result:
+                    log.info(subresult)
+            else:
+                if result.data_validity != "OK":
+                    log.warning("Error: " + result.data_validity)
+                log.info(result)
 
     if 'f' in flags:
         submission_string = interface.create_submissions(results)
@@ -198,21 +213,28 @@ def cmd_scrape(country_classes: dict, flags: dict, discord_bot: bot.Investigator
     
     if 'd' in flags:
         for country, result in results.items():
-            if result.data_validity == "OK":
-                if result.cases > 0:
-                    submission_string = interface.convert_dataobject_to_submission(result)
-                    submission_additional_data_str = None
-                    if config.SUBMIT_ADDITIONAL_DATA:
-                        submission_additional_data_str = interface.convert_dataobject_to_additional_data_string(result)
-                    discord_bot.submit(country, submission_string, result.screenshot_path, submission_additional_data_str)
-                else:
-                    discord_bot.send_message("Zero cases reported on the date {} for {}, omitting submission".format(interface.convert_datetime_to_string(date), result.pretty_country_name), country)
-                    log.info("Omitted submission to Discord due to zero cases")
+            if isinstance(result, list):
+                discord_bot.send_message("Sending region data from {}".format(result[0].source_website), country)
+                message = ""
+                for subresult in result:
+                    message += "{}: {} {} {}\n".format(subresult.province, subresult.cases, subresult.deaths, subresult.recovered)
+                discord_bot.send_message(message, country)
             else:
-                submission_string = interface.convert_dataobject_to_submission(result)
-                log.warning("Submission data is bad due to: {}".format(result.data_validity))
-                discord_bot.send_error("{} (resulting in submission: {})".format(result.data_validity, submission_string),country)
-            time.sleep(2)
+                if result.data_validity == "OK":
+                    if result.cases > 0:
+                        submission_string = interface.convert_dataobject_to_submission(result)
+                        submission_additional_data_str = None
+                        if config.SUBMIT_ADDITIONAL_DATA:
+                            submission_additional_data_str = interface.convert_dataobject_to_additional_data_string(result)
+                        discord_bot.submit(country, submission_string, result.screenshot_path, submission_additional_data_str)
+                    else:
+                        discord_bot.send_message("Zero cases reported on the date {} for {}, omitting submission".format(interface.convert_datetime_to_string(date), result.pretty_country_name), country)
+                        log.info("Omitted submission to Discord due to zero cases")
+                else:
+                    submission_string = interface.convert_dataobject_to_submission(result)
+                    log.warning("Submission data is bad due to: {}".format(result.data_validity))
+                    discord_bot.send_error("{} (resulting in submission: {})".format(result.data_validity, submission_string),country)
+                time.sleep(2)
 
 def cmd_train(country_classes: dict, flags: dict, discord_bot: bot.InvestigatorBot, browser):
     if "default" not in flags or not isinstance(flags["default"], str):
@@ -301,6 +323,7 @@ def cmd_discord_chat(country_classes, flags, discord_bot: bot.InvestigatorBot):
     discord_bot.send_message(message, channel)
 
 def cmd_discord_submission_source_history(country_classes, flags, discord_bot: bot.InvestigatorBot):
+    # Before 16th different format
     """ Retrieve the source history for a channel """
     if "default" not in flags or not isinstance(flags["default"], str):
         error_message("The required arguments are missing or are incorrectly formated")
@@ -323,23 +346,39 @@ def cmd_discord_submission_source_history(country_classes, flags, discord_bot: b
         print("Channel history retrieved, parsing...")
         sources = [] #List of tuple (source, submission_date, timestamp)
         for message in channel_history:
-            if message.author.id == config.NOVEL_BOT_ID:
-                if len(message.embeds) > 0:
-                    if "SUBMISSION" in message.embeds[0].title and len(message.embeds[0].fields) > 1 and "ACCEPTED" in message.embeds[0].fields[1].value:
-                        link_string = message.embeds[0].fields[6].value
-                        link = None
-                        if link_string.startswith("http"): #Plain link
-                            link = link_string
-                        else:
-                            lst = re.findall('\(([^)]+)', link_string)
-                            for possible_link in lst:
-                                if possible_link.startswith("http"):
-                                    link = possible_link
-                                    break
-                        if link != None:
-                            timestamp = message.edited_at if message.edited_at != None else message.created_at
-                            date = message.embeds[0].fields[0].value.split()[4].strip("`")
-                            sources.append((link, date, timestamp)) 
+            timestamp = message.edited_at if message.edited_at != None else message.created_at
+            if timestamp.month > 3 or timestamp.day > 16:
+                if message.author.id == config.NOVEL_BOT_ID:
+                    if len(message.embeds) > 0:
+                        if "SUBMISSION" in message.embeds[0].title:
+                            accepted = False
+                            link_string = None
+                            for field in message.embeds[0].fields:
+                                if "ACCEPTED" in field.value:
+                                    accepted = True
+                                elif "Link" in field.name:
+                                    link_string = field.value
+                            if accepted and link_string != None:
+                                link = None
+                                if link_string.startswith("http"): #Plain link
+                                    link = link_string
+                                else:
+                                    lst = re.findall('\((http[^)]+)', link_string)
+                                    for possible_link in lst:
+                                        if possible_link.startswith("http"):
+                                            link = possible_link
+                                            break
+                                if link != None:
+                                    date = message.embeds[0].fields[0].value.split()[4].strip("`")
+                                    sources.append((link, date, timestamp)) 
+            if timestamp.month == 3 or timestamp.day < 18: #Different format
+                if message.content.startswith("=") or message.content.startswith("+") or message.content.startswith("total") or message.content.startswith("add"):
+                    if len(message.reactions) == 0 or (message.reactions[0].emoji == "✅" and message.reactions[0].count > 1):
+                        words = message.content.split()
+                        if len(words) == 5:
+                            link = words[4]
+                            date = "{}/0{}".format(timestamp.day, timestamp.month) 
+                            sources.append((link, date, timestamp))
 
         sources = sorted(sources, key=lambda x: x[2])
         for link, date, timestamp in sources:

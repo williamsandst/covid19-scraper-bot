@@ -45,6 +45,16 @@ def get_screenshot(website, browser, screenshot_path, viewport_width=1200, viewp
     if config.ALLOW_SCREENSHOTS and screenshot_path != None:
         browser.save_screenshot(screenshot_path)
 
+def get_javascript_objects(website, browser, objects, wait_time = 4):
+    log.info("Retrieving Javascript objects from website with Selenium: {}".format(website))
+    browser.get(website)
+    time.sleep(wait_time)
+    return_objects = []
+    for obj in objects:
+        output = browser.execute_script("return {};".format(obj))
+        return_objects.append(output) 
+    return return_objects
+
 def get_visible_text(website, browser, screenshot_path = False, viewport_width=1200, viewport_height=900, wait_time = 4, scroll_height = None, parse_javscript = False):
     # extract text
     log.info("Retrieving website with Selenium: {}".format(website))
@@ -230,8 +240,53 @@ class LearnedData():
             self.data = {}
             self.indices = {}
 
+def findkeys(node, kv):
+    if isinstance(node, list):
+        for i in node:
+            for x in findkeys(i, kv):
+               yield x
+    elif isinstance(node, dict):
+        if kv in node:
+            yield node[kv]
+        for j in node.values():
+            for x in findkeys(j, kv):
+                yield x
 
-class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins):
+class NovelScraperJavascriptRegions(NovelScraper):
+    def __init__(self):
+        self.javascript_objects = None
+        self.key_mapping = None
+        self.wait_time = 4
+        self.region_source_website = None
+
+
+    def scrape_regions(self, browser):
+        # Cleaning up config data
+        if isinstance(self.key_mapping, dict):
+            self.key_mapping = [self.key_mapping]
+        if isinstance(self.javascript_objects, str):
+            self.javascript_objects = [self.javascript_objects]
+
+        log.info("Retrieving Javascript objects")
+        javascript_objects = get_javascript_objects(self.region_source_website, browser, self.javascript_objects, self.wait_time)
+
+        result_list = []
+        for object_index, obj in enumerate(javascript_objects):
+            for label, name in self.key_mapping[object_index].items():
+                keys = list(findkeys(obj, name))
+                if len(keys) != len(result_list):
+                    for i in keys:
+                        result_object = dataobject.DataObject(self)
+                        result_object.source_website = self.region_source_website
+                        result_list.append(result_object)
+
+                for index, value in enumerate(list(findkeys(obj, name))):
+                    result_list[index].update_by_str(label, value)
+        
+        return result_list
+        
+
+class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins, NovelScraperJavascriptRegions):
     """ Automated scraping through a training approach
         #Steps:
         #Learning:
@@ -260,12 +315,16 @@ class NovelScraperAuto(NovelScraperCovidTracking, NovelScraperHopkins):
         self.has_covidtracking = False
         self.has_hopkins = True
         self.has_auto = False
+        self.has_javascript_regions = False
         self.scroll_height = None
         self.adjust_scraped_recovery_from_sheet = True
         self.adjust_scraped_deaths_from_sheet = False
         self.combine_text_numbers = True
         self.overwrite_model_surrounding_numbers = False
         self.remove_timestamps = False
+        self.javascript_objects = None
+        self.key_mapping = None
+        self.region_source_website = None
 
     def learn(self, text, number, label):
         """ Learn the data surrounding a number to be able to find it in the future """

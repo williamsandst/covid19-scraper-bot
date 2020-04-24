@@ -5,6 +5,7 @@ import datetime
 import csv
 import codecs
 import logging
+import math
 from contextlib import closing
 from pathlib import Path
 
@@ -313,10 +314,12 @@ def check_from_sheet(country, country_iso_code, date, ignore_cache_timeout = Fal
         if index == -1:
             result.data_validity = "Could not find specified date in the Google Sheet data. Has a new date been added to the sheet yet?"
             return result
-
-        result.cases = int(cases[index])
-        result.deaths = int(deaths[index])
-        result.recovered = int(recovered[index])
+        if not math.isnan(cases[index]):
+            result.cases = int(cases[index])
+            result.deaths = int(deaths[index])
+            result.recovered = int(recovered[index])
+        else:
+            result.data_validity = "Cell was NAN. Has a new date been added to the sheet yet?"
 
     return result
 
